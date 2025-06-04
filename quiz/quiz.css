@@ -1,0 +1,76 @@
+:root {
+    --pixel-size: 5;
+}
+
+html, body {
+    padding: 0;
+    margin: 0;
+    width: 100%;
+  }
+  
+body {
+    overflow: hidden;
+}
+
+.quiz-section {
+    background-color: rgb(232, 232, 232);
+    height: 100vh;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+}
+
+.title {
+    padding-top: 4rem;
+    justify-content: center;
+}
+h1 {
+    font-size: 1.5rem;
+    color: rgb(0, 0, 0);
+    text-align: center;
+    margin: 0;
+}
+
+h2 {
+    font-size: 2.5rem;
+    color: rgb(0, 0, 0);
+    text-align: center;
+    margin: 0;
+}
+.animation-container {
+    height: calc(64px * var(--pixel-size));
+    width: calc(64px * var(--pixel-size));
+    overflow: hidden;
+}
+
+.animation-sprite {
+    animation: idle 1s steps(2) infinite;
+    width: calc(420px * var(--pixel-size));
+    image-rendering: pixelated;
+}
+
+.container {
+    background-color: white;
+    height: 80%;
+    width: 80%;
+    margin: 0;
+    padding: 0;
+}
+
+@keyframes idle {
+    from {
+        transform: translate3d(0px, 0, 0);
+    }
+    to {
+        transform: translate3d(-100%, 0, 0);
+    }
+}
+
+@keyframes attack {
+    from {
+        transform: translate3d(0px, 0, 0);
+    }
+    to {
+        transform: translate3d(-100%, 1, 2);
+    }
+}
