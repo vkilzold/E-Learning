@@ -1,5 +1,5 @@
 :root {
-    --pixel-size: 5;
+    --pixel-size: 0;
 }
 
 html, body {
@@ -38,15 +38,14 @@ h2 {
     margin: 0;
 }
 .animation-container {
-    height: calc(64px * var(--pixel-size));
-    width: calc(64px * var(--pixel-size));
-    overflow: hidden;
+    margin: 4rem 0 0 10rem;
+    height: 10rem;
+    width: 10rem;
 }
 
 .animation-sprite {
-    animation: idle 1s steps(2) infinite;
-    width: calc(420px * var(--pixel-size));
-    image-rendering: pixelated;
+    height: 100%;
+    width: 100%;
 }
 
 .container {
@@ -55,22 +54,8 @@ h2 {
     width: 80%;
     margin: 0;
     padding: 0;
+       
 }
 
-@keyframes idle {
-    from {
-        transform: translate3d(0px, 0, 0);
-    }
-    to {
-        transform: translate3d(-100%, 0, 0);
-    }
-}
 
-@keyframes attack {
-    from {
-        transform: translate3d(0px, 0, 0);
-    }
-    to {
-        transform: translate3d(-100%, 1, 2);
-    }
-}
+
