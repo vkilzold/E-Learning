@@ -37,10 +37,20 @@ h2 {
     text-align: center;
     margin: 0;
 }
+.container {
+    background-color: white;
+    height: 80%;
+    width: 80%;
+    margin: 0;
+    padding: 0;
+    justify-content: center; /* center horizontally */
+    align-items: center; 
+       
+}
 .animation-container {
     margin: 4rem 0 0 10rem;
     height: 10rem;
-    width: 10rem;
+    width: 13rem;
 }
 
 .animation-sprite {
@@ -48,14 +58,19 @@ h2 {
     width: 100%;
 }
 
-.container {
-    background-color: white;
-    height: 80%;
-    width: 80%;
-    margin: 0;
-    padding: 0;
-       
+.button-animation {
+    display: flex;
+    gap: 1rem; /* spacing between buttons */
+    flex-direction: column; /* or row, depending on layout */
+    align-items: center;
 }
+
+.button-animation button {
+    padding: 1rem 2rem;
+    font-size: 1rem;
+    width: 8rem;
+    cursor: pointer;
+  }
 
 
 
