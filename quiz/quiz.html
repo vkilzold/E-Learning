@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="quiz.css"/>
-    <script src="quiz.js"></script>
+    
     <title>Document</title>
 </head>
 <body>
@@ -14,15 +14,10 @@
                 <h1>Round 1</h1>
                 <h2>Question 1</h2>
             </div>
-            <div class="animation-container">
-                <img id="animation-sprite" class="animation-sprite" src="animations/char-idle.gif" alt="character">
-            </div>
-            <div class = "button-animation">
-                <button onclick="changeGIF('animations/char-attack.gif')">attack</button>
-              </div>
+            <canvas id="gameCanvas" width="500" height="500"></canvas>
         </div>
     </div>
-    
+    <script src="quiz.js"></script>
 </body>
 
 </html>

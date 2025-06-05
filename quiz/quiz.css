@@ -44,18 +44,7 @@ h2 {
     margin: 0;
     padding: 0;
     justify-content: center; /* center horizontally */
-    align-items: center; 
-       
-}
-.animation-container {
-    margin: 4rem 0 0 10rem;
-    height: 10rem;
-    width: 13rem;
-}
-
-.animation-sprite {
-    height: 100%;
-    width: 100%;
+    align-items: center;  
 }
 
 .button-animation {
@@ -71,6 +60,10 @@ h2 {
     width: 8rem;
     cursor: pointer;
   }
-
+  
+canvas {
+    image-rendering: pixelated;
+  }
+  
 
 
