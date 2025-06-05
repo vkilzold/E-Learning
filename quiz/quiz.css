@@ -13,7 +13,7 @@ body {
 }
 
 .quiz-section {
-    background-color: rgb(232, 232, 232);
+    background-color: rgb(216, 216, 216);
     height: 100vh;
     align-items: center;
     display: flex;
@@ -38,7 +38,7 @@ h2 {
     margin: 0;
 }
 .container {
-    background-color: white;
+    background-color: rgb(239, 239, 239);
     height: 80%;
     width: 80%;
     margin: 0;

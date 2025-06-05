@@ -8,6 +8,6 @@ function changeGIF(gifPath) {
   if (!gifPath.includes('idle')) {
     setTimeout(() => {
       img.src = 'animations/char-idle.gif?t=' + new Date().getTime();
-    }, 1100); // 1000 milliseconds = 1 second
+    }, 1000); // 1000 milliseconds = 1 second
   }
 }
