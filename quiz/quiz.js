@@ -1,58 +1,134 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
+ctx.imageSmoothingEnabled = false; 
 
-// Disable smoothing for pixelated effect
-ctx.imageSmoothingEnabled = false;
+let idleSpriteSheet = new Image();
+let attackSpriteSheet = new Image();
+let deathSpriteSheet = new Image();
 
-const spriteSheet = new Image();
-spriteSheet.src = 'animations/player-idle.png';
+const scale = 1.2; // global scale factor for all animations
 
-const frameWidth = 32;
-const frameHeight = 32;
-const totalFrames = 16;
-let currentFrame = 0;
-let lastTime = 0;
-
-const scale = 4;
-const fps = 12;
-const frameTime = 1000 / fps;
-
-spriteSheet.onload = () => {
-  requestAnimationFrame(draw);
+const animations = {
+  idle: {
+    image: idleSpriteSheet,
+    frameWidth: 256,
+    frameHeight: 64,
+    totalFrames: 16,
+    fps: 12,
+  },
+  attack: {
+    image: attackSpriteSheet,
+    frameWidth: 256,
+    frameHeight: 64,
+    totalFrames: 38,
+    fps: 16,
+  },
+  death: {
+    image: deathSpriteSheet,
+    frameWidth: 256,
+    frameHeight: 64,
+    totalFrames: 23,
+    fps: 12,
+  },
 };
 
-function draw(timestamp) {
-  if (timestamp - lastTime > frameTime) {
-    currentFrame = (currentFrame + 1) % totalFrames;
-    lastTime = timestamp;
+let currentAnimation = animations.idle;
+let currentFrame = 0;
+let lastFrameTime = 0;
+
+let isAttackPlaying = false;
+let isDeathPlaying = false;
+
+function loadImage(src) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.src = src;
+    img.onload = () => resolve(img);
+    img.onerror = () => reject(new Error(`Failed to load image: ${src}`));
+  });
+}
+
+Promise.all([
+  loadImage('animations/player-idle.png').then(img => idleSpriteSheet = img),
+  loadImage('animations/player-attack.png').then(img => attackSpriteSheet = img),
+  loadImage('animations/player-death.png').then(img => deathSpriteSheet = img),
+]).then(() => {
+  // update images in animations object after load
+  animations.idle.image = idleSpriteSheet;
+  animations.attack.image = attackSpriteSheet;
+  animations.death.image = deathSpriteSheet;
+
+  requestAnimationFrame(animate);
+}).catch(err => {
+  console.error(err);
+  // start animation anyway with whatever loaded
+  requestAnimationFrame(animate);
+});
+
+function animate(timestamp = 0) {
+  const frameDuration = 1000 / currentAnimation.fps;
+
+  if (timestamp - lastFrameTime >= frameDuration) {
+    lastFrameTime = timestamp;
+
+    if (isDeathPlaying) {
+      if (currentFrame < currentAnimation.totalFrames - 2) {
+        currentFrame++;
+      }
+    } else {
+      currentFrame++;
+
+      if (isAttackPlaying && currentFrame >= currentAnimation.totalFrames) {
+        currentAnimation = animations.idle;
+        currentFrame = 0;
+        isAttackPlaying = false;
+      }
+
+      if (!isAttackPlaying && currentFrame >= currentAnimation.totalFrames) {
+        currentFrame = 0;
+      }
+    }
   }
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  ctx.drawImage(
-    spriteSheet,
-    currentFrame * frameWidth, 0,
-    frameWidth, frameHeight,
-    100, 100,
-    frameWidth * scale, frameHeight * scale
-  );
+  const { image, frameWidth, frameHeight, totalFrames } = currentAnimation;
+  const sx = Math.min(currentFrame, totalFrames - 1) * frameWidth;
 
-  requestAnimationFrame(draw);
+  if (
+    image &&
+    image.complete &&
+    image.naturalWidth > 0 &&
+    sx + frameWidth <= image.width
+  ) {
+    const x = -20;
+    const y = 60;
+    ctx.drawImage(
+      image,
+      sx, 0, frameWidth, frameHeight,
+      x, y, frameWidth * scale, frameHeight * scale
+    );
+  }
+
+  requestAnimationFrame(animate);
 }
 
-
-
-
-function changeGIF(gifPath) {
-  const img = document.getElementById("animation-sprite");
-  
-  // Set the selected animation
-  img.src = gifPath + '?t=' + new Date().getTime(); // forces reload
-
-  // If it's not the idle animation, return to idle after 1 second
-  if (!gifPath.includes('idle')) {
-    setTimeout(() => {
-      img.src = 'animations/player-idle.gif?t=' + new Date().getTime();
-    }, 1000); // 1000 milliseconds = 1 second
+function playAttackAnimation() {
+  if (!isAttackPlaying && !isDeathPlaying) {
+    currentAnimation = animations.attack;
+    currentFrame = 0;
+    isAttackPlaying = true;
   }
 }
+
+function playDeathAnimation() {
+  if (!isDeathPlaying) {
+    currentAnimation = animations.death;
+    currentFrame = 0;
+    isDeathPlaying = true;
+    isAttackPlaying = false;
+  }
+}
+
+document.getElementById('attackBtn').addEventListener('click', playAttackAnimation);
+document.getElementById('deathBtn').addEventListener('click', playDeathAnimation);
