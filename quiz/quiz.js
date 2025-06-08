@@ -72,7 +72,7 @@ function animate(timestamp = 0) {
     lastFrameTime = timestamp;
 
     if (isDeathPlaying) {
-      if (currentFrame < currentAnimation.totalFrames - 2) {
+      if (currentFrame < currentAnimation.totalFrames - 1) {
         currentFrame++;
       }
     } else {
