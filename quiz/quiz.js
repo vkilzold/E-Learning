@@ -1,30 +1,35 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
-ctx.imageSmoothingEnabled = false; 
+ctx.imageSmoothingEnabled = false;
 
-let idleSpriteSheet = new Image();
-let attackSpriteSheet = new Image();
-let deathSpriteSheet = new Image();
+const scale = 1;
 
-const scale = 2; // global scale factor for all animations
+// Images
+let playerIdleImage = new Image();
+let playerAttackImage = new Image();
+let playerDeathImage = new Image();
 
-const animations = {
+let enemyAttackImage = new Image();
+let enemyDeathImage = new Image();
+
+// Animation Definitions
+const playerAnimations = {
   idle: {
-    image: idleSpriteSheet,
+    image: playerIdleImage,
     frameWidth: 256,
     frameHeight: 64,
     totalFrames: 16,
     fps: 12,
   },
   attack: {
-    image: attackSpriteSheet,
+    image: playerAttackImage,
     frameWidth: 256,
     frameHeight: 64,
-    totalFrames: 38,
-    fps: 16,
+    totalFrames: 39,
+    fps: 12,
   },
   death: {
-    image: deathSpriteSheet,
+    image: playerDeathImage,
     frameWidth: 256,
     frameHeight: 64,
     totalFrames: 23,
@@ -32,39 +37,62 @@ const animations = {
   },
 };
 
-let currentAnimation = animations.idle;
+const enemyAnimations = {
+  attack: {
+    image: enemyAttackImage,
+    frameWidth: 256,
+    frameHeight: 64,
+    totalFrames: 33,
+    fps: 12,
+  },
+  death: {
+    image: enemyDeathImage,
+    frameWidth: 256,
+    frameHeight: 64,
+    totalFrames: 13,
+    fps: 12,
+  },
+};
+
+// Animation State
+let currentAnimation = playerAnimations.idle;
 let currentFrame = 0;
 let lastFrameTime = 0;
 
 let isAttackPlaying = false;
 let isDeathPlaying = false;
+let currentCharacter = 'player'; // 'player' or 'enemy'
 
+// Load Images
 function loadImage(src) {
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.src = src;
     img.onload = () => resolve(img);
-    img.onerror = () => reject(new Error(`Failed to load image: ${src}`));
+    img.onerror = () => reject(`Failed to load image: ${src}`);
   });
 }
 
 Promise.all([
-  loadImage('animations/player-idle.png').then(img => idleSpriteSheet = img),
-  loadImage('animations/player-attack.png').then(img => attackSpriteSheet = img),
-  loadImage('animations/player-death.png').then(img => deathSpriteSheet = img),
+  loadImage('animations/enemy1-player-idle.png').then(img => playerIdleImage = img),
+  loadImage('animations/enemy1-player-attack.png').then(img => playerAttackImage = img),
+  loadImage('animations/enemy1-player-death.png').then(img => playerDeathImage = img),
+  loadImage('animations/enemy1-attack-player.png').then(img => enemyAttackImage = img),
+  loadImage('animations/enemy1-death-player.png').then(img => enemyDeathImage = img),
 ]).then(() => {
-  // update images in animations object after load
-  animations.idle.image = idleSpriteSheet;
-  animations.attack.image = attackSpriteSheet;
-  animations.death.image = deathSpriteSheet;
+  playerAnimations.idle.image = playerIdleImage;
+  playerAnimations.attack.image = playerAttackImage;
+  playerAnimations.death.image = playerDeathImage;
+  enemyAnimations.attack.image = enemyAttackImage;
+  enemyAnimations.death.image = enemyDeathImage;
 
   requestAnimationFrame(animate);
 }).catch(err => {
   console.error(err);
-  // start animation anyway with whatever loaded
   requestAnimationFrame(animate);
 });
 
+// Animation Loop
 function animate(timestamp = 0) {
   const frameDuration = 1000 / currentAnimation.fps;
 
@@ -79,9 +107,12 @@ function animate(timestamp = 0) {
       currentFrame++;
 
       if (isAttackPlaying && currentFrame >= currentAnimation.totalFrames) {
-        currentAnimation = animations.idle;
         currentFrame = 0;
         isAttackPlaying = false;
+        isDeathPlaying = false;
+
+        // After attack, return to idle regardless of player or enemy
+        currentAnimation = playerAnimations.idle;
       }
 
       if (!isAttackPlaying && currentFrame >= currentAnimation.totalFrames) {
@@ -95,14 +126,9 @@ function animate(timestamp = 0) {
   const { image, frameWidth, frameHeight, totalFrames } = currentAnimation;
   const sx = Math.min(currentFrame, totalFrames - 1) * frameWidth;
 
-  if (
-    image &&
-    image.complete &&
-    image.naturalWidth > 0 &&
-    sx + frameWidth <= image.width
-  ) {
-    const x = -20;
-    const y = 10;
+  if (image && image.complete && image.naturalWidth > 0 && sx + frameWidth <= image.width) {
+    const x = 20;
+    const y = 60;
     ctx.drawImage(
       image,
       sx, 0, frameWidth, frameHeight,
@@ -113,22 +139,48 @@ function animate(timestamp = 0) {
   requestAnimationFrame(animate);
 }
 
-function playAttackAnimation() {
+// Player Actions
+function playPlayerAttack() {
   if (!isAttackPlaying && !isDeathPlaying) {
-    currentAnimation = animations.attack;
+    currentCharacter = 'player';
+    currentAnimation = playerAnimations.attack;
     currentFrame = 0;
     isAttackPlaying = true;
   }
 }
 
-function playDeathAnimation() {
+function playPlayerDeath() {
   if (!isDeathPlaying) {
-    currentAnimation = animations.death;
+    currentCharacter = 'player';
+    currentAnimation = playerAnimations.death;
     currentFrame = 0;
     isDeathPlaying = true;
     isAttackPlaying = false;
   }
 }
 
-document.getElementById('attackBtn').addEventListener('click', playAttackAnimation);
-document.getElementById('deathBtn').addEventListener('click', playDeathAnimation);
+// Enemy Actions
+function playEnemyAttack() {
+  if (!isAttackPlaying && !isDeathPlaying) {
+    currentCharacter = 'enemy';
+    currentAnimation = enemyAnimations.attack;
+    currentFrame = 0;
+    isAttackPlaying = true;
+  }
+}
+
+function playEnemyDeath() {
+  if (!isDeathPlaying) {
+    currentCharacter = 'enemy';
+    currentAnimation = enemyAnimations.death;
+    currentFrame = 0;
+    isDeathPlaying = true;
+    isAttackPlaying = false;
+  }
+}
+
+// Event Listeners
+document.getElementById('attackPlayerBtn').addEventListener('click', playPlayerAttack);
+document.getElementById('deathPlayerBtn').addEventListener('click', playPlayerDeath);
+document.getElementById('attackEnemyBtn').addEventListener('click', playEnemyAttack);
+document.getElementById('deathEnemyBtn').addEventListener('click', playEnemyDeath);
