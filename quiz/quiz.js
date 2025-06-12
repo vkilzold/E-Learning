@@ -6,7 +6,7 @@ let idleSpriteSheet = new Image();
 let attackSpriteSheet = new Image();
 let deathSpriteSheet = new Image();
 
-const scale = 1.2; // global scale factor for all animations
+const scale = 2; // global scale factor for all animations
 
 const animations = {
   idle: {
@@ -102,7 +102,7 @@ function animate(timestamp = 0) {
     sx + frameWidth <= image.width
   ) {
     const x = -20;
-    const y = 60;
+    const y = 10;
     ctx.drawImage(
       image,
       sx, 0, frameWidth, frameHeight,
