@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sign in</title>
+  <link rel="stylesheet" href="login.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header class="header">
+    <div class="logo">E-Learning</div>
+  </header>
+
+  <div class="login-container">
+    <form action="classcode.html" class="login-form">
+      <h2>Sign in</h2>
+
+      <button type="button" class="btn social google">
+        <img src="https://img.icons8.com/fluency/48/google-logo.png" alt="Google logo" />
+        Continue with Google
+      </button>
+
+      <button type="button" class="btn social apple">
+        <img src="https://img.icons8.com/ios-glyphs/30/mac-os.png" alt="Apple logo" />
+        Sign in with Apple
+      </button>
+
+      <div class="divider"><span>or</span></div>
+
+      <input type="email" placeholder="Email or phone" required />
+
+      <div class="password-wrapper">
+        <input type="password" placeholder="Password" required />
+      </div>
+
+      <a href="#" class="forgot">Forgot password?</a>
+
+      <label class="remember">
+        <input type="checkbox" checked />
+        Keep me logged in
+      </label>
+
+      <button type="submit" class="btn signin">Sign in</button>
+
+      <p class="join-text">E-Learning? <a href="#">Join now</a></p>
+    </form>
+  </div>
+</body>
+</html>
