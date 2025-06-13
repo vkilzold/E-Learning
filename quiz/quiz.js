@@ -142,7 +142,7 @@ function animate(timestamp = 0) {
 
   if (image && image.complete && image.naturalWidth > 0 && sx + frameWidth <= image.width) {
     const x = 20;
-    const y = 10;
+    const y = 1;
     ctx.drawImage(image, sx, 0, frameWidth, frameHeight, x, y, frameWidth * scale, frameHeight * scale);
   }
 
