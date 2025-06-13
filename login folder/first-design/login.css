@@ -1,0 +1,146 @@
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+  font-family: 'Roboto', sans-serif;
+  background-color: #ffffff;
+}
+.header {
+  width: 100%;
+  padding: 20px 40px;
+  background-color: #ffffff;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+}
+
+.logo {
+  font-size: 24px;
+  font-weight: bold;
+  color: #007bff;
+  font-family: 'Roboto', sans-serif;
+}
+.login-container {
+  background-color: #fff;
+  padding: 10px 35px;
+  width: 350px;
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.login-form {
+  padding-left: 5px;
+}
+
+.login-form h2 {
+  margin-bottom: 25px;
+  font-size: 30px;
+  text-align: center;
+}
+
+.btn {
+  width: 100%;
+  padding: 14px;
+  font-size: 16px;
+  margin-bottom: 12px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn img {
+  width: 22px;
+  height: 22px;
+  margin-right: 12px;
+}
+
+.btn.social.google {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 50px;
+}
+
+.btn.social.apple {
+ background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 50px;
+}
+
+.divider {
+  text-align: center;
+  margin: 20px 0;
+  position: relative;
+}
+
+.divider span {
+  background-color: #fff;
+  padding: 0 12px;
+  position: relative;
+  z-index: 1;
+}
+
+.divider::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background-color: #ccc;
+  z-index: 0;
+}
+
+.input-group {
+  margin-left: 30px;
+}
+
+input[type="email"],
+input[type="password"] {
+  width: 90%;
+  padding: 12px;
+  font-size: 15px;
+  margin-bottom: 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.password-wrapper {
+  position: relative;
+}
+
+.forgot,
+.join-text {
+  font-size: 14px;
+  display: block;
+  text-align: left;
+  margin: 5px 0 12px;
+}
+
+.remember {
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.remember input {
+  margin-right: 8px;
+}
+
+.btn.signin {
+  background-color: #007bff;
+  color: #fff;
+  font-size: 16px;
+}
+
+.join-text {
+  text-align: center;
+  margin-top: 10px;
+}
