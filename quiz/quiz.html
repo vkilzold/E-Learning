@@ -1,28 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="quiz.css"/>
-    <title>Document</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="quiz.css" />
+  <title>Quiz Game</title>
 </head>
 <body>
-    <div class="quiz-section">
-        <div class="container">
-            <div class="title">
-                <h1>Round 1</h1>
-                <h2>Question 1</h2>
-            </div>
-            <div class="animation-buttons">
-                <button id="attackPlayerBtn" class ="attack">Attack Player</button>
-                <button id ="deathPlayerBtn">Player Death</button>
-                <button id ="deathEnemyBtn">Enemy Death</button>
-                <button id ="attackEnemyBtn">Enemy Attack</button>
-            </div>
-            <canvas id="gameCanvas"></canvas>
-        </div>
+  <div class="quiz-section">
+    <div class="container">
+      <div class="title">
+        <h1>Round 1</h1>
+        <h2>Question 1</h2>
+        <div id="quiz-content">
+            <h3 id="question">Loading question...</h3>
+            <ul>
+                <li id="firstChoice">A.</li>
+                <li id="secondChoice">B.</li>
+                <li id="thirdChoice">C.</li>
+                <li id="fourthChoice">D.</li>
+              </ul>
+              
+          </div>
+      </div>
+      <div class="animation-buttons">
+        <button id="attackPlayerBtn" class="attack">Attack Player</button>
+        <button id="deathPlayerBtn">Player Death</button>
+        <button id="deathEnemyBtn">Enemy Death</button>
+        <button id="attackEnemyBtn">Enemy Attack</button>
+      </div>
+      <canvas id="gameCanvas"></canvas>
     </div>
-    <script src="quiz.js"></script>
+  </div>
+  <script type="module" src="quiz.js"></script>
 </body>
-
 </html>

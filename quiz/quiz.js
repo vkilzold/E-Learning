@@ -1,80 +1,81 @@
-// supabase
-import { createClient } from '@supabase/supabase-js';
+// ---------------------- Supabase Setup ----------------------
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-// credentials
-const supabaseUrl = 'https://idaklprhflgtctumqeus.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlkYWtscHJoZmxndGN0dW1xZXVzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk3OTM4NTUsImV4cCI6MjA2NTM2OTg1NX0.Hw47aaPqJeVFWGz4Sx_1qz4EtsWy9rIVv-bFmkpuhX0';
+    const supabaseUrl = "https://idaklprhflgtctumqeus.supabase.co";
+    const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlkYWtscHJoZmxndGN0dW1xZXVzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk3OTM4NTUsImV4cCI6MjA2NTM2OTg1NX0.Hw47aaPqJeVFWGz4Sx_1qz4EtsWy9rIVv-bFmkpuhX0";
 
-// client
-const supabase = createClient(supabaseUrl, supabaseKey);
+    const supabase = createClient(supabaseUrl, supabaseKey);
 
+    async function loadQuiz() {
+      const { data, error } = await supabase
+        .from('quiz_questions')
+        .select('*')
+        .limit(1);
+    
+      if (error) {
+        console.error('Error loading quiz:', error);
+        return;
+      }
+    
+      if (!data || data.length === 0) {
+        console.warn("No quiz data found");
+        return;
+      }
+    
+      const quiz = data[0];
+    
+      // Use the correct column name
+      document.getElementById('question').textContent = quiz.Question;
+    
+      // Choices is already a JS array now, no parsing needed
+      const choices = quiz.Choices;
+    
+      if (!Array.isArray(choices) || choices.length < 4) {
+        console.error("Choices must be an array of at least 4 items");
+        return;
+      }
+    
+      document.getElementById('firstChoice').textContent = `A. ${choices[0]}`;
+      document.getElementById('secondChoice').textContent = `B. ${choices[1]}`;
+      document.getElementById('thirdChoice').textContent = `C. ${choices[2]}`;
+      document.getElementById('fourthChoice').textContent = `D. ${choices[3]}`;
+    }
+    
 
+    loadQuiz();
+// ---------------------- Canvas + Animation ----------------------
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 ctx.imageSmoothingEnabled = false;
 
 const scale = 1;
 
-// Images
 let playerIdleImage = new Image();
 let playerAttackImage = new Image();
 let playerDeathImage = new Image();
-
 let enemyAttackImage = new Image();
 let enemyDeathImage = new Image();
 
-// Animation Definitions
 const playerAnimations = {
-  idle: {
-    image: playerIdleImage,
-    frameWidth: 256,
-    frameHeight: 64,
-    totalFrames: 16,
-    fps: 12,
-  },
-  attack: {
-    image: playerAttackImage,
-    frameWidth: 256,
-    frameHeight: 64,
-    totalFrames: 39,
-    fps: 12,
-  },
-  death: {
-    image: playerDeathImage,
-    frameWidth: 256,
-    frameHeight: 64,
-    totalFrames: 23,
-    fps: 12,
-  },
+  idle: { image: null, frameWidth: 256, frameHeight: 64, totalFrames: 16, fps: 12 },
+  attack: { image: null, frameWidth: 256, frameHeight: 64, totalFrames: 39, fps: 12 },
+  death: { image: null, frameWidth: 256, frameHeight: 64, totalFrames: 23, fps: 12 },
 };
 
 const enemyAnimations = {
-  attack: {
-    image: enemyAttackImage,
-    frameWidth: 256,
-    frameHeight: 64,
-    totalFrames: 33,
-    fps: 12,
-  },
-  death: {
-    image: enemyDeathImage,
-    frameWidth: 256,
-    frameHeight: 64,
-    totalFrames: 13,
-    fps: 12,
-  },
+  attack: { image: null, frameWidth: 256, frameHeight: 64, totalFrames: 33, fps: 12 },
+  death: { image: null, frameWidth: 256, frameHeight: 64, totalFrames: 13, fps: 12 },
 };
 
-// Animation State
-let currentAnimation = playerAnimations.idle;
+let currentAnimation = null;
 let currentFrame = 0;
 let lastFrameTime = 0;
 
 let isAttackPlaying = false;
 let isDeathPlaying = false;
-let currentCharacter = 'player'; // 'player' or 'enemy'
+let currentCharacter = 'player';
 
-// Load Images
+// ---------------------- Load Images ----------------------
 function loadImage(src) {
   return new Promise((resolve, reject) => {
     const img = new Image();
@@ -91,19 +92,24 @@ Promise.all([
   loadImage('animations/enemy1-attack-player.png').then(img => enemyAttackImage = img),
   loadImage('animations/enemy1-death-player.png').then(img => enemyDeathImage = img),
 ]).then(() => {
+  // Assign images after load
   playerAnimations.idle.image = playerIdleImage;
   playerAnimations.attack.image = playerAttackImage;
   playerAnimations.death.image = playerDeathImage;
   enemyAnimations.attack.image = enemyAttackImage;
   enemyAnimations.death.image = enemyDeathImage;
 
+  // Now it's safe to set the initial animation
+  currentAnimation = playerAnimations.idle;
+  currentFrame = 0;
+  lastFrameTime = 0;
+
   requestAnimationFrame(animate);
 }).catch(err => {
   console.error(err);
-  requestAnimationFrame(animate);
 });
 
-// Animation Loop
+// ---------------------- Animation Loop ----------------------
 function animate(timestamp = 0) {
   const frameDuration = 1000 / currentAnimation.fps;
 
@@ -116,13 +122,10 @@ function animate(timestamp = 0) {
       }
     } else {
       currentFrame++;
-
       if (isAttackPlaying && currentFrame >= currentAnimation.totalFrames) {
         currentFrame = 0;
         isAttackPlaying = false;
         isDeathPlaying = false;
-
-        // After attack, return to idle regardless of player or enemy
         currentAnimation = playerAnimations.idle;
       }
 
@@ -139,18 +142,14 @@ function animate(timestamp = 0) {
 
   if (image && image.complete && image.naturalWidth > 0 && sx + frameWidth <= image.width) {
     const x = 20;
-    const y = 60;
-    ctx.drawImage(
-      image,
-      sx, 0, frameWidth, frameHeight,
-      x, y, frameWidth * scale, frameHeight * scale
-    );
+    const y = 10;
+    ctx.drawImage(image, sx, 0, frameWidth, frameHeight, x, y, frameWidth * scale, frameHeight * scale);
   }
 
   requestAnimationFrame(animate);
 }
 
-// Player Actions
+// ---------------------- Animation Controls ----------------------
 function playPlayerAttack() {
   if (!isAttackPlaying && !isDeathPlaying) {
     currentCharacter = 'player';
@@ -170,7 +169,6 @@ function playPlayerDeath() {
   }
 }
 
-// Enemy Actions
 function playEnemyAttack() {
   if (!isAttackPlaying && !isDeathPlaying) {
     currentCharacter = 'enemy';
@@ -190,7 +188,7 @@ function playEnemyDeath() {
   }
 }
 
-// Event Listeners
+// ---------------------- Event Listeners ----------------------
 document.getElementById('attackPlayerBtn').addEventListener('click', playPlayerAttack);
 document.getElementById('deathPlayerBtn').addEventListener('click', playPlayerDeath);
 document.getElementById('attackEnemyBtn').addEventListener('click', playEnemyAttack);
