@@ -1,4 +1,3 @@
-// signup.js
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
 const supabaseUrl = 'https://uwbkcarkmgawqhzcyrkc.supabase.co';
@@ -16,7 +15,7 @@ signupForm.addEventListener('submit', async (e) => {
   const password = document.getElementById('password').value.trim();
   const role = document.querySelector('input[name="role"]:checked').value;
 
-  // Step 1: Sign up using Supabase Auth
+  // Sign up using Supabase Auth
   console.log("Signing up with:", email, password, fullName, role);
   const { data, error } = await supabase.auth.signUp({
     email,
