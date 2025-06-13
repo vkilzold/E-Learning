@@ -11,21 +11,31 @@
     <aside class="image-section">
       <img src="/login folder/image/d67ec1eda0a924ab5244331097cf308d.jpg" alt="Illustration" />
     </aside>
+    
     <main class="login-section">
       <div class="form-container">
         <h2>Welcome</h2>
-        <form>
-          <input type="text" placeholder="Email or Phone" required />
-          <input type="password" placeholder="Password" required />
+        <form id="loginForm">
+          <input type="text" id="email" placeholder="Email or Phone" required />
+          <input type="password" id="password" placeholder="Password" required />
+          <a href="#">Forgot password?</a>
+          <div class="buttons">
+    <form id="loginForm">
+          <input type="text" id="email" placeholder="Email or Phone" required />
+          <input type="password" id="password" placeholder="Password" required />
           <a href="#">Forgot password?</a>
           <div class="buttons">
             <button type="button" class="login-btn" onclick="window.location.href='/classcode/classcode.html'">Login</button>
-            <button type="button" class="signup-btn">Sign up</button>
+            <button type="button" class="signup-btn" id="navigateToSignupBtn">Sign up</button>
              <button type="button" class="google-btn">
-      <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google icon" style="height: 20px; vertical-align: middle;" />
-    </button>
+             <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google icon" style="height: 20px; vertical-align: middle;" />
+              </button>
           </div>
         </form>
+
+
+        <div><p id="message" style="color: red;"></p></div>
+        
         <div class="footer-links">
           <a href="#">Copyright Policy</a>
           <a href="#">Privacy Policy</a>
@@ -38,5 +48,6 @@
       </div>
     </main>
   </div>
+  <script type="module" src="login.js"></script>
 </body>
 </html>
