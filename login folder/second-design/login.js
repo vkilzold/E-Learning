@@ -5,57 +5,105 @@ const supabaseUrl = 'https://uwbkcarkmgawqhzcyrkc.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV3YmtjYXJrbWdhd3FoemN5cmtjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkwNDI0NDAsImV4cCI6MjA2NDYxODQ0MH0.BozcjvIAFN94yzI3KPOAdJrR6BZRsKZgnAVbqYw3b_I'; 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-const loginForm = document.getElementById('loginForm');
-const message = document.getElementById('message');
 
-// OPTIONAL: Go to signup page
-const navigateToSignupBtn = document.getElementById('navigateToSignupBtn');
-if (navigateToSignupBtn) {
-  navigateToSignupBtn.addEventListener('click', () => {
-    window.location.href = 'signup.html';
-  });
-}
+document.addEventListener('DOMContentLoaded', () => {
+    const loginForm = document.getElementById('loginForm');
+    const message = document.getElementById('message');
+    const navigateToSignupBtn = document.getElementById('navigateToSignupBtn');
+    const loginButton = document.querySelector('.login-btn'); 
 
-loginForm.addEventListener('submit', async (e) => {
-  e.preventDefault();
 
-  const email = document.getElementById('email').value.trim();
-  const password = document.getElementById('password').value.trim();
+    // Event listener for the Login button
+    if (loginButton) {
+        loginButton.addEventListener('click', async (e) => {
+            e.preventDefault(); 
 
-  // Step 1: Log in
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  });
+            const emailInput = document.getElementById('email'); 
+            const passwordInput = document.getElementById('password'); 
 
-  if (error) {
-    message.textContent = `❌ Login failed: ${error.message}`;
-    return;
-  }
+            const email = emailInput ? emailInput.value.trim() : '';
+            const password = passwordInput ? passwordInput.value.trim() : '';
 
-  // Step 2: Check email confirmation
-  if (!data.user?.confirmed_at) {
-    message.textContent = '⚠️ Please verify your email before logging in.';
-    return;
-  }
 
-  // Step 3: Optionally check user profile in public.user_profiles
-  const { data: profile, error: profileError } = await supabase
-    .from('user_profiles')
-    .select('*')
-    .eq('id', data.user.id)
-    .single();
+            if (!email || !password) {
+                if (message) {
+                    message.textContent = 'Please enter both email and password.';
+                    message.style.color = 'red';
+                }
+                return;
+            }
 
-  if (profileError) {
-    message.textContent = '⚠️ Login failed: user profile not found.';
-    return;
-  }
+            // Display "Logging in..." message immediately
+            if (message) {
+                message.textContent = 'Logging in...';
+                message.style.color = 'blue';
+            }
 
-  // Step 4: Redirect
-  message.style.color = 'green';
-  message.textContent = '✅ Login successful! Redirecting...';
 
-  setTimeout(() => {
-    window.location.href = 'sampledashboard.html';
-  }, 1500);
+            // Log in with Supabase
+            const { data, error } = await supabase.auth.signInWithPassword({
+                email,
+                password,
+            });
+
+            if (error) {
+                if (message) {
+                    message.textContent = `❌ Login failed: ${error.message}`;
+                    message.style.color = 'red';
+                }
+                console.error("Login Error:", error);
+                return;
+            }
+
+            // Check email confirmation
+            if (!data.user?.email_confirmed_at) { 
+                if (message) {
+                    message.textContent = '⚠️ Please verify your email before logging in.';
+                    message.style.color = 'orange';
+                }
+                return;
+            }
+
+            // check user profile in public.user_profiles
+            const { data: profile, error: profileError } = await supabase
+                .from('user_profiles')
+                .select('*')
+                .eq('id', data.user.id)
+                .single();
+
+            if (profileError) {
+                if (message) {
+                    message.textContent = '⚠️ Login failed: user profile not found or access denied (RLS issue?).';
+                    message.style.color = 'orange';
+                }
+                console.error("Profile Fetch Error:", profileError);
+                return;
+            }
+
+            // Login successful message and redirect
+            if (message) {
+                message.style.color = 'green';
+                message.textContent = '✅ Login successful! Redirecting...';
+            }
+
+
+            setTimeout(() => {
+                window.location.href = '\\classcode/classcode.html';
+            }, 1500); // Redirect after 1.5 seconds
+
+        });
+    } else {
+        console.error("Error: Login button with class 'login-btn' not found.");
+    }
+
+
+    // Event listener for the "Sign up" button (to navigate to signup.html)
+    if (navigateToSignupBtn) {
+        navigateToSignupBtn.addEventListener('click', () => {
+            window.location.href = 'signup.html';
+        });
+    } else {
+        console.warn("Warning: navigateToSignupBtn element not found in the DOM.");
+    }
+
 });
