@@ -35,10 +35,10 @@ import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js
         return;
       }
     
-      document.getElementById('firstChoice').textContent = `A. ${choices[0]}`;
-      document.getElementById('secondChoice').textContent = `B. ${choices[1]}`;
-      document.getElementById('thirdChoice').textContent = `C. ${choices[2]}`;
-      document.getElementById('fourthChoice').textContent = `D. ${choices[3]}`;
+      document.getElementById('firstChoice').textContent = `${choices[0]}`;
+      document.getElementById('secondChoice').textContent = `${choices[1]}`;
+      document.getElementById('thirdChoice').textContent = `${choices[2]}`;
+      document.getElementById('fourthChoice').textContent = `${choices[3]}`;
     }
     
 
@@ -141,14 +141,53 @@ function animate(timestamp = 0) {
   const sx = Math.min(currentFrame, totalFrames - 1) * frameWidth;
 
   if (image && image.complete && image.naturalWidth > 0 && sx + frameWidth <= image.width) {
-    const x = 20;
-    const y = 1;
+    const x = 15;
+    const y = -20;
     ctx.drawImage(image, sx, 0, frameWidth, frameHeight, x, y, frameWidth * scale, frameHeight * scale);
   }
 
   requestAnimationFrame(animate);
 }
+// ---------------------- Quiz Logic  ----------------------
+async function checkAnswerAndAnimate() {
+  const selectedChoice = document.querySelector('.choice.selected');
 
+  if (!selectedChoice) {
+    alert("Please select an answer first.");
+    return;
+  }
+
+  const selectedAnswer = selectedChoice.textContent.trim();
+
+  const { data, error } = await supabase
+    .from('quiz_questions')
+    .select('Answer, Choices')
+    .limit(1)
+    .single();
+
+  if (error || !data || !data.Answer) {
+    console.error("Error fetching answer or answer missing:", error || data);
+    return;
+  }
+
+  const correctAnswer = data.Answer.trim();
+
+  const choices = document.querySelectorAll('.choice');
+  choices.forEach(choice => {
+    choice.classList.remove('correct', 'wrong');
+    if (choice.textContent.trim() === correctAnswer) {
+      choice.classList.add('correct');
+    } else if (choice === selectedChoice) {
+      choice.classList.add('wrong');
+    }
+  });
+
+  if (selectedAnswer === correctAnswer) {
+    playPlayerAttack();
+  } else {
+    playEnemyAttack();
+  }
+}
 // ---------------------- Animation Controls ----------------------
 function playPlayerAttack() {
   if (!isAttackPlaying && !isDeathPlaying) {
@@ -187,9 +226,20 @@ function playEnemyDeath() {
     isAttackPlaying = false;
   }
 }
+// Wait until DOM is fully loaded
+document.addEventListener("DOMContentLoaded", () => {
+  const choices = document.querySelectorAll('.choice');
+
+  choices.forEach(choice => {
+    choice.addEventListener('click', () => {
+      // Remove 'selected' class from all choices
+      choices.forEach(c => c.classList.remove('selected'));
+
+      // Add 'selected' class to the clicked one
+      choice.classList.add('selected');
+    });
+  });
+});
 
 // ---------------------- Event Listeners ----------------------
-document.getElementById('attackPlayerBtn').addEventListener('click', playPlayerAttack);
-document.getElementById('deathPlayerBtn').addEventListener('click', playPlayerDeath);
-document.getElementById('attackEnemyBtn').addEventListener('click', playEnemyAttack);
-document.getElementById('deathEnemyBtn').addEventListener('click', playEnemyDeath);
+document.querySelector('.playButton').addEventListener('click', checkAnswerAndAnimate);
