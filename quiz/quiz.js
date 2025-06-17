@@ -6,30 +6,27 @@ import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    async function loadQuiz() {
+    async function loadQuiz(index) {
+      showLoadingPopup();
+    
       const { data, error } = await supabase
         .from('quiz_questions')
-        .select('*')
-        .limit(1);
+        .select('*');
     
-      if (error) {
-        console.error('Error loading quiz:', error);
+      hideLoadingPopup();
+    
+      if (error || !data || data.length === 0 || index >= data.length) {
+        console.error('Error loading quiz or index out of range:', error);
+        alert("Quiz finished or error loading!");
         return;
       }
     
-      if (!data || data.length === 0) {
-        console.warn("No quiz data found");
-        return;
-      }
+      totalQuestions = data.length;
+      const quiz = data[index];
     
-      const quiz = data[0];
-    
-      // Use the correct column name
       document.getElementById('question').textContent = quiz.Question;
     
-      // Choices is already a JS array now, no parsing needed
       const choices = quiz.Choices;
-    
       if (!Array.isArray(choices) || choices.length < 4) {
         console.error("Choices must be an array of at least 4 items");
         return;
@@ -39,6 +36,11 @@ import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js
       document.getElementById('secondChoice').textContent = `${choices[1]}`;
       document.getElementById('thirdChoice').textContent = `${choices[2]}`;
       document.getElementById('fourthChoice').textContent = `${choices[3]}`;
+    
+      // Remove previous classes
+      document.querySelectorAll('.choice').forEach(choice => {
+        choice.classList.remove('correct', 'wrong', 'selected');
+      });
     }
     
 
@@ -149,9 +151,19 @@ function animate(timestamp = 0) {
   requestAnimationFrame(animate);
 }
 // ---------------------- Quiz Logic  ----------------------
+let currentIndex = 0;
+let totalQuestions = 0;
+
+function showLoadingPopup() {
+  document.getElementById('loadingPopup').classList.remove('hidden');
+}
+
+function hideLoadingPopup() {
+  document.getElementById('loadingPopup').classList.add('hidden');
+}
+
 async function checkAnswerAndAnimate() {
   const selectedChoice = document.querySelector('.choice.selected');
-
   if (!selectedChoice) {
     alert("Please select an answer first.");
     return;
@@ -161,18 +173,18 @@ async function checkAnswerAndAnimate() {
 
   const { data, error } = await supabase
     .from('quiz_questions')
-    .select('Answer, Choices')
-    .limit(1)
+    .select('Answer')
+    .range(currentIndex, currentIndex)
     .single();
 
   if (error || !data || !data.Answer) {
-    console.error("Error fetching answer or answer missing:", error || data);
+    console.error("Error fetching answer:", error);
     return;
   }
 
   const correctAnswer = data.Answer.trim();
-
   const choices = document.querySelectorAll('.choice');
+
   choices.forEach(choice => {
     choice.classList.remove('correct', 'wrong');
     if (choice.textContent.trim() === correctAnswer) {
@@ -187,7 +199,18 @@ async function checkAnswerAndAnimate() {
   } else {
     playEnemyAttack();
   }
+
+  // Wait a bit for animation before loading next question
+  setTimeout(() => {
+    currentIndex++;
+    if (currentIndex < totalQuestions) {
+      loadQuiz(currentIndex);
+    } else {
+      alert("Quiz finished!");
+    }
+  }, 2000); // wait 2 seconds
 }
+
 // ---------------------- Animation Controls ----------------------
 function playPlayerAttack() {
   if (!isAttackPlaying && !isDeathPlaying) {
@@ -243,3 +266,5 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // ---------------------- Event Listeners ----------------------
 document.querySelector('.playButton').addEventListener('click', checkAnswerAndAnimate);
+
+loadQuiz(currentIndex);
