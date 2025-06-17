@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>E-Learning Gamification</title>
+  <link rel="stylesheet" href="dashboard.css" />
+  <script src="Chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="container">
+      <div class="avatar"></div>
+      <div class="user-id">ID: student_001</div>
+      <button class="logout-btn">Logout</button>
+
+    <!-- Main Content -->
+    <div class="main">
+      <div class="header">Learning Dashboard</div>
+
+      <!-- Stats Grid -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-number">120</div>
+          <div class="stat-label">Learning Time</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">15</div>
+          <div class="stat-label">Subjects</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">42</div>
+          <div class="stat-label">Achievements</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">89%</div>
+          <div class="stat-label">Progress</div>
+        </div>
+      </div>
+
+      <!-- Radar Placeholder -->
+      <div class="radar-chart">
+  <canvas id="radarStatsChart"></canvas>
+      </div>
+</div>
+    </div>
+  </div>
+</body>
+</html>
