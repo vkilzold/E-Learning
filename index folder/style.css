@@ -105,7 +105,7 @@ body {
 .home-content button {
   margin-top: 20px;
   padding: 12px 20px;
-  background: #D36D42;
+  background: #ec916a;
   border: none;
   cursor: pointer;
   border-radius: 100px;
@@ -204,7 +204,7 @@ html {
   margin-top: 5rem;
   font-size: 2.5rem;
   margin-bottom: 40px;
-  color: #333;
+  color: #511069;
 }
 
 .services-container {
@@ -372,19 +372,6 @@ html {
 .teams-content button:hover {
   background: #6a1699;
 }
-  
-  .bottom {
-    background-color: rgb(233, 231, 231);
-    text-align: center;
-    color: rgb(43, 39, 39);
-    padding: 15px 2%;
-    font-size: 80%;
-    width: 100%;
-    margin: 0;
-  }  
-  .hidden {
-    display: none;
-  }
   /* Our Team Section */
 .our-team-section {
   padding: 60px 20px;
@@ -431,7 +418,7 @@ html {
 
 .member-card img {
   width: 100%;
-  border-radius: 50%;
+  border-radius: 25%;
   margin-bottom: 15px;
   object-fit: cover;
 }
@@ -446,6 +433,34 @@ html {
   font-size: 1rem;
   color: #777;
 }
+.social-icons {
+  margin-top: 10px;
+}
+
+.social-icons a {
+  margin: 0 6px;
+  color: #555555;
+  text-decoration: none;
+  font-size: 18px;
+  transition: color 0.3s ease;
+}
+
+.social-icons a:hover {
+  color: #0077b5; /* LinkedIn blue or any hover color */
+}
+
+  .bottom {
+    background-color: #f9f9f9;
+    text-align: center;
+    color: rgb(43, 39, 39);
+    padding: 15px 2%;
+    font-size: 80%;
+    width: 100%;
+    margin: 0;
+  }  
+  .hidden {
+    display: none;
+  }
   
 /* Responsive Styles */
 @media (max-width: 768px) {
