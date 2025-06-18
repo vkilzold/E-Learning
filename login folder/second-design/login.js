@@ -86,11 +86,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 message.textContent = '✅ Login successful! Redirecting...';
             }
 
-
+            //in default go to classcode but if the user is a teacher he/she wil go directly to dashboard 
             setTimeout(() => {
-                window.location.href = '\\classcode/classcode.html';
-            }, 1500); // Redirect after 1.5 seconds
-
+                if (profile.role === 'teacher') {
+                    window.location.href = '\\teacher dashboard/teacherdashboard.html';
+                } else {
+                    window.location.href = '\\classcode/classcode.html';
+                }
+            }, 1500);
         });
     } else {
         console.error("Error: Login button with class 'login-btn' not found.");

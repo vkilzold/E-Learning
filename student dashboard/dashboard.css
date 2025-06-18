@@ -1,0 +1,152 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+body {
+  background: #fdf5f8;
+  display: flex;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+.container {
+  width: 100%;
+  max-width: 1000px;
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.05);
+  display: flex;
+  overflow: hidden;
+}
+
+.avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: #eee url('https://img.icons8.com/color/100/000000/user-male-circle--v2.png') no-repeat center;
+  background-size: cover;
+  margin-bottom: 15px;
+}
+
+.user-id {
+  font-weight: bold;
+  color: #f6f0f8;
+  margin-bottom: 30px;
+  font-size: 0.95rem;
+}
+
+.logout-btn {
+  margin-top: auto;
+  padding: 10px 20px;
+  background: #ff4b5c;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 0.85rem;
+}
+
+.logout-btn:hover {
+  background: #e63e4f;
+}
+
+/* Main Content */
+.main {
+  flex: 1;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  font-size: 1.6rem;
+  color: #511069;
+  margin-bottom: 20px;
+}
+
+.stats-grid {
+  
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.stat-card {
+  background: #fefefe;
+  border-radius: 16px;
+  padding: 15px;
+  text-align: center;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+}
+
+.stat-number {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #ff914d;
+}
+
+.stat-label {
+  color: #666;
+  font-size: 0.95rem;
+}
+
+.radar-chart {
+  width: 100%;
+  max-width: 400px;
+  height: 320px;
+  background: #fff;
+  margin: 0 auto;
+  border-radius: 20px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+  font-size: 0.95rem;
+  text-align: center;
+  padding: 15px;
+}
+
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+    border-radius: 12px;
+  }
+
+  .sidebar {
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 20px;
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #eee;
+  }
+
+  .avatar {
+    width: 50px;
+    height: 50px;
+  }
+
+  .user-id {
+    font-size: 0.85rem;
+    margin: 0;
+  }
+
+  .logout-btn {
+    font-size: 0.8rem;
+    padding: 8px 16px;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .radar-chart {
+    height: 250px;
+  }
+}
