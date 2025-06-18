@@ -6,19 +6,38 @@
   <title>E-Learning Gamification</title>
   <link rel="stylesheet" href="dashboard.css" />
   <script src="Chart.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
   <div class="container">
-      <div class="avatar"></div>
-      <div class="user-id">ID: student_001</div>
-      <button class="logout-btn">Logout</button>
 
-    <!-- Main Content -->
+    <!-- Top Section -->
+    <div class="top-section">
+      <div class="profile-section">
+        <div class="avatar"></div>
+        <div class="personal-info">
+          <h2>Andrei Pira</h2>
+          <p>Grade Level: 12</p>
+          <p>Student ID: 001234</p>
+          <p>Email: andreipira07@gmail.com</p>
+          <button class="logout-btn">Logout</button>
+        </div>
+      </div>
+
+      <div class="leaderboard-section">
+        <h3>Leaderboard</h3>
+        <ul>
+          <li>#1 Roldan Aguila - 4520 pts</li>
+          <li>#2 Lorens Mangubat - 4300 pts</li>
+          <li>#3 Arvin Pira - 4180 pts</li>
+          <li>#4 Arjhay Calaguan - 3900 pts</li>
+          <li>#5 Steph Mendoza - 3420 pts</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Stats Grid -->
     <div class="main">
       <div class="header">Learning Dashboard</div>
-
-      <!-- Stats Grid -->
       <div class="stats-grid">
         <div class="stat-card">
           <div class="stat-number">120</div>
@@ -38,12 +57,25 @@
         </div>
       </div>
 
-      <!-- Radar Placeholder -->
-      <div class="radar-chart">
-  <canvas id="radarStatsChart"></canvas>
+      <!-- Bottom Section -->
+      <div class="bottom-wrapper">
+        <div class="written-stats">
+          <h3>Written Stats</h3>
+          <p>Quizzes Completed: 18</p>
+          <p>Exams Taken: 5</p>
+          <p>Average Score: 89%</p>
+          <p>Last Active: June 16, 2025</p>
+        </div>
+
+        <div class="radar-chart">
+          <canvas id="radarStatsChart"></canvas>
+        </div>
       </div>
-</div>
     </div>
-  </div>
+
+  </div> <!-- END of .container -->
+
+  <!-- Chart Script -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </body>
 </html>

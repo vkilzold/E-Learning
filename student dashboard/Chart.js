@@ -1,9 +1,10 @@
-const ctx = document.getElementById('radarStatsChart');
+document.addEventListener('DOMContentLoaded', () => {
+  const ctx = document.getElementById('radarStatsChart');
 
   new Chart(ctx, {
     type: 'radar',
     data: {
-      labels: ['Reading', 'Problem Solving', 'Creativity', 'Focus', 'Collaboration', 'Speed'],
+      labels: ['Algebra', 'Calculus', 'Geometry', 'Number theory', 'Statistics', 'Physics'],
       datasets: [{
         label: 'Skill Scores',
         data: [80, 70, 65, 75, 60, 85],
@@ -44,3 +45,4 @@ const ctx = document.getElementById('radarStatsChart');
       }
     }
   });
+});
