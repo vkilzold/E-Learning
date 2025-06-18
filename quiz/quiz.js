@@ -50,7 +50,7 @@ const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 ctx.imageSmoothingEnabled = false;
 
-const scale = 1;
+const scale = 1.5;
 
 let playerIdleImage = new Image();
 let playerAttackImage = new Image();
@@ -143,8 +143,8 @@ function animate(timestamp = 0) {
   const sx = Math.min(currentFrame, totalFrames - 1) * frameWidth;
 
   if (image && image.complete && image.naturalWidth > 0 && sx + frameWidth <= image.width) {
-    const x = 15;
-    const y = -20;
+    const x = -45;
+    const y = -40;
     ctx.drawImage(image, sx, 0, frameWidth, frameHeight, x, y, frameWidth * scale, frameHeight * scale);
   }
 
@@ -152,7 +152,7 @@ function animate(timestamp = 0) {
 }
 // ---------------------- Quiz Logic  ----------------------
 let currentIndex = 0;
-let totalQuestions = 0;
+let totalQuestions = 10;
 
 function showLoadingPopup() {
   document.getElementById('loadingPopup').classList.remove('hidden');
