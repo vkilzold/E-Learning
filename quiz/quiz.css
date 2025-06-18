@@ -141,6 +141,11 @@ li {
   line-height: 2.2rem;
 
 }
+
+.temp-score {
+  font-size: 1.2rem;
+  height: 2rem;
+}
 .loading-popup {
   position: fixed;
   top: 0; left: 0;
@@ -208,8 +213,8 @@ li {
 }
 
 canvas {
-    width: 90vw;
-    max-width: 960px;
+    width: 100%;
+    max-width: 100%;
     aspect-ratio: 16 / 9;  /* maintain widescreen ratio */
     height: 100%;
     display: block;

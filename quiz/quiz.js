@@ -50,7 +50,7 @@ const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 ctx.imageSmoothingEnabled = false;
 
-const scale = 1.5;
+const scale = 1;
 
 let playerIdleImage = new Image();
 let playerAttackImage = new Image();
@@ -143,16 +143,23 @@ function animate(timestamp = 0) {
   const sx = Math.min(currentFrame, totalFrames - 1) * frameWidth;
 
   if (image && image.complete && image.naturalWidth > 0 && sx + frameWidth <= image.width) {
-    const x = -45;
-    const y = -40;
+    const x = 12;
+    const y = -30;
     ctx.drawImage(image, sx, 0, frameWidth, frameHeight, x, y, frameWidth * scale, frameHeight * scale);
   }
 
   requestAnimationFrame(animate);
 }
 // ---------------------- Quiz Logic  ----------------------
+
 let currentIndex = 0;
 let totalQuestions = 10;
+let countCorrectAnswer = 0; // Score Counter
+let countIncorrectAnswer = 0;
+let scoreMultiplier = 1.5;
+let scorePoints = 200;
+let countStreak = 0;
+let userPoint = 0;
 
 function showLoadingPopup() {
   document.getElementById('loadingPopup').classList.remove('hidden');
@@ -162,6 +169,9 @@ function hideLoadingPopup() {
   document.getElementById('loadingPopup').classList.add('hidden');
 }
 
+function scoreRefresh() {
+  document.getElementById('temp-score').textContent = `${userPoint}`;
+}
 async function checkAnswerAndAnimate() {
   const selectedChoice = document.querySelector('.choice.selected');
   if (!selectedChoice) {
@@ -196,8 +206,13 @@ async function checkAnswerAndAnimate() {
 
   if (selectedAnswer === correctAnswer) {
     playPlayerAttack();
+    countCorrectAnswer++;
+    userPoint+=scorePoints;
+    scoreRefresh();
   } else {
     playEnemyAttack();
+    countIncorrectAnswer++;
+    scoreRefresh();
   }
 
   // Wait a bit for animation before loading next question
