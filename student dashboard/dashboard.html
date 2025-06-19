@@ -17,11 +17,12 @@
       <div class="profile-section">
         <div class="avatar"></div>
         <div class="personal-info">
-          <h2>Andrei Pira</h2>
-          <p>Grade Level: 12</p>
-          <p>Student ID: 001234</p>
-          <p>Email: andreipira07@gmail.com</p>
+          <!-- User profile name and email -->
+          <h2 id="studentFullName"></h2>
+          <p id="studentEmail"></p>
+          <p id="studentClassName">Class: Not assigned</p> 
           <button class="logout-btn">Logout</button>
+          <button class="add-class-btn">Add Class</button>
         </div>
       </div>
 
@@ -83,8 +84,20 @@
     </div>
 
   </div> <!-- END of .container -->
-
+ 
+  <!-- Modal pop up-->
+  <div id="classModal" class="modal hidden">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h3>Join a Class</h3>
+      <input type="text" id="classCodeInput" placeholder="Enter class code" />
+      <button id="joinClassBtn">Join</button>
+      <p id="modalMessage" style="margin-top: 10px;"></p>
+    </div>
+  </div>
   <!-- Chart Script -->
+  <script type="module" src="studentdashboard.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 </body>
 </html>
