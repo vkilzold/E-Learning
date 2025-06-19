@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
       new Chart(ctx, {
         type: 'radar',
         data: {
-          labels: ['Basic Algebra', 'Fraction and Percentage', 'Basic Operationg', 'Geometry', 'Number theory'],
+          labels: ['Basic Algebra', 'Fraction', 'Basic Operation', 'Geometry', 'Number theory'],
           datasets: [{
             label: 'Skill Scores',
             data: [80, 70, 65, 75, 60, 85],
@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
               grid: { color: '#eee' },
               pointLabels: {
                 color: '#333',
-                font: { size: 10 }
+                font: { size: 10}
               },
               ticks: {
                 color: '#999',
