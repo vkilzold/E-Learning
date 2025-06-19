@@ -4,7 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="quiz.css" />
-  <title>Quiz Game</title>
+  <link href="https://fonts.googleapis.com/css2?family=Jersey+10&family=Pixelify+Sans:wght@400;700&display=swap" rel="stylesheet">
+  <title>InQUIZition</title>
 </head>
 <body>
   <div class="quiz-section">
@@ -15,18 +16,25 @@
         <div class="quiz-content">
             <h3 id="question">Loading question...</h3>
             <ul class="choices">
-              <li class="choice" data-choice="A" id="firstChoice">A.</li>
-              <li class="choice" data-choice="B" id="secondChoice">B. </li>
-              <li class="choice" data-choice="C" id="thirdChoice">C. </li>
-              <li class="choice" data-choice="D" id="fourthChoice">D. </li>
+              <li class="choice" data-choice="A" id="firstChoice"></li>
+              <li class="choice" data-choice="B" id="secondChoice"></li>
+              <li class="choice" data-choice="C" id="thirdChoice"></li>
+              <li class="choice" data-choice="D" id="fourthChoice"></li>
             </ul>
           </div>
       </div>
-      <div class="animation-buttons">
-        <button id="attackPlayerBtn" class="attack">Attack Player</button>
-        <button id="deathPlayerBtn">Player Death</button>
-        <button id="deathEnemyBtn">Enemy Death</button>
-        <button id="attackEnemyBtn">Enemy Attack</button>
+      <div id="loadingPopup" class="loading-popup hidden">
+        <div class="popup-content">
+          <p>Loading...</p>
+        </div>
+      </div>      
+      <div class="play-button">
+        <button class = "playButton" id="playButton">
+          <img src="playBtn.png" alt="Play" class="button-bg" />
+          <span></span></button>
+      </div>
+      <div class="score">
+        <p class ="temp-score" id = "temp-score">llll</p>
       </div>
       <canvas id="gameCanvas"></canvas>
     </div>
