@@ -23,7 +23,7 @@
       <div class="top-header">
         <div class="profile-box">
           <div class="avatar"></div>
-          <div class="teacher-info"><strong>Teacher:</strong> Prof Andrei</div>
+          <div class="teacher-info"><strong>Teacher:</strong></div>
         </div>
 
         <div class="leaderboard-section">
@@ -40,30 +40,26 @@
           </div>
         </div>
       </div>
+
       <!-- Bottom: Classes and Students -->
       <div class="bottom-section">
         <div class="class-section">
           <div class="section-header">
             <h4>Classes</h4>
-            <button class="action-btn">+ Add Class</button>
+            <button class="action-btn" id="addClassBtn">+ Add Class</button>
           </div>
-          <div class="scroll-box">
-            <div class="item">math (UO6E)</div>
+          <div class="scroll-box" id="classList">
+            <!-- Dynamically populated -->
           </div>
         </div>
 
         <div class="student-section">
-          <div class="section-header">
-            <h4>Students</h4>
-            <button class="action-btn">+ Add Student</button>
-          </div>
-          <div class="scroll-box">
-            <div class="item">George Sia</div>
-            <div class="item">Prince Masilac</div>
-            <div class="item">Andrei Pira</div>
-            <div class="item">Andrei Pira</div>
-            <div class="item">Andrei Pira</div>
-          </div>
+            <div class="section-header">
+              <h4>Students</h4>
+              <button class="action-btn" id="selectClassBtn">Select Class</button>
+              <button class="action-btn" id="viewStudentsBtn">View</button>  
+            </div>
+            <div class="scroll-box" id="dashboardStudentList"> </div>
         </div>
       </div>
     </div>
@@ -76,10 +72,10 @@
 
   </div>
 
-  <!-- Modal Popup -->
+  <!-- Add Class Modal -->
   <div id="classModal" class="modal">
     <div class="modal-content">
-      <span class="close-btn">&times;</span>
+      <span class="close-btn" id="closeAddClass">&times;</span>
       <h2>Add a New Class</h2>
       <form id="addClassForm">
         <label for="className">Class Name:</label>
@@ -89,11 +85,28 @@
     </div>
   </div>
 
-  <!-- Script -->
+  <!-- Select Class Modal -->
+  <div id="selectClassModal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" id="closeSelectClass">&times;</span>
+      <h2>Select a Class</h2>
+      <div id="classSelectionList">
+        <!-- Class buttons inserted here -->
+      </div>
+    </div>
+  </div>
+
+    <!-- View Students Modal -->
+  <div id="viewStudentsModal" class="modal">
+    <div class="modal-content">
+      <span class="close-view-btn">&times;</span>
+      <h2>Students in This Class</h2>
+      <ul id="modalStudentList" class="student-list"></ul>
+    </div>
+  </div>
+
+
+  <!-- Scripts -->
   <script type="module" src="teacherdashboard.js"></script>
-
-
-  <!-- Wag galawin script to ng teacherdashboard sadya to nandine -->
-<script type="module" src="teacherdashboard.js"></script>
 </body>
 </html>
