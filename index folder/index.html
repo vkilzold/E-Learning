@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>E-Learning Platform</title>
   <link rel="stylesheet" href="style.css">
+  <script src="index.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 </head>
 <body>
@@ -16,19 +17,16 @@
   <nav class="center-nav">
     <ul class="nav-links">
       <li><a href="#home">Home</a></li>
-      <li><a href="#journey">About</a></li>
       <li><a href="#services">Services</a></li>
       <li><a href="#contact">Contacts</a></li>
     </ul>
   </nav>
-  <div class="right-nav">
-    <a href="/login folder/second-design/login.html" class="login-link">Log in</a>
-  </div>
 </header>
 
 
   <!-- Hero Section -->
   <section class="home" id="home">
+    <div class="home-blur-bg"></div>
     <div class="home-content">
       <h1>IMPROVE YOUR SKILLS</h1>
       <p>Enhance your growth by evaluating your personal math skills</p>
@@ -38,31 +36,41 @@
         <div class="hero-ima"></div>
   </section>
 
-  <!-- Journey Section -->
+ <!-- -------------------------------------------Journey Section--------------------------- -->
 <section class="journey" id="journey">
-  <h2>Your Journey</h2>
-  <p>
-    Discover a personalized and flexible learning experience designed to fit your pace, style, and goals. Whether you're a student, a professional, or simply curious, E-Learning is here to guide and support you.
-  </p>
+  <div class="scroll-wrapper">
+    <button class="scroll-btn left" onclick="scrollLeft()">‹</button>
 
-  <div class="cards">
-    <div class="card">
-      <div class="hero-img"></div>
-      <h3>📚 Interactive Lessons</h3>
-      <p>Engage with videos, quizzes, and exercises to understand concepts better and stay motivated throughout your journey.</p>
+    <div class="scroll-container">
+      <div class="cards">
+        <div class="card">
+          <h3>Geometry</h3>
+          <p>Engage with videos, quizzes, and exercises to understand concepts better and stay motivated throughout your journey.</p>
+        </div>
+        <div class="card">
+          <h3>Basic Algebra</h3>
+          <p>Learn from professionals and educators who bring real-world experience and clear guidance to every lesson.</p>
+        </div>
+        <div class="card">
+          <h3>Fraction and Percentage</h3>
+          <p>Access your courses anytime, anywhere no pressure, just progress. Learn the way that works best for you.</p>
+        </div>
+        <div class="card">
+          <h3>Basic Operating</h3>
+          <p>Access your courses anytime, anywhere no pressure, just progress. Learn the way that works best for you.</p>
+        </div>
+        <div class="card">
+          <h3>Number Theory</h3>
+          <p>Access your courses anytime, anywhere no pressure, just progress. Learn the way that works best for you.</p>
+        </div>
+      </div>
     </div>
-    <div class="card">
-      <div class="hero-img"></div>
-      <h3>🧑‍🏫 Expert Instructors</h3>
-      <p>Learn from professionals and educators who bring real-world experience and clear guidance to every lesson.</p>
-    </div>
-    <div class="card">
-      <div class="hero-img"></div>
-      <h3>🎯 Learn at Your Pace</h3>
-      <p>Access your courses anytime, anywhere no pressure, just progress. Learn the way that works best for you.</p>
-    </div>
+
+    <button class="scroll-btn right" onclick="scrollRight()">›</button>
   </div>
 </section>
+
+
 
   
  <section class="services" id="services">
