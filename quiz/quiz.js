@@ -8,43 +8,36 @@ import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 
     async function loadQuiz(index) {
       showLoadingPopup();
-    
+      await new Promise(res => setTimeout(res, 1000)); // Wait for animation (2s)
       const { data, error } = await supabase
         .from('quiz_questions')
         .select('*');
-    
       hideLoadingPopup();
-    
       if (error || !data || data.length === 0 || index >= data.length) {
         console.error('Error loading quiz or index out of range:', error);
         alert("Quiz finished or error loading!");
         return;
       }
-    
       totalQuestions = data.length;
       const quiz = data[index];
-    
       document.getElementById('question').textContent = quiz.Question;
-    
       const choices = quiz.Choices;
       if (!Array.isArray(choices) || choices.length < 4) {
-        console.error("Choices must be an array of at least 4 items");
+        console.error("Choices must be an arr ay of at least 4 items");
         return;
       }
-    
       document.getElementById('firstChoice').textContent = `${choices[0]}`;
       document.getElementById('secondChoice').textContent = `${choices[1]}`;
       document.getElementById('thirdChoice').textContent = `${choices[2]}`;
       document.getElementById('fourthChoice').textContent = `${choices[3]}`;
-    
-      // Remove previous classes
       document.querySelectorAll('.choice').forEach(choice => {
         choice.classList.remove('correct', 'wrong', 'selected');
       });
+      updateQuestionNumber(index);
+      startQuestionTimer();
     }
     
 
-    loadQuiz();
 // ---------------------- Canvas + Animation ----------------------
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
@@ -178,23 +171,18 @@ async function checkAnswerAndAnimate() {
     alert("Please select an answer first.");
     return;
   }
-
   const selectedAnswer = selectedChoice.textContent.trim();
-
   const { data, error } = await supabase
     .from('quiz_questions')
     .select('Answer')
     .range(currentIndex, currentIndex)
     .single();
-
   if (error || !data || !data.Answer) {
     console.error("Error fetching answer:", error);
     return;
   }
-
   const correctAnswer = data.Answer.trim();
   const choices = document.querySelectorAll('.choice');
-
   choices.forEach(choice => {
     choice.classList.remove('correct', 'wrong');
     if (choice.textContent.trim() === correctAnswer) {
@@ -203,27 +191,34 @@ async function checkAnswerAndAnimate() {
       choice.classList.add('wrong');
     }
   });
-
   if (selectedAnswer === correctAnswer) {
     playPlayerAttack();
     countCorrectAnswer++;
     userPoint+=scorePoints;
     scoreRefresh();
+    showScoreAnimation('+200');
+    countStreak++;
+    updateStreakFire();
   } else {
     playEnemyAttack();
     countIncorrectAnswer++;
     scoreRefresh();
+    countStreak = 0;
+    updateStreakFire();
   }
-
-  // Wait a bit for animation before loading next question
-  setTimeout(() => {
-    currentIndex++;
-    if (currentIndex < totalQuestions) {
-      loadQuiz(currentIndex);
-    } else {
-      alert("Quiz finished!");
-    }
-  }, 2000); // wait 2 seconds
+  // Wait for animation, then show loading popup, then load next question after popup hides
+  setTimeout(async () => {
+    showLoadingPopup();
+    setTimeout(async () => {
+      hideLoadingPopup();
+      currentIndex++;
+      if (currentIndex < totalQuestions) {
+        await loadQuiz(currentIndex);
+      } else {
+        await showEndMessageWithAnimation();
+      }
+    }, 800); // loading popup visible for 0.8s
+  }, 3000); // wait for animation (3s)
 }
 
 // ---------------------- Animation Controls ----------------------
@@ -277,9 +272,187 @@ document.addEventListener("DOMContentLoaded", () => {
       choice.classList.add('selected');
     });
   });
+
+  loadQuiz(0);
 });
 
 // ---------------------- Event Listeners ----------------------
 document.querySelector('.playButton').addEventListener('click', checkAnswerAndAnimate);
 
-loadQuiz(currentIndex);
+// Update question number dynamically
+function updateQuestionNumber(index) {
+  const questionNumberElem = document.querySelector('.title h2');
+  if (questionNumberElem) {
+    questionNumberElem.textContent = `Question ${index + 1}`;
+  }
+}
+
+// Timer logic: display as a number, reset and start on each question
+let timerInterval = null;
+let timerSeconds = 30; // default, can be set per question
+
+function startQuestionTimer() {
+  clearInterval(timerInterval);
+  // Set timerSeconds based on difficulty if needed, else default to 30
+  timerSeconds = 30;
+  updateTimerDisplay();
+  timerInterval = setInterval(() => {
+    timerSeconds--;
+    updateTimerDisplay();
+    if (timerSeconds <= 0) {
+      clearInterval(timerInterval);
+      handleTimeOut();
+    }
+  }, 1000);
+}
+
+function updateTimerDisplay() {
+  const timerElem = document.getElementById('timer-number');
+  if (timerElem) {
+    timerElem.textContent = timerSeconds;
+    // Color logic: green > 20, orange 10-20, red < 10
+    if (timerSeconds > 20) {
+      timerElem.style.color = '#4caf50'; // green
+      timerElem.style.borderColor = '#4caf50';
+      timerElem.style.boxShadow = '0 0 12px #4caf50cc';
+      timerElem.style.backgroundColor = 'rgba(76, 175, 80, 0.18)';
+    } else if (timerSeconds > 10) {
+      timerElem.style.color = '#ff9800'; // orange
+      timerElem.style.borderColor = '#ff9800';
+      timerElem.style.boxShadow = '0 0 12px #ff9800cc';
+      timerElem.style.backgroundColor = 'rgba(255, 152, 0, 0.18)';
+    } else {
+      timerElem.style.color = '#ff1744'; // red
+      timerElem.style.borderColor = '#ff1744';
+      timerElem.style.boxShadow = '0 0 12px #ff1744cc';
+      timerElem.style.backgroundColor = 'rgba(255, 23, 68, 0.18)';
+    }
+  }
+}
+
+// Add this function at the end of the file
+function showScoreAnimation(text) {
+  const animDiv = document.getElementById('score-animation');
+  if (!animDiv) return;
+  animDiv.innerHTML = `<span class="score-animate">${text}</span>`;
+  setTimeout(() => {
+    animDiv.innerHTML = '';
+  }, 1200);
+}
+
+function updateStreakFire() {
+  const fire = document.getElementById('streak-fire');
+  const tempScore = document.getElementById('temp-score');
+  const container = document.querySelector('.container');
+  if (!fire || !tempScore || !container) return;
+  // Remove all streak classes
+  tempScore.classList.remove('temp-score-streak-orange', 'temp-score-streak-violet', 'temp-score-streak-blue', 'temp-score-streak');
+  // Aura logic
+  container.classList.remove('container-aura-orange', 'container-aura-purple', 'container-aura-blue');
+  if (countStreak >= 8) {
+    fire.classList.add('streak-fire-blue');
+    fire.classList.remove('streak-fire-violet');
+    container.classList.add('container-aura-blue');
+    tempScore.classList.add('temp-score-streak-blue');
+  } else if (countStreak >= 4) {
+    fire.classList.add('streak-fire-violet');
+    fire.classList.remove('streak-fire-blue');
+    container.classList.add('container-aura-purple');
+    tempScore.classList.add('temp-score-streak-violet');
+  } else if (countStreak >= 2) {
+    fire.classList.remove('streak-fire-violet', 'streak-fire-blue');
+    container.classList.add('container-aura-orange');
+    tempScore.classList.add('temp-score-streak-orange');
+  } else {
+    fire.classList.remove('streak-fire-violet', 'streak-fire-blue');
+  }
+  // Animate fire icon and temp-score gradient in/out smoothly
+  if (countStreak >= 2) {
+    fire.style.display = 'inline-block';
+    setTimeout(() => {
+      fire.classList.add('streak-fire-active');
+    }, 10);
+  } else {
+    fire.classList.remove('streak-fire-active');
+    setTimeout(() => {
+      if (countStreak < 2) fire.style.display = 'none';
+    }, 500);
+  }
+}
+
+// Timer durations for each type
+const TIMER_DURATIONS = {
+  easy: 30,
+  average: 45,
+  difficult: 60
+};
+
+function getTimerDuration(type) {
+  // Placeholder: always return 30 for now
+  // In the future, use type ('easy', 'average', 'difficult')
+  return TIMER_DURATIONS.easy;
+}
+
+let totalTimeSpent = 0;
+let totalQuestionsAnswered = 0;
+
+function handleTimeOut() {
+  playEnemyAttack();
+  countIncorrectAnswer++;
+  scoreRefresh();
+  countStreak = 0;
+  updateStreakFire();
+  setTimeout(async () => {
+    await showEndMessageWithAnimation();
+  }, 3000);
+}
+
+async function showEndMessageWithAnimation() {
+  clearInterval(timerInterval);
+  document.getElementById('quiz-main-content').classList.add('hidden');
+  const correct = countCorrectAnswer;
+  const incorrect = countIncorrectAnswer;
+  const total = correct + incorrect;
+  const accuracy = total > 0 ? ((correct / total) * 100) : 0;
+  let message = '';
+  if (accuracy > 50) {
+    message = 'You win this round!';
+    playEnemyDeath();
+  } else {
+    message = 'You lose this round!';
+    playPlayerDeath();
+  }
+  await new Promise(res => setTimeout(res, 1800));
+  const endDiv = document.getElementById('end-message');
+  endDiv.innerHTML = `
+    <div class="end-quiz-icons">
+      <span class="end-quiz-icon map-icon" title="Map"></span>
+      <span class="end-quiz-icon menu-icon" title="Menu"></span>
+    </div>
+    <div>${message}</div>
+    <div class="end-results">
+      <div><span>Correct:</span> ${correct}</div>
+      <div><span>Incorrect:</span> ${incorrect}</div>
+      <div><span>Accuracy:</span> ${accuracy.toFixed(1)}%</div>
+      <div><span>Avg Speed:</span> ${(total > 0 ? (totalTimeSpent / total).toFixed(2) : '0.00')} s/question</div>
+    </div>
+    <button class="end-quiz-next-btn" id="endQuizNextBtn">Next</button>
+  `;
+  endDiv.style.display = 'flex';
+
+  // Add event listeners for the new buttons
+  document.querySelector('.map-icon').onclick = () => {
+    window.location.href = 'map.html';
+  };
+  document.querySelector('.menu-icon').onclick = () => {
+    showMenu();
+  };
+  document.getElementById('endQuizNextBtn').onclick = () => {
+    // Placeholder: reload or go to next round
+    window.location.reload();
+  };
+}
+
+function showMenu() {
+  alert('Menu button clicked! (Implement menu logic here)');
+}
