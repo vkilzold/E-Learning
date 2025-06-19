@@ -90,8 +90,8 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 if (profile.role === 'teacher') {
                     window.location.href = '\\teacher dashboard/teacherdashboard.html';
-                } else {
-                    window.location.href = '\\classcode/classcode.html';
+                } else if (profile.role === 'student') {
+                    window.location.href = '\\student dashboard/dashboard.html';
                 }
             }, 1500);
         });
