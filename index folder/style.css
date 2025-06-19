@@ -7,20 +7,19 @@
 body {
   font-family: sans-serif;
   line-height: 1.6;
-  background: #f2f2f2;
-  color: #333;
+  background:#1C1D22;
 }
 
-/* Header */
+/* ----------------------------------------------Heather---------------------------------------------- */
 .header {
-   position: fixed;
+    position:fixed;
     top: 0;
     left: 0;
     width: 100%;
     padding: 1.1%;
     display: flex;
-    justify-content: right;
-    background: rgba(247, 245, 245, 0.3);
+    justify-content: center;
+    background: rgba(71, 71, 71, 0.3);
     -webkit-backdrop-filter: blur(3px);
     backdrop-filter: blur(3px);
     color: white;
@@ -30,18 +29,20 @@ body {
 
 .brand {
   flex: 1;
-  text-align: left;
+  text-align: center; 
 }
 
 .logo {
   font-size: 24px;
   font-weight: bold;
-  color: #511069;
+  color: #F0D8C3;
 }
 
 .center-nav {
+color: #F0D8C3;
   flex: 2;
-  text-align: center;
+  text-align: right;
+ margin-right: 5rem;
 }
 
 .nav-links {
@@ -54,149 +55,160 @@ body {
 
 .nav-links a {
   text-decoration: none;
-  color: #333;
+  color: #F0D8C3;
   font-size: 18px;
   font-weight: 500;
   transition: color 0.3s;
 }
 
 .nav-links a:hover {
-  color: #511069;
+  color: #F0D8C3;
 }
 
 .right-nav {
   flex: 1;
   text-align: right;
 }
-
-.login-link {
-  font-size: 22px;
-  font-weight: bold;
-  color: #511069;
-  text-decoration: none;
-}
-
-.login-link:hover {
-  text-decoration: underline;
-}
-
-/* Hero Section */
+/* ----------------------------------------------Hero section---------------------------------------------- */
 .home {
-  background-image: url('/index folder/image/d1142fd22f314264181cbf18bf3eb073.jpg');
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center;
-  display: flex;
-  justify-content:space-around;
-  padding: 60px 20px;
-  height: 100vh;
-  align-items: center;
+  position: relative;
+  overflow: hidden;
+}  
+.home {
+    background-image: url('/index folder/image/indexnewnewnew.jpg');
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    display: flex;
+    justify-content:space-around;
+    padding: 60px 20px;
+    height: 100vh;
+    align-items: center;
+    
+  }
+  /* This keeps your content above the blurred background */
+.home > * {
+  position: relative;
+  z-index: 1;
 }
 
-.home-content {
-  max-width: 50%;
-}
+  .home-content {
+    color: #F0d8c3;
+    max-width: 100%;
+  }
 
 .home-content h1 {
-  font-size: 3.5rem;
+  text-align: center;
+  font-size: 5rem;
   margin-bottom: 10px;
+}
+.home p{
+  font-size: 1.2rem;
 }
 
 .home-content button {
   margin-top: 20px;
-  padding: 12px 20px;
-  background: #ec916a;
+  padding: 13px 25px;
+  background: #F0d8c3;
+  font-size: 1.5rem;
   border: none;
   cursor: pointer;
   border-radius: 100px;
 }
-
-.hero-image {
-  width: 300px;
-  height: 300px;
-  background: url('/index folder/image/c225149d5110ab9af9462429a4833517.jpg') center/cover no-repeat;
-  border-radius: 50px;
-}
-
-.hero-ima {
-  width: 300px;
-  height: 300px;
-  background:  url('/index folder/image/ad1505e345f71292b67cc1573f1ffbe7.jpg') center/cover no-repeat;
-  border-radius: 50px;
-}
 html {
     scroll-behavior: smooth;
-
-/* Journey Section */
-.journey {
-  padding: 60px 20px;
-  background: #faf0f0;
-  text-align: center;
-  height: 100vh;
 }
 
-.journey h2 {
-  font-size: 2.5rem;
-  color: #511069;
-  margin-bottom: 10px;
+/* ----------------------------------------------Scroll left to right---------------------------------------------- */
+.scroll-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
 }
 
-.journey p {
-  font-size: 1.1rem;
-  color: #333;
-  line-height: 1.6;
-  max-width: 800px;
-  margin: 10px auto 30px;
+.scroll-container {
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+  scroll-behavior: smooth;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  flex: 1;
+}
+
+.scroll-container::-webkit-scrollbar {
+  display: none;
 }
 
 .cards {
-   margin-top: 50px;
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 30px;
+  gap: 1rem;
+  padding: 1rem 0;
+  width: 25vw;
+  height: 40vh;
 }
 
 .card {
-  background: #fff;
-  padding: 25px 20px;
-  width: 260px;
-  border-radius: 15px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  width: 100%;
+  flex: 0 0 auto;
+  background: #f9f9fc;
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  text-align: left;
+  word-wrap: break-word;       /* Ensures long words break */
+  overflow-wrap: break-word;   /* Modern alternative */
+  white-space: normal;         /* Allow line breaks */
 }
-
 .card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+  transform: translateX(4px);
+  box-shadow: 10px 0 18px rgba(0, 0, 0, 0.15); /* Slightly deeper shadow on hover */
+}
+.scroll-btn {
+  background: rgba(0, 0, 0, 0.4);
+  color: white;
+  border: none;
+  font-size: 2rem;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  z-index: 1;
+  transition: background 0.3s ease;
+  border-radius: 5px;
 }
 
-.card h3 {
-  margin-top: 15px;
-  font-size: 1.2rem;
-  color: #511069;
+.scroll-btn:hover {
+  background: rgba(0, 0, 0, 0.6);
 }
 
-.card p {
-  font-size: 0.95rem;
-  color: #555;
-  margin-top: 10px;
+.scroll-btn.left {
+  margin-right: 0.5rem;
 }
 
-/* Placeholder image (hero-img) */
-.hero-img {
-  width: 100px;
-  height: 100px;
-  background: #ddd;
-  border-radius: 50%;
-  margin: 0 auto 10px;
+.scroll-btn.right {
+  margin-left: 0.5rem;
+}
+.card h3, .card p {
+  white-space: normal;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+
 }
 
 
+
+
+
+
+/* ----------------------------------------------Service---------------------------------------------- */
 .services {
   height: 100vh;
   padding: 60px 20px;
-  background-color: #f9f9f9;
+  background-color: #313B44;
   text-align: center;
 }
 
@@ -204,7 +216,7 @@ html {
   margin-top: 5rem;
   font-size: 2.5rem;
   margin-bottom: 40px;
-  color: #511069;
+  color:white;
 }
 
 .services-container {
@@ -238,21 +250,24 @@ html {
   color: #555;
 }
 
-/* Contact section wrapper */
+
+
+
+/* ----------------------------------------------Contact---------------------------------------------- */
 .contact {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   align-items: flex-start;
   padding: 40px 20px;
-  background-color: #e9e7e7;
+  background-color: #606467;
   gap: 40px;
   height: 100vh;
 }
 
 /* Left side (with container box) */
 .contact .container {
-  background-color: white;
+  background-color: #F0D8C3;
   margin-top: 9rem;
   padding: 40px 30px;
   border-radius: 20px;
@@ -320,13 +335,13 @@ html {
 
 .teams-content h3 {
   font-size: 1.8rem;
-  color: #511069;
+  color: white;
   margin-bottom: 10px;
 }
 
 .teams-content p {
   font-size: 1rem;
-  color: #555;
+  color: white;
   margin-bottom: 25px;
 }
 
@@ -361,7 +376,7 @@ html {
 .teams-content button {
   padding: 14px;
   font-size: 1rem;
-  background: #511069;
+  background: #ec916a;
   color: white;
   border: none;
   border-radius: 10px;
@@ -370,12 +385,12 @@ html {
 }
 
 .teams-content button:hover {
-  background: #6a1699;
+  background: #606467;
 }
-  /* Our Team Section */
+  /* ------------------------------------------------Our Team Section-------------------------------------s    */
 .our-team-section {
   padding: 60px 20px;
-  background: #f9f9f9;
+  background: #F0D8C3;
   text-align: center;
   font-family: 'Segoe UI', sans-serif;
   color: #333;
@@ -450,7 +465,7 @@ html {
 }
 
   .bottom {
-    background-color: #f9f9f9;
+    background-color: #F0D8C3;
     text-align: center;
     color: rgb(43, 39, 39);
     padding: 15px 2%;
@@ -462,7 +477,7 @@ html {
     display: none;
   }
   
-/* Responsive Styles */
+/* ---------------------------------------------------Responsive Styles-------------------------------------------------- */
 @media (max-width: 768px) {
   .header {
     align-items: center;
@@ -588,6 +603,5 @@ html {
   .bottom {
     font-size: 14px;
   }
-}
 }
 }

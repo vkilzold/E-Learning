@@ -8,87 +8,74 @@
 </head>
 <body>
 
-     <div class="top-bar">
-  <button class="back-btn" onclick="window.location.href='index.html'">← Back</button>
-</div>
+  <div class="top-bar">
+    <button class="back-btn" onclick="window.location.href='/login folder/second-design/login.html'">Logout</button>
+  </div>
 
   <div class="dashboard-container">
 
-    <!-- Main Grid Row -->
-    <div class="top-row">
+    <div class="dashboard-header">
+      <h2>Teacher Dashboard</h2>
+    </div>
 
-      <!-- LEFT SIDE -->
-      <div class="left-profile">
-        
-        <!-- Profile Section -->
+    <div class="top-row">
+      <!-- Top: Profile + Leaderboard -->
+      <div class="top-header">
         <div class="profile-box">
           <div class="avatar"></div>
-          <div class="teacher-info">
-            <strong>Teacher:</strong>
-          </div>
+          <div class="teacher-info"><strong>Teacher:</strong> Prof Andrei</div>
         </div>
 
-        <!-- Classes Section -->
-        <div class="class-section">
+        <div class="leaderboard-section">
           <div class="section-header">
-            <h3>Classes</h3>
-            <button class="action-btn">+ Add Class</button>
-          </div>
-          <div class="scroll-box">
-          </div>
-        </div>
-
-        <!-- Badges Section -->
-        <div class="class-section">
-          <div class="section-header">
-            <h3>Badges</h3>
-            <button class="action-btn">+ Add Badge</button>
-          </div>
-          <div class="scroll-box">
-            <div class="item">Top Performer</div>
-            <div class="item">Most Improved</div>
-            <div class="item">Perfect Attendance</div>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- RIGHT SIDE -->
-      <div class="right-content">
-
-        <!-- Leaderboard Section -->
-        <div class="free-section">
-          <div class="section-header">
-            <h3>Leaderboard</h3>
+            <h4>Leaderboard</h4>
             <button class="action-btn">View</button>
           </div>
           <div class="scroll-box">
             <div class="item">Prince Masilac - 180 pts</div>
             <div class="item">George Sia - 170 pts</div>
             <div class="item">Andrei Pira - 160 pts</div>
+            <div class="item">George Sia - 170 pts</div>
+            <div class="item">Andrei Pira - 160 pts</div>
+          </div>
+        </div>
+      </div>
+      <!-- Bottom: Classes and Students -->
+      <div class="bottom-section">
+        <div class="class-section">
+          <div class="section-header">
+            <h4>Classes</h4>
+            <button class="action-btn">+ Add Class</button>
+          </div>
+          <div class="scroll-box">
+            <div class="item">math (UO6E)</div>
           </div>
         </div>
 
-        <!-- Students Section -->
         <div class="student-section">
           <div class="section-header">
-            <h3>Students</h3>
+            <h4>Students</h4>
             <button class="action-btn">+ Add Student</button>
           </div>
           <div class="scroll-box">
             <div class="item">George Sia</div>
             <div class="item">Prince Masilac</div>
             <div class="item">Andrei Pira</div>
-            <div class="item">Lenar Yolola</div>
+            <div class="item">Andrei Pira</div>
+            <div class="item">Andrei Pira</div>
           </div>
         </div>
-
       </div>
+    </div>
 
+    <!-- Performance Chart Section -->
+    <div class="chart-section">
+      <h3>Performance Overview</h3>
+      <div class="chart-placeholder">[Graph coming soon]</div>
     </div>
 
   </div>
-    
+
   <!-- Modal Popup -->
   <div id="classModal" class="modal">
     <div class="modal-content">
@@ -101,6 +88,9 @@
       </form>
     </div>
   </div>
+
+  <!-- Script -->
+  <script type="module" src="teacherdashboard.js"></script>
 
 
   <!-- Wag galawin script to ng teacherdashboard sadya to nandine -->

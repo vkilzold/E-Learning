@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   
     // ✏️ Display teacher name
-    teacherInfo.innerHTML = `<strong>Teacher:</strong> ${profile.full_name}<br>Subject: Programming<br>Section: BSCS3IS1`;
+    teacherInfo.innerHTML = `<strong>Teacher:</strong> ${profile.full_name}`;
   
     // 🧾 Show modal form
     addClassBtn.addEventListener('click', () => {
