@@ -58,6 +58,7 @@ h3, li {
 
 .nav-links {
   list-style: none;
+  justify-content: center;
   display: flex;
   gap: 2.5rem;
   padding: 0;
@@ -210,7 +211,7 @@ html {
 }
 
 .card h3 {
-  font-size: 1.3rem;
+  font-size: 1.2rem;
   font-weight: 600;
   margin-bottom: 0.7rem;
   color: #7dd3fc;
@@ -744,4 +745,18 @@ html {
   color: #fff;
 }
 }
+}
+
+/* ----------------------------------------------Journey Section---------------------------------------------- */
+.journey {
+  background: #232946;
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.journey h2 {
+  font-size: 2.5rem;
+  margin-bottom: 3rem;
+  color: #7dd3fc;
+  text-align: center;
 }

@@ -3,86 +3,173 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>E-Learning Gamification</title>
+  <title>Student Dashboard - E-Learning</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
   <link rel="stylesheet" href="dashboard.css" />
   <script src="Chart.js"></script>
 </head>
 <body>
-  <div class="container">
-      <div class="main">
-      <div class="header">Student Dashboard</div>
-
-    <!-- Top Section -->
-    <div class="top-section">
-      <div class="profile-section">
-        <div class="avatar"></div>
-        <div class="personal-info">
-          <!-- User profile name and email -->
-          <h2 id="studentFullName"></h2>
-          <p id="studentEmail"></p>
-          <p id="studentClassName">Class: Not assigned</p> 
-          <button class="logout-btn">Logout</button>
-          <button class="add-class-btn">Add Class</button>
+  <div class="dashboard-layout">
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <h1 class="logo">E-Learning</h1>
         </div>
-      </div>
-
-      <div class="leaderboard-section">
-        <h3>Leaderboard</h3>
-         <div class="scroll-box">
-        <ul>
-          <li>#1 Roldan Aguila - 4520 pts</li>
-          <li>#2 Lorens Mangubat - 4300 pts</li>
-          <li>#3 Arvin Pira - 4180 pts</li>
-          <li>#4 Arjhay Calaguan - 3900 pts</li>
-          <li>#5 Steph Mendoza - 3420 pts</li>
-          <li>#1 Roldan Aguila - 4520 pts</li>
-          <li>#2 Lorens Mangubat - 4300 pts</li>
-          <li>#3 Arvin Pira - 4180 pts</li>
-          <li>#4 Arjhay Calaguan - 3900 pts</li>
-          <li>#5 Steph Mendoza - 3420 pts</li>
+        <ul class="nav-links">
+            <li class="active"><a href="#"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+            <li><a href="#"><i class="fas fa-book"></i> My Courses</a></li>
+            <li><a href="#"><i class="fas fa-trophy"></i> Achievements</a></li>
+            <li><a href="#"><i class="fas fa-chart-line"></i> Progress</a></li>
+            <li><a href="#"><i class="fas fa-calendar"></i> Schedule</a></li>
+            <li><a href="#"><i class="fas fa-envelope"></i> Messages</a></li>
         </ul>
-        </div>
-      </div>
-    </div>
+    </nav>
 
-    <!-- Stats Grid -->
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-number">120</div>
-          <div class="stat-label">Learning Time</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-number">15</div>
-          <div class="stat-label">Subjects</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-number">42</div>
-          <div class="stat-label">Achievements</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-number">89%</div>
-          <div class="stat-label">Progress</div>
-        </div>
-      </div>
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="main-header">
+            <div class="student-profile">
+                <div class="avatar"></div>
+                <div class="student-info">
+                    <h2 id="studentFullName">Student Name</h2>
+                    <p id="studentEmail">student@email.com</p>
+                    <p id="studentClassName">Class: Not assigned</p>
+                </div>
+            </div>
+            <div class="header-actions">
+                <span class="notification-icon">🔔</span>
+                <button class="add-class-btn" id="addClassBtn">+ Add Class</button>
+                <button class="logout-btn" onclick="window.location.href='/login folder/second-design/login.html'">Logout</button>
+            </div>
+        </header>
 
-      <!-- Bottom Section -->
-      <div class="bottom-wrapper">
-        <div class="written-stats">
-          <h3>Written Stats</h3>
-          <p>Quizzes Completed: 18</p>
-          <p>Exams Taken: 5</p>
-          <p>Average Score: 89%</p>
-          <p>Last Active: June 16, 2025</p>
-        </div>
+        <div class="content-cards">
+            <!-- Stats Grid -->
+            <div class="card stats-card">
+                <div class="section-header">
+                    <h4><i class="fas fa-chart-bar"></i> Learning Statistics</h4>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-number">120</div>
+                        <div class="stat-label">Learning Time (hrs)</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">15</div>
+                        <div class="stat-label">Subjects</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">42</div>
+                        <div class="stat-label">Achievements</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">89%</div>
+                        <div class="stat-label">Progress</div>
+                    </div>
+                </div>
+            </div>
 
-        <div class="radar-chart">
-          <canvas id="radarStatsChart"></canvas>
-        </div>
-      </div>
-    </div>
+            <!-- Leaderboard Card -->
+            <div class="card leaderboard-section">
+                <div class="section-header">
+                    <h4><i class="fas fa-trophy"></i> Leaderboard</h4>
+                    <button class="action-btn">View All</button>
+                </div>
+                <div class="scroll-box">
+                    <div class="item">#1 Roldan Aguila - 4520 pts</div>
+                    <div class="item">#2 Lorens Mangubat - 4300 pts</div>
+                    <div class="item">#3 Arvin Pira - 4180 pts</div>
+                    <div class="item">#4 Arjhay Calaguan - 3900 pts</div>
+                    <div class="item">#5 Steph Mendoza - 3420 pts</div>
+                </div>
+            </div>
 
-  </div> <!-- END of .container -->
- 
+            <!-- Written Stats Card -->
+            <div class="card written-stats-card">
+                <div class="section-header">
+                    <h4><i class="fas fa-clipboard-list"></i> Academic Summary</h4>
+                </div>
+                <div class="stats-list">
+                    <div class="stat-row">
+                        <span class="stat-label">Quizzes Completed:</span>
+                        <span class="stat-value">18</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Exams Taken:</span>
+                        <span class="stat-value">5</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Average Score:</span>
+                        <span class="stat-value">89%</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Last Active:</span>
+                        <span class="stat-value">June 16, 2025</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity Card -->
+            <div class="card activity-card">
+                <div class="section-header">
+                    <h4><i class="fas fa-clock"></i> Recent Activity</h4>
+                </div>
+                <div class="activity-list">
+                    <div class="activity-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Completed Math Quiz - 95%</span>
+                        <small>2 hours ago</small>
+                    </div>
+                    <div class="activity-item">
+                        <i class="fas fa-book"></i>
+                        <span>Started Science Module 3</span>
+                        <small>1 day ago</small>
+                    </div>
+                    <div class="activity-item">
+                        <i class="fas fa-trophy"></i>
+                        <span>Earned "Math Master" badge</span>
+                        <small>3 days ago</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Performance Overview Card -->
+            <div class="card performance-card">
+                <div class="section-header">
+                    <h4><i class="fas fa-chart-line"></i> Performance Overview</h4>
+                </div>
+                <div class="radar-chart">
+                    <canvas id="radarStatsChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Upcoming Tasks Card -->
+            <div class="card tasks-card">
+                <div class="section-header">
+                    <h4><i class="fas fa-tasks"></i> Upcoming Tasks</h4>
+                </div>
+                <div class="task-list">
+                    <div class="task-item">
+                        <div class="task-info">
+                            <span class="task-title">Science Assignment Due</span>
+                            <span class="task-date">Tomorrow</span>
+                        </div>
+                        <div class="task-status pending">Pending</div>
+                    </div>
+                    <div class="task-item">
+                        <div class="task-info">
+                            <span class="task-title">History Quiz</span>
+                            <span class="task-date">Friday</span>
+                        </div>
+                        <div class="task-status upcoming">Upcoming</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+  </div>
+
   <!-- Modal pop up-->
   <div id="classModal" class="modal hidden">
     <div class="modal-content">
@@ -93,9 +180,9 @@
       <p id="modalMessage" style="margin-top: 10px;"></p>
     </div>
   </div>
-  <!-- Chart Script -->
+
+  <!-- Scripts -->
   <script type="module" src="studentdashboard.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 </body>
 </html>

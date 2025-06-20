@@ -4,73 +4,121 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Teacher Dashboard</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
   <link rel="stylesheet" href="teacherdashboard.css">
 </head>
 <body>
 
-  <div class="top-bar">
-    <button class="back-btn" onclick="window.location.href='/login folder/second-design/login.html'">Logout</button>
-  </div>
-
-  <div class="dashboard-container">
-
-    <div class="dashboard-header">
-      <h2>Teacher Dashboard</h2>
-    </div>
-
-    <div class="top-row">
-      <!-- Top: Profile + Leaderboard -->
-      <div class="top-header">
-        <div class="profile-box">
-          <div class="avatar"></div>
-          <div class="teacher-info"><strong>Teacher:</strong></div>
+  <div class="dashboard-layout">
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <h1 class="logo">E-Learning</h1>
         </div>
+        <ul class="nav-links">
+            <li class="active"><a href="#"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+            <li><a href="#"><i class="fas fa-chalkboard-teacher"></i> Classes</a></li>
+            <li><a href="#"><i class="fas fa-user-graduate"></i> Students</a></li>
+            <li><a href="#"><i class="fas fa-folder"></i> Resources</a></li>
+            <li><a href="#"><i class="fas fa-bullhorn"></i> Announcements</a></li>
+            <li><a href="#"><i class="fas fa-envelope"></i> Messages</a></li>
+        </ul>
+    </nav>
 
-        <div class="leaderboard-section">
-          <div class="section-header">
-            <h4>Leaderboard</h4>
-            <button class="action-btn">View</button>
-          </div>
-          <div class="scroll-box">
-            <div class="item">Prince Masilac - 180 pts</div>
-            <div class="item">George Sia - 170 pts</div>
-            <div class="item">Andrei Pira - 160 pts</div>
-            <div class="item">George Sia - 170 pts</div>
-            <div class="item">Andrei Pira - 160 pts</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Bottom: Classes and Students -->
-      <div class="bottom-section">
-        <div class="class-section">
-          <div class="section-header">
-            <h4>Classes</h4>
-            <button class="action-btn" id="addClassBtn">+ Add Class</button>
-          </div>
-          <div class="scroll-box" id="classList">
-            <!-- Dynamically populated -->
-          </div>
-        </div>
-
-        <div class="student-section">
-            <div class="section-header">
-              <h4>Students</h4>
-              <button class="action-btn" id="selectClassBtn">Select Class</button>
-              <button class="action-btn" id="viewStudentsBtn">View</button>  
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="main-header">
+            <div class="teacher-profile">
+                <div class="avatar"></div>
+                <div class="teacher-info">
+                    <!-- Populated by JS -->
+                </div>
             </div>
-            <div class="scroll-box" id="dashboardStudentList"> </div>
+            <div class="header-actions">
+                <span class="notification-icon">🔔</span>
+                <button class="back-btn" onclick="window.location.href='/login folder/second-design/login.html'">Logout</button>
+            </div>
+        </header>
+
+        <div class="content-cards">
+            <div class="card performance-card">
+                <div class="section-header">
+                    <h4><i class="icon-performance"></i> Performance Overview</h4>
+                </div>
+                <div class="chart-placeholder">[Graph coming soon]</div>
+            </div>
+
+            <div class="card class-section">
+              <div class="section-header">
+                  <h4><i class="icon-classes"></i> Classes</h4>
+                  <button class="action-btn" id="addClassBtn">+ Add Class</button>
+              </div>
+              <div class="scroll-box" id="classList">
+                  <!-- Dynamically populated -->
+              </div>
+          </div>
+
+            <div class="card student-section">
+              <div class="section-header">
+                  <h4><i class="icon-students"></i> Students</h4>
+                  <div>
+                      <button class="action-btn" id="selectClassBtn">Select Class</button>
+                      <button class="action-btn" id="viewStudentsBtn">View</button>
+                  </div>
+              </div>
+              <div class="scroll-box" id="dashboardStudentList"> </div>
+          </div>
+
+            <div class="card leaderboard-section">
+              <div class="section-header">
+                <h4><i class="icon-leaderboard"></i> Leaderboard</h4>
+                <button class="action-btn">View</button>
+              </div>
+              <div class="scroll-box">
+                <div class="item">Prince Masilac - 180 pts</div>
+                <div class="item">George Sia - 170 pts</div>
+                <div class="item">Andrei Pira - 160 pts</div>
+                <div class="item">George Sia - 170 pts</div>
+                <div class="item">Andrei Pira - 160 pts</div>
+              </div>
+            </div>
+
+            <div class="card resources-card">
+                <div class="section-header">
+                    <h4><i class="icon-resources"></i> Resources</h4>
+                </div>
+                <div class="card-body">
+                    <p>[Upload/Download coming soon]</p>
+                </div>
+            </div>
+
+            <div class="card announcements-card">
+              <div class="section-header">
+                  <h4><i class="icon-announcements"></i> Announcements</h4>
+              </div>
+              <div class="card-body">
+                  <p>No announcements yet.</p>
+              </div>
+          </div>
+
+            <div class="card messages-card">
+                <div class="section-header">
+                    <h4><i class="icon-messages"></i> Messages</h4>
+                </div>
+                <div class="card-body">
+                    <p>[Message center coming soon]</p>
+                </div>
+            </div>
+
+
+
+
+
+
         </div>
-      </div>
-    </div>
-
-    <!-- Performance Chart Section -->
-    <div class="chart-section">
-      <h3>Performance Overview</h3>
-      <div class="chart-placeholder">[Graph coming soon]</div>
-    </div>
-
-  </div>
+    </main>
+</div>
 
   <!-- Add Class Modal -->
   <div id="classModal" class="modal">
