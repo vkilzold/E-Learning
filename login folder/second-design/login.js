@@ -11,19 +11,91 @@ document.addEventListener('DOMContentLoaded', () => {
     const message = document.getElementById('message');
     const navigateToSignupBtn = document.getElementById('navigateToSignupBtn');
     const loginButton = document.querySelector('.login-btn'); 
+    const rememberMeCheckbox = document.getElementById('rememberMe');
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
 
+    // Load saved credentials if "Remember me" was checked
+    function loadSavedCredentials() {
+        const savedEmail = localStorage.getItem('rememberedEmail');
+        const savedPassword = localStorage.getItem('rememberedPassword');
+        const wasRemembered = localStorage.getItem('rememberMe') === 'true';
+        
+        if (wasRemembered && savedEmail && savedPassword) {
+            if (emailInput) emailInput.value = savedEmail;
+            if (passwordInput) passwordInput.value = savedPassword;
+            if (rememberMeCheckbox) rememberMeCheckbox.checked = true;
+        }
+    }
+
+    // Save credentials to localStorage
+    function saveCredentials(email, password) {
+        localStorage.setItem('rememberedEmail', email);
+        localStorage.setItem('rememberedPassword', password);
+        localStorage.setItem('rememberMe', 'true');
+    }
+
+    // Clear saved credentials
+    function clearSavedCredentials() {
+        localStorage.removeItem('rememberedEmail');
+        localStorage.removeItem('rememberedPassword');
+        localStorage.removeItem('rememberMe');
+    }
+
+    // Check if user was logged out from dashboard
+    async function checkIfLoggedOut() {
+        try {
+            const { data: { user }, error } = await supabase.auth.getUser();
+            
+            // If no user or error, user was logged out
+            if (error || !user) {
+                // Clear saved credentials when user is logged out
+                clearSavedCredentials();
+                return true;
+            }
+            return false;
+        } catch (err) {
+            // If there's any error, assume user was logged out and clear credentials
+            clearSavedCredentials();
+            return true;
+        }
+    }
+
+    // Initialize page
+    async function initializePage() {
+        // Check if user was logged out first
+        const wasLoggedOut = await checkIfLoggedOut();
+        
+        // Only load saved credentials if user wasn't logged out
+        if (!wasLoggedOut) {
+            loadSavedCredentials();
+        }
+    }
+
+    // Initialize the page
+    initializePage();
+
+    // Remember me checkbox event listener
+    if (rememberMeCheckbox) {
+        rememberMeCheckbox.addEventListener('change', () => {
+            if (!rememberMeCheckbox.checked) {
+                // If unchecked, clear saved credentials
+                clearSavedCredentials();
+                // Clear the input fields
+                if (emailInput) emailInput.value = '';
+                if (passwordInput) passwordInput.value = '';
+            }
+        });
+    }
 
     // Event listener for the Login button
     if (loginButton) {
         loginButton.addEventListener('click', async (e) => {
             e.preventDefault(); 
 
-            const emailInput = document.getElementById('email'); 
-            const passwordInput = document.getElementById('password'); 
-
             const email = emailInput ? emailInput.value.trim() : '';
             const password = passwordInput ? passwordInput.value.trim() : '';
-
+            const rememberMe = rememberMeCheckbox ? rememberMeCheckbox.checked : false;
 
             if (!email || !password) {
                 if (message) {
@@ -33,28 +105,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
+            // Handle "Remember me" functionality
+            if (rememberMe) {
+                saveCredentials(email, password);
+            } else {
+                clearSavedCredentials();
+            }
+
             // Display "Logging in..." message immediately
             if (message) {
                 message.textContent = 'Logging in...';
                 message.style.color = 'blue';
             }
 
-
             // Log in with Supabase
             const { data, error } = await supabase.auth.signInWithPassword({
                 email,
                 password,
             });
-
-            if (error) {
-                if (message) {
-                    message.textContent = `❌ Login failed: ${error.message}`;
-                    message.style.color = 'red';
-                }
-                console.error("Login Error:", error);
-                return;
-            }
-
             // Check email confirmation
             if (!data.user?.email_confirmed_at) { 
                 if (message) {
@@ -98,7 +166,6 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
         console.error("Error: Login button with class 'login-btn' not found.");
     }
-
 
     // Event listener for the "Sign up" button (to navigate to signup.html)
     if (navigateToSignupBtn) {
