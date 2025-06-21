@@ -19,13 +19,15 @@
           <form id="signupForm">
             <input type="text" id="fullName" placeholder="Full Name" required />
             <input type="email" id="email" placeholder="Email" required />
+            
             <div class="password-field">
               <input type="password" id="password" placeholder="Password" required />
-              <span class="password-toggle" onclick="togglePassword('password')">Show</span>
+              <span class="password-toggle" data-target="password">Show</span>
             </div>
+
             <div class="password-field">
               <input type="password" id="confirmPassword" placeholder="Confirm Password" required />
-              <span class="password-toggle" onclick="togglePassword('confirmPassword')">Show</span>
+              <span class="password-toggle" data-target="confirmPassword">Show</span>
             </div>
             
             <div class="terms-agreement">
@@ -47,9 +49,6 @@
             <div class="buttons">
               <button type="submit" class="signup-btn">Sign Up</button>
               <button type="button" class="login-btn" id="navigateToLoginBtn">Login</button>
-              <button type="button" class="google-btn">
-                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google icon" style="height: 20px; vertical-align: middle;" />
-              </button>
             </div>
           </form>
   
@@ -68,20 +67,6 @@
       </main>
     </div>
 
-    <script>
-      function togglePassword(fieldId) {
-        const passwordField = document.getElementById(fieldId);
-        const toggle = passwordField.nextElementSibling;
-        
-        if (passwordField.type === 'password') {
-          passwordField.type = 'text';
-          toggle.textContent = 'Hide';
-        } else {
-          passwordField.type = 'password';
-          toggle.textContent = 'Show';
-        }
-      }
-    </script>
 
   </body>
   

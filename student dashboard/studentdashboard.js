@@ -1,15 +1,10 @@
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
-
-const supabaseUrl = 'https://uwbkcarkmgawqhzcyrkc.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV3YmtjYXJrbWdhd3FoemN5cmtjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkwNDI0NDAsImV4cCI6MjA2NDYxODQ0MH0.BozcjvIAFN94yzI3KPOAdJrR6BZRsKZgnAVbqYw3b_I';
-const supabase = createClient(supabaseUrl, supabaseKey);
+// --- Supabase Client Initialization ---
+import { supabase } from '../utils/supabaseClient.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
-    // DOM elements
     const nameElement = document.getElementById('studentFullName');
     const emailElement = document.getElementById('studentEmail');
-    const classElement = document.getElementById('studentClassName'); // NEW: Get the class name element
-    const logoutBtn = document.querySelector('.logout-btn');
+    const classElement = document.getElementById('studentClassName');
     const addClassBtn = document.querySelector('.add-class-btn');
     const modal = document.getElementById('classModal');
     const closeBtn = document.querySelector('.modal .close');
@@ -17,10 +12,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     const classCodeInput = document.getElementById('classCodeInput');
     const modalMessage = document.getElementById('modalMessage');
     const radarStatsChartCanvas = document.getElementById('radarStatsChart');
+    const logoutBtn = document.querySelector('.logout-btn');
+    const logoutModal = document.getElementById('logoutModal');
+    const confirmLogoutBtn = document.getElementById('confirmLogoutBtn');
+    const cancelLogoutBtn = document.getElementById('cancelLogoutBtn');
 
     let currentUser = null; // Store user for repeated access
-
-    // --- Authentication and Profile Loading ---
+    
+// ------------------------------------ Authentication and Profile Loading ------------------------------------
     try {
         const { data: { user }, error: userError } = await supabase.auth.getUser();
 
@@ -44,11 +43,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             return;
         }
 
-        // Update the dashboard content with profile data
+// ------------------------------------ Update Dashboard Content ------------------------------------
         if (nameElement) nameElement.textContent = profile.full_name;
         if (emailElement) emailElement.textContent = profile.email;
 
-        // NEW LOGIC: Display current class name
+
+// ------------------------------------ Display Current Class Name ------------------------------------
         if (classElement) { // Ensure the element exists
             if (profile.class_id) {
                 const { data: currentClass, error: classError } = await supabase
@@ -76,13 +76,24 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
-
-    // --- Logout functionality ---
+// ------------------------------------ Logout Functionality ------------------------------------
     if (logoutBtn) {
-        logoutBtn.addEventListener('click', async () => {
+        logoutBtn.addEventListener('click', () => {
+            logoutModal.style.display = 'flex';
+        });
+    }
+    
+    if (cancelLogoutBtn) {
+        cancelLogoutBtn.addEventListener('click', () => {
+            logoutModal.style.display = 'none';
+        });
+    }
+    
+    if (confirmLogoutBtn) {
+        confirmLogoutBtn.addEventListener('click', async () => {
             const { error } = await supabase.auth.signOut();
             if (!error) {
-                window.location.href = '../login folder/second-design/login.html';
+                window.location.href = '/login folder/second-design/login.html';
             } else {
                 alert('Logout failed. Try again.');
                 console.error("Logout error:", error);
@@ -91,7 +102,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
 
-    // --- Add Class (Join Class) Modal Functionality ---
+// ------------------------------------ add class button to open modal ------------------------------------
     if (addClassBtn) {
         addClassBtn.addEventListener('click', () => {
             if (modal) {
@@ -111,7 +122,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Join Class Logic
+// ------------------------------------ joining a class ------------------------------------
     if (joinBtn) {
         joinBtn.addEventListener('click', async () => {
             const inputCode = classCodeInput.value.trim();
@@ -124,7 +135,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 return;
             }
 
-            // 1. Look up the class by class_code
+            // Look up the class by class_code
             const { data: foundClass, error: lookupError } = await supabase
                 .from('classes')
                 .select('id, name') // Only select name, no need for class_code for display here
@@ -140,7 +151,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 return;
             }
 
-            // 2. Update the student's user_profiles table with the found class_id
+            // Update the student's user_profiles table with the found class_id
             const { error: updateError } = await supabase
                 .from('user_profiles')
                 .update({ class_id: foundClass.id })
@@ -155,7 +166,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 return;
             }
 
-            // Success message and UI update
+// ------------------------------------ Success Message and UI Update ------------------------------------
             if (modalMessage) {
                 modalMessage.textContent = `✅ Successfully joined "${foundClass.name}"!`;
                 modalMessage.style.color = 'green';
