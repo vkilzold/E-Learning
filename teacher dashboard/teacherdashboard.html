@@ -37,7 +37,7 @@
             </div>
             <div class="header-actions">
                 <span class="notification-icon">🔔</span>
-                <button class="back-btn" onclick="window.location.href='/login folder/second-design/login.html'">Logout</button>
+                <button class="back-btn" id="logoutBtn">Logout</button>
             </div>
         </header>
 
@@ -110,16 +110,10 @@
                     <p>[Message center coming soon]</p>
                 </div>
             </div>
-
-
-
-
-
-
         </div>
     </main>
 </div>
-
+  <!-- ------------------------------------------Modals------------------------------------------ -->
   <!-- Add Class Modal -->
   <div id="classModal" class="modal">
     <div class="modal-content">
@@ -152,6 +146,17 @@
       <ul id="modalStudentList" class="student-list"></ul>
     </div>
   </div>
+
+  <!-- Logout Confirmation Modal -->
+<div id="logoutModal" class="modal hidden">
+  <div class="modal-content">
+    <p>Are you sure you want to logout?</p>
+    <div class="modal-actions">
+      <button id="confirmLogoutBtn" class="confirm-btn">Yes, Logout</button>
+      <button id="cancelLogoutBtn" class="cancel-btn">Cancel</button>
+    </div>
+  </div>
+</div>
 
 
   <!-- Scripts -->

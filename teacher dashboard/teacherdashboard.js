@@ -1,8 +1,5 @@
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
-
-const supabaseUrl = 'https://uwbkcarkmgawqhzcyrkc.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV3YmtjYXJrbWdhd3FoemN5cmtjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkwNDI0NDAsImV4cCI6MjA2NDYxODQ0MH0.BozcjvIAFN94yzI3KPOAdJrR6BZRsKZgnAVbqYw3b_I';
-const supabase = createClient(supabaseUrl, supabaseKey);
+// --- Supabase Client Initialization ---
+import { supabase } from '../utils/supabaseClient.js';
 
 // Generate random class code
 function generateClassCode() {
@@ -30,6 +27,10 @@ const modalStudentList = document.getElementById('modalStudentList'); // Correct
 const closeViewBtn = document.querySelector('.close-view-btn');
 const viewStudentsBtn = document.getElementById('viewStudentsBtn'); // Correctly targeting the View button by ID
 
+const logoutBtn = document.getElementById('logoutBtn');
+const logoutModal = document.getElementById('logoutModal');
+const confirmLogoutBtn = document.getElementById('confirmLogoutBtn');
+const cancelLogoutBtn = document.getElementById('cancelLogoutBtn');
 
 // --- Declare selectedClassId in a scope accessible by all relevant listeners ---
 let selectedClassId = null; // Initialize as null here, accessible by all functions
@@ -57,6 +58,30 @@ alert("⚠️ Failed to load teacher profile.");
 
 teacherInfo.innerHTML = `<strong>Teacher:</strong> ${profile.full_name}`;
 
+ // ---------------------------------------------Logout part---------------------------------------------
+if (logoutBtn) {
+  logoutBtn.addEventListener('click', () => {
+      logoutModal.style.display = 'flex';
+  });
+}
+
+if (cancelLogoutBtn) {
+  cancelLogoutBtn.addEventListener('click', () => {
+      logoutModal.style.display = 'none';
+  });
+}
+
+if (confirmLogoutBtn) {
+  confirmLogoutBtn.addEventListener('click', async () => {
+      const { error } = await supabase.auth.signOut();
+      if (!error) {
+          window.location.href = '/login folder/second-design/login.html';
+      } else {
+          alert('Logout failed. Try again.');
+          console.error("Logout error:", error);
+      }
+  });
+}
 // ---------------------------------------------Add Class modal---------------------------------------------
 // Show "Add Class" Modal
  addClassBtn.addEventListener('click', () => {

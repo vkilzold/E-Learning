@@ -1,11 +1,8 @@
-// login.js
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+// --- Supabase Client Initialization ---
+import { supabase } from '../../utils/supabaseClient.js';
 
-const supabaseUrl = 'https://uwbkcarkmgawqhzcyrkc.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV3YmtjYXJrbWdhd3FoemN5cmtjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkwNDI0NDAsImV4cCI6MjA2NDYxODQ0MH0.BozcjvIAFN94yzI3KPOAdJrR6BZRsKZgnAVbqYw3b_I'; 
-const supabase = createClient(supabaseUrl, supabaseKey);
-
-
+// These elements are used for interacting with the login form, displaying messages,
+// and navigating to other pages.
 document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('loginForm');
     const message = document.getElementById('message');
@@ -15,6 +12,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const emailInput = document.getElementById('email');
     const passwordInput = document.getElementById('password');
 
+
+// ------------------------------------ Remember me checkbox ------------------------------------
     // Load saved credentials if "Remember me" was checked
     function loadSavedCredentials() {
         const savedEmail = localStorage.getItem('rememberedEmail');
@@ -41,7 +40,8 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.removeItem('rememberedPassword');
         localStorage.removeItem('rememberMe');
     }
-
+    
+// ------------------------------------ User Session Check Function ------------------------------------
     // Check if user was logged out from dashboard
     async function checkIfLoggedOut() {
         try {
@@ -61,6 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+// ------------------------------------  Page Initialization Function ------------------------------------
     // Initialize page
     async function initializePage() {
         // Check if user was logged out first
@@ -88,6 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+// ------------------------------------ Login Button Functionality ------------------------------------
     // Event listener for the Login button
     if (loginButton) {
         loginButton.addEventListener('click', async (e) => {
@@ -123,6 +125,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 email,
                 password,
             });
+
+            // Check for invalid email or password
+            if (error) {
+                if (message) {
+                    message.textContent = '❌ Incorrect email or password.';
+                    message.style.color = 'red';
+                }
+                console.error("Login Error:", error.message);
+                return;
+            }
+            
             // Check email confirmation
             if (!data.user?.email_confirmed_at) { 
                 if (message) {
@@ -132,6 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
+// ------------------------------------ Supabase Authentication ------------------------------------
             // check user profile in public.user_profiles
             const { data: profile, error: profileError } = await supabase
                 .from('user_profiles')
@@ -139,6 +153,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 .eq('id', data.user.id)
                 .single();
 
+// ------------------------------------ Login Error Handling ------------------------------------
             if (profileError) {
                 if (message) {
                     message.textContent = '⚠️ Login failed: user profile not found or access denied (RLS issue?).';
