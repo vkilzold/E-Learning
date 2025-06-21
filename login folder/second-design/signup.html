@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Signup</title>
-  <link rel="stylesheet" href="login.css" />
+  <link rel="stylesheet" href="signup.css" />
   <script type="module" src="signup.js"></script>
 </head>
 <body>
@@ -16,34 +16,40 @@
       <main class="login-section">
         <div class="form-container">
           <h2>Sign Up</h2>
-          <form id="signupForm"> <div class="form-group">
-              <label for="fullName">Full Name:</label>
-              <input type="text" id="fullName" placeholder="Enter your full name" required />
+          <form id="signupForm">
+            <input type="text" id="fullName" placeholder="Full Name" required />
+            <input type="email" id="email" placeholder="Email" required />
+            
+            <div class="password-field">
+              <input type="password" id="password" placeholder="Password" required />
+              <span class="password-toggle" data-target="password">Show</span>
             </div>
-  
-            <div class="form-group">
-              <label for="email">Email:</label>
-              <input type="email" id="email" placeholder="Enter your email" required />
+
+            <div class="password-field">
+              <input type="password" id="confirmPassword" placeholder="Confirm Password" required />
+              <span class="password-toggle" data-target="confirmPassword">Show</span>
             </div>
-  
-            <div class="form-group">
-              <label for="password">Password:</label>
-              <input type="password" id="password" placeholder="Create a password" required />
+            
+            <div class="terms-agreement">
+              <label>
+                <input type="checkbox" id="termsCheckbox" required>
+                I agree with the <a href="#">privacy</a> and <a href="#">policy</a>
+              </label>
             </div>
-  
-            <div class="form-group">
-              <label>Role:</label>
-              <div class="role-selection">
-                <label>
-                  <input type="radio" name="role" value="teacher" id="roleTeacher" checked> Teacher
-                </label>
-                <label>
-                  <input type="radio" name="role" value="student" id="roleStudent"> Student
-                </label>
-              </div>
+            
+            <div class="role-selection">
+              <label>
+                <input type="radio" name="role" value="teacher" id="roleTeacher" checked> Teacher
+              </label>
+              <label>
+                <input type="radio" name="role" value="student" id="roleStudent"> Student
+              </label>
             </div>
-  
-            <button type="submit" class="signup-btn">Sign Up</button>
+            
+            <div class="buttons">
+              <button type="submit" class="signup-btn">Sign Up</button>
+              <button type="button" class="login-btn" id="navigateToLoginBtn">Login</button>
+            </div>
           </form>
   
           <div><p id="message" style="color: red;"></p></div>
@@ -60,6 +66,7 @@
         </div>
       </main>
     </div>
+
 
   </body>
   

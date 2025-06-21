@@ -1,29 +1,103 @@
-// login.js
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+// --- Supabase Client Initialization ---
+import { supabase } from '../../utils/supabaseClient.js';
 
-const supabaseUrl = 'https://uwbkcarkmgawqhzcyrkc.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV3YmtjYXJrbWdhd3FoemN5cmtjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkwNDI0NDAsImV4cCI6MjA2NDYxODQ0MH0.BozcjvIAFN94yzI3KPOAdJrR6BZRsKZgnAVbqYw3b_I'; 
-const supabase = createClient(supabaseUrl, supabaseKey);
-
-
+// These elements are used for interacting with the login form, displaying messages,
+// and navigating to other pages.
 document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('loginForm');
     const message = document.getElementById('message');
     const navigateToSignupBtn = document.getElementById('navigateToSignupBtn');
     const loginButton = document.querySelector('.login-btn'); 
+    const rememberMeCheckbox = document.getElementById('rememberMe');
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
 
 
+// ------------------------------------ Remember me checkbox ------------------------------------
+    // Load saved credentials if "Remember me" was checked
+    function loadSavedCredentials() {
+        const savedEmail = localStorage.getItem('rememberedEmail');
+        const savedPassword = localStorage.getItem('rememberedPassword');
+        const wasRemembered = localStorage.getItem('rememberMe') === 'true';
+        
+        if (wasRemembered && savedEmail && savedPassword) {
+            if (emailInput) emailInput.value = savedEmail;
+            if (passwordInput) passwordInput.value = savedPassword;
+            if (rememberMeCheckbox) rememberMeCheckbox.checked = true;
+        }
+    }
+
+    // Save credentials to localStorage
+    function saveCredentials(email, password) {
+        localStorage.setItem('rememberedEmail', email);
+        localStorage.setItem('rememberedPassword', password);
+        localStorage.setItem('rememberMe', 'true');
+    }
+
+    // Clear saved credentials
+    function clearSavedCredentials() {
+        localStorage.removeItem('rememberedEmail');
+        localStorage.removeItem('rememberedPassword');
+        localStorage.removeItem('rememberMe');
+    }
+    
+// ------------------------------------ User Session Check Function ------------------------------------
+    // Check if user was logged out from dashboard
+    async function checkIfLoggedOut() {
+        try {
+            const { data: { user }, error } = await supabase.auth.getUser();
+            
+            // If no user or error, user was logged out
+            if (error || !user) {
+                // Clear saved credentials when user is logged out
+                clearSavedCredentials();
+                return true;
+            }
+            return false;
+        } catch (err) {
+            // If there's any error, assume user was logged out and clear credentials
+            clearSavedCredentials();
+            return true;
+        }
+    }
+
+// ------------------------------------  Page Initialization Function ------------------------------------
+    // Initialize page
+    async function initializePage() {
+        // Check if user was logged out first
+        const wasLoggedOut = await checkIfLoggedOut();
+        
+        // Only load saved credentials if user wasn't logged out
+        if (!wasLoggedOut) {
+            loadSavedCredentials();
+        }
+    }
+
+    // Initialize the page
+    initializePage();
+
+    // Remember me checkbox event listener
+    if (rememberMeCheckbox) {
+        rememberMeCheckbox.addEventListener('change', () => {
+            if (!rememberMeCheckbox.checked) {
+                // If unchecked, clear saved credentials
+                clearSavedCredentials();
+                // Clear the input fields
+                if (emailInput) emailInput.value = '';
+                if (passwordInput) passwordInput.value = '';
+            }
+        });
+    }
+
+// ------------------------------------ Login Button Functionality ------------------------------------
     // Event listener for the Login button
     if (loginButton) {
         loginButton.addEventListener('click', async (e) => {
             e.preventDefault(); 
 
-            const emailInput = document.getElementById('email'); 
-            const passwordInput = document.getElementById('password'); 
-
             const email = emailInput ? emailInput.value.trim() : '';
             const password = passwordInput ? passwordInput.value.trim() : '';
-
+            const rememberMe = rememberMeCheckbox ? rememberMeCheckbox.checked : false;
 
             if (!email || !password) {
                 if (message) {
@@ -33,12 +107,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
+            // Handle "Remember me" functionality
+            if (rememberMe) {
+                saveCredentials(email, password);
+            } else {
+                clearSavedCredentials();
+            }
+
             // Display "Logging in..." message immediately
             if (message) {
                 message.textContent = 'Logging in...';
                 message.style.color = 'blue';
             }
-
 
             // Log in with Supabase
             const { data, error } = await supabase.auth.signInWithPassword({
@@ -46,15 +126,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 password,
             });
 
+            // Check for invalid email or password
             if (error) {
                 if (message) {
-                    message.textContent = `❌ Login failed: ${error.message}`;
+                    message.textContent = '❌ Incorrect email or password.';
                     message.style.color = 'red';
                 }
-                console.error("Login Error:", error);
+                console.error("Login Error:", error.message);
                 return;
             }
-
+            
             // Check email confirmation
             if (!data.user?.email_confirmed_at) { 
                 if (message) {
@@ -64,6 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
+// ------------------------------------ Supabase Authentication ------------------------------------
             // check user profile in public.user_profiles
             const { data: profile, error: profileError } = await supabase
                 .from('user_profiles')
@@ -71,6 +153,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 .eq('id', data.user.id)
                 .single();
 
+// ------------------------------------ Login Error Handling ------------------------------------
             if (profileError) {
                 if (message) {
                     message.textContent = '⚠️ Login failed: user profile not found or access denied (RLS issue?).';
@@ -90,15 +173,14 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 if (profile.role === 'teacher') {
                     window.location.href = '\\teacher dashboard/teacherdashboard.html';
-                } else {
-                    window.location.href = '\\classcode/classcode.html';
+                } else if (profile.role === 'student') {
+                    window.location.href = '\\student dashboard/dashboard.html';
                 }
             }, 1500);
         });
     } else {
         console.error("Error: Login button with class 'login-btn' not found.");
     }
-
 
     // Event listener for the "Sign up" button (to navigate to signup.html)
     if (navigateToSignupBtn) {

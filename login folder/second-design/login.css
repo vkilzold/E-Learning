@@ -7,10 +7,7 @@
 
 body {
   height: 100vh;
-   background-image: url('/login folder/image/50c2f6d7da1a6765179a9a08837a4fba.jpg');
- background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center;
+  background-color: #1C1D22;
    display: flex;
   justify-content: center;
   align-items: center;
@@ -105,19 +102,93 @@ form a {
   cursor: pointer;
   flex: 1;
 }
-.google-btn {
-  color: white;
-  background-color: white;
+
+.divider {
+  text-align: center;
+  margin: 20px 0 10px 0;
+  position: relative;
+}
+
+.divider span {
+  background-color: #fff;
+  padding: 0 12px;
+  position: relative;
+  z-index: 1;
+  color: #7c3aed;
+  font-size: 14px;
+}
+
+.divider::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background-color: #ccc;
+  z-index: 0;
+}
+
+.social-buttons {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.social-buttons button {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 0;
+  border-radius: 6px;
   border: none;
-  padding: 8px 14px;       
-  border-radius: 30px;     
+  font-size: 15px;
   cursor: pointer;
-  flex: none;             
-  width: auto;       
+  font-weight: 500;
+  transition: background 0.2s, color 0.2s;
+}
+
+.google-btn {
+  background: #fff;
+  border: 2px solid #7c3aed;
+  color: #1C1D22;
+}
+
+.google-btn:hover {
+  background: #f3e8ff;
+  border-color: #5b21b6;
+  color: #5b21b6;
+}
+
+.facebook-btn {
+  background: #fff;
+  color: #7c3aed;
+  border: 2px solid #7c3aed;
+}
+
+.facebook-btn:hover {
+  background: #f3e8ff;
+  border-color: #5b21b6;
+  color: #5b21b6;
+}
+
+.apple-btn {
+  background: #f3f4f6;
+  color: #222;
+  border: 2px solid #7c3aed;
+}
+
+.apple-btn:hover {
+  background: #ede9fe;
+  color: #7c3aed;
+  border-color: #5b21b6;
 }
 
 .footer-links {
-width: 100%;
+  width: 100%;
   max-width: 900px;
   margin: 20px auto 0;
   padding: 10px 20px;
@@ -153,6 +224,41 @@ width: 100%;
   text-align: center;
   font-size: 12px;
   color: #888;
+}
+
+.forgot-remember {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+
+.forgot-remember label,
+.forgot-remember a {
+  margin-bottom: 0;
+}
+
+.forgot-remember input[type="checkbox"] {
+  accent-color: #0073b1;
+  width: 16px;
+  height: 16px;
+  margin-right: 4px;
+  position: static;
+  vertical-align: middle;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.forgot-remember a {
+  color: #0073b1;
+  text-decoration: none;
+  font-size: 14px;
+  margin-left: 10px;
+}
+
+.forgot-remember a:hover {
+  text-decoration: underline;
 }
 
 /* Responsive layout */

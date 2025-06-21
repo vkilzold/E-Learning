@@ -4,95 +4,120 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Teacher Dashboard</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
   <link rel="stylesheet" href="teacherdashboard.css">
 </head>
 <body>
 
-     <div class="top-bar">
-  <button class="back-btn" onclick="window.location.href='index.html'">← Back</button>
+  <div class="dashboard-layout">
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <h1 class="logo">E-Learning</h1>
+        </div>
+        <ul class="nav-links">
+            <li class="active"><a href="#"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+            <li><a href="#"><i class="fas fa-chalkboard-teacher"></i> Classes</a></li>
+            <li><a href="#"><i class="fas fa-user-graduate"></i> Students</a></li>
+            <li><a href="#"><i class="fas fa-folder"></i> Resources</a></li>
+            <li><a href="#"><i class="fas fa-bullhorn"></i> Announcements</a></li>
+            <li><a href="#"><i class="fas fa-envelope"></i> Messages</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="main-header">
+            <div class="teacher-profile">
+                <div class="avatar"></div>
+                <div class="teacher-info">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+            <div class="header-actions">
+                <span class="notification-icon">🔔</span>
+                <button class="back-btn" id="logoutBtn">Logout</button>
+            </div>
+        </header>
+
+        <div class="content-cards">
+            <div class="card performance-card">
+                <div class="section-header">
+                    <h4><i class="icon-performance"></i> Performance Overview</h4>
+                </div>
+                <div class="chart-placeholder">[Graph coming soon]</div>
+            </div>
+
+            <div class="card class-section">
+              <div class="section-header">
+                  <h4><i class="icon-classes"></i> Classes</h4>
+                  <button class="action-btn" id="addClassBtn">+ Add Class</button>
+              </div>
+              <div class="scroll-box" id="classList">
+                  <!-- Dynamically populated -->
+              </div>
+          </div>
+
+            <div class="card student-section">
+              <div class="section-header">
+                  <h4><i class="icon-students"></i> Students</h4>
+                  <div>
+                      <button class="action-btn" id="selectClassBtn">Select Class</button>
+                      <button class="action-btn" id="viewStudentsBtn">View</button>
+                  </div>
+              </div>
+              <div class="scroll-box" id="dashboardStudentList"> </div>
+          </div>
+
+            <div class="card leaderboard-section">
+              <div class="section-header">
+                <h4><i class="icon-leaderboard"></i> Leaderboard</h4>
+                <button class="action-btn">View</button>
+              </div>
+              <div class="scroll-box">
+                <div class="item">Prince Masilac - 180 pts</div>
+                <div class="item">George Sia - 170 pts</div>
+                <div class="item">Andrei Pira - 160 pts</div>
+                <div class="item">George Sia - 170 pts</div>
+                <div class="item">Andrei Pira - 160 pts</div>
+              </div>
+            </div>
+
+            <div class="card resources-card">
+                <div class="section-header">
+                    <h4><i class="icon-resources"></i> Resources</h4>
+                </div>
+                <div class="card-body">
+                    <p>[Upload/Download coming soon]</p>
+                </div>
+            </div>
+
+            <div class="card announcements-card">
+              <div class="section-header">
+                  <h4><i class="icon-announcements"></i> Announcements</h4>
+              </div>
+              <div class="card-body">
+                  <p>No announcements yet.</p>
+              </div>
+          </div>
+
+            <div class="card messages-card">
+                <div class="section-header">
+                    <h4><i class="icon-messages"></i> Messages</h4>
+                </div>
+                <div class="card-body">
+                    <p>[Message center coming soon]</p>
+                </div>
+            </div>
+        </div>
+    </main>
 </div>
-
-  <div class="dashboard-container">
-
-    <!-- Main Grid Row -->
-    <div class="top-row">
-
-      <!-- LEFT SIDE -->
-      <div class="left-profile">
-        
-        <!-- Profile Section -->
-        <div class="profile-box">
-          <div class="avatar"></div>
-          <div class="teacher-info">
-            <strong>Teacher:</strong>
-          </div>
-        </div>
-
-        <!-- Classes Section -->
-        <div class="class-section">
-          <div class="section-header">
-            <h3>Classes</h3>
-            <button class="action-btn">+ Add Class</button>
-          </div>
-          <div class="scroll-box">
-          </div>
-        </div>
-
-        <!-- Badges Section -->
-        <div class="class-section">
-          <div class="section-header">
-            <h3>Badges</h3>
-            <button class="action-btn">+ Add Badge</button>
-          </div>
-          <div class="scroll-box">
-            <div class="item">Top Performer</div>
-            <div class="item">Most Improved</div>
-            <div class="item">Perfect Attendance</div>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- RIGHT SIDE -->
-      <div class="right-content">
-
-        <!-- Leaderboard Section -->
-        <div class="free-section">
-          <div class="section-header">
-            <h3>Leaderboard</h3>
-            <button class="action-btn">View</button>
-          </div>
-          <div class="scroll-box">
-            <div class="item">Prince Masilac - 180 pts</div>
-            <div class="item">George Sia - 170 pts</div>
-            <div class="item">Andrei Pira - 160 pts</div>
-          </div>
-        </div>
-
-        <!-- Students Section -->
-        <div class="student-section">
-          <div class="section-header">
-            <h3>Students</h3>
-            <button class="action-btn">+ Add Student</button>
-          </div>
-          <div class="scroll-box">
-            <div class="item">George Sia</div>
-            <div class="item">Prince Masilac</div>
-            <div class="item">Andrei Pira</div>
-            <div class="item">Lenar Yolola</div>
-          </div>
-        </div>
-
-      </div>
-
-    </div>
-
-  </div>
-    
-  <!-- Modal Popup -->
+  <!-- ------------------------------------------Modals------------------------------------------ -->
+  <!-- Add Class Modal -->
   <div id="classModal" class="modal">
     <div class="modal-content">
-      <span class="close-btn">&times;</span>
+      <span class="close-btn" id="closeAddClass">&times;</span>
       <h2>Add a New Class</h2>
       <form id="addClassForm">
         <label for="className">Class Name:</label>
@@ -102,8 +127,39 @@
     </div>
   </div>
 
+  <!-- Select Class Modal -->
+  <div id="selectClassModal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" id="closeSelectClass">&times;</span>
+      <h2>Select a Class</h2>
+      <div id="classSelectionList">
+        <!-- Class buttons inserted here -->
+      </div>
+    </div>
+  </div>
 
-  <!-- Wag galawin script to ng teacherdashboard sadya to nandine -->
-<script type="module" src="teacherdashboard.js"></script>
+    <!-- View Students Modal -->
+  <div id="viewStudentsModal" class="modal">
+    <div class="modal-content">
+      <span class="close-view-btn">&times;</span>
+      <h2>Students in This Class</h2>
+      <ul id="modalStudentList" class="student-list"></ul>
+    </div>
+  </div>
+
+  <!-- Logout Confirmation Modal -->
+<div id="logoutModal" class="modal hidden">
+  <div class="modal-content">
+    <p>Are you sure you want to logout?</p>
+    <div class="modal-actions">
+      <button id="confirmLogoutBtn" class="confirm-btn">Yes, Logout</button>
+      <button id="cancelLogoutBtn" class="cancel-btn">Cancel</button>
+    </div>
+  </div>
+</div>
+
+
+  <!-- Scripts -->
+  <script type="module" src="teacherdashboard.js"></script>
 </body>
 </html>
