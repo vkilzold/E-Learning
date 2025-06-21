@@ -1,9 +1,6 @@
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
-
-const supabaseUrl = 'https://uwbkcarkmgawqhzcyrkc.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV3YmtjYXJrbWdhd3FoemN5cmtjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkwNDI0NDAsImV4cCI6MjA2NDYxODQ0MH0.BozcjvIAFN94yzI3KPOAdJrR6BZRsKZgnAVbqYw3b_I'; 
-const supabase = createClient(supabaseUrl, supabaseKey);
-
+// --- Supabase Client Initialization ---
+import { supabase } from '../../utils/supabaseClient.js';
+// ------------------------------------ Password eye Function ------------------------------------
 function togglePassword(fieldId) {
   const passwordField = document.getElementById(fieldId);
   const toggle = passwordField.nextElementSibling;
@@ -23,6 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const navigateToLoginBtn = document.getElementById('navigateToLoginBtn');
   const passwordToggles = document.querySelectorAll('.password-toggle');
 
+// ------------------------------------ Navigate to Login Button ------------------------------------
   if (navigateToLoginBtn) {
     navigateToLoginBtn.addEventListener('click', () => {
       window.location.href = 'login.html';
@@ -38,6 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+// ------------------------------------ Signup Form ------------------------------------
   if (signupForm) {
     signupForm.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -50,27 +49,30 @@ document.addEventListener('DOMContentLoaded', () => {
       const roleInput = document.querySelector('input[name="role"]:checked');
       const role = roleInput ? roleInput.value : '';
 
+// ------------------------------------ Checks if all required fields are filled ------------------------------------
       if (!fullName || !email || !password || !confirmPassword || !role) {
         message.textContent = 'Please fill in all required fields.';
         message.style.color = 'red';
         return;
       }
-
+// ------------------------------------ password and confirm password fields match ------------------------------------
       if (password !== confirmPassword) {
         message.textContent = 'Passwords do not match.';
         message.style.color = 'red';
         return;
       }
-
+// ------------------------------------ privacy and policy terms ------------------------------------
       if (!termsCheckbox.checked) {
         message.textContent = 'You must agree to the privacy and policy.';
         message.style.color = 'red';
         return;
       }
 
-      message.textContent = 'Checking for existing email...';
+// ------------------------------------ Display "Signing Up" Message ------------------------------------
+      message.textContent = 'Signing up....';
       message.style.color = 'blue';
 
+// ------------------------------------ Supabase User Registration (Sign Up) ------------------------------------
       //  Check if email already exists in Supabase Auth
       const { data: existingUserData, error: signupTry } = await supabase.auth.signUp({
         email,
@@ -80,6 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       });
 
+// ------------------------------------ Signup Error Handling ------------------------------------
       if (signupTry) {
         if (signupTry.message && signupTry.message.includes('already registered')) {
           message.textContent = '❌ This email is already registered. Try logging in.';
@@ -98,12 +101,13 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
+// ------------------------------------ Signup Success Message ------------------------------------
       // ✅ Success
       message.textContent = '✅ Signup successful! Please check your email. Redirecting...';
       message.style.color = 'green';
       setTimeout(() => {
         window.location.href = 'login.html';
-      }, 1500);
+      }, 1800);
 
       
     });
