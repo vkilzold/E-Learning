@@ -40,7 +40,7 @@
             <div class="header-actions">
                 <span class="notification-icon">🔔</span>
                 <button class="add-class-btn" id="addClassBtn">+ Add Class</button>
-                <button class="logout-btn" onclick="window.location.href='/login folder/second-design/login.html'">Logout</button>
+                <button class="logout-btn" type="button">Logout</button>
             </div>
         </header>
 
@@ -178,6 +178,16 @@
       <input type="text" id="classCodeInput" placeholder="Enter class code" />
       <button id="joinClassBtn">Join</button>
       <p id="modalMessage" style="margin-top: 10px;"></p>
+    </div>
+  </div>
+  <!-- Logout Confirmation Modal -->
+<div id="logoutModal" class="modal hidden">
+    <div class="modal-content">
+      <p>Are you sure you want to logout?</p>
+      <div class="modal-actions">
+        <button id="confirmLogoutBtn" class="confirm-btn">Yes, Logout</button>
+        <button id="cancelLogoutBtn" class="cancel-btn">Cancel</button>
+      </div>
     </div>
   </div>
 

@@ -122,6 +122,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 email,
                 password,
             });
+
+            // Check for invalid email or password
+            if (error) {
+                if (message) {
+                    message.textContent = '❌ Incorrect email or password.';
+                    message.style.color = 'red';
+                }
+                console.error("Login Error:", error.message);
+                return;
+            }
+            
             // Check email confirmation
             if (!data.user?.email_confirmed_at) { 
                 if (message) {

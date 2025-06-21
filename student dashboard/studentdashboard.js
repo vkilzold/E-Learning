@@ -8,8 +8,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // DOM elements
     const nameElement = document.getElementById('studentFullName');
     const emailElement = document.getElementById('studentEmail');
-    const classElement = document.getElementById('studentClassName'); // NEW: Get the class name element
-    const logoutBtn = document.querySelector('.logout-btn');
+    const classElement = document.getElementById('studentClassName');
     const addClassBtn = document.querySelector('.add-class-btn');
     const modal = document.getElementById('classModal');
     const closeBtn = document.querySelector('.modal .close');
@@ -17,6 +16,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     const classCodeInput = document.getElementById('classCodeInput');
     const modalMessage = document.getElementById('modalMessage');
     const radarStatsChartCanvas = document.getElementById('radarStatsChart');
+    const logoutBtn = document.querySelector('.logout-btn');
+    const logoutModal = document.getElementById('logoutModal');
+    const confirmLogoutBtn = document.getElementById('confirmLogoutBtn');
+    const cancelLogoutBtn = document.getElementById('cancelLogoutBtn');
 
     let currentUser = null; // Store user for repeated access
 
@@ -77,12 +80,23 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
 
-    // --- Logout functionality ---
     if (logoutBtn) {
-        logoutBtn.addEventListener('click', async () => {
+        logoutBtn.addEventListener('click', () => {
+            logoutModal.style.display = 'flex';
+        });
+    }
+    
+    if (cancelLogoutBtn) {
+        cancelLogoutBtn.addEventListener('click', () => {
+            logoutModal.style.display = 'none';
+        });
+    }
+    
+    if (confirmLogoutBtn) {
+        confirmLogoutBtn.addEventListener('click', async () => {
             const { error } = await supabase.auth.signOut();
             if (!error) {
-                window.location.href = '../login folder/second-design/login.html';
+                window.location.href = '/login folder/second-design/login.html';
             } else {
                 alert('Logout failed. Try again.');
                 console.error("Logout error:", error);

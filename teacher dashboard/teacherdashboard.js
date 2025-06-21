@@ -30,6 +30,10 @@ const modalStudentList = document.getElementById('modalStudentList'); // Correct
 const closeViewBtn = document.querySelector('.close-view-btn');
 const viewStudentsBtn = document.getElementById('viewStudentsBtn'); // Correctly targeting the View button by ID
 
+const logoutBtn = document.getElementById('logoutBtn');
+const logoutModal = document.getElementById('logoutModal');
+const confirmLogoutBtn = document.getElementById('confirmLogoutBtn');
+const cancelLogoutBtn = document.getElementById('cancelLogoutBtn');
 
 // --- Declare selectedClassId in a scope accessible by all relevant listeners ---
 let selectedClassId = null; // Initialize as null here, accessible by all functions
@@ -57,6 +61,30 @@ alert("⚠️ Failed to load teacher profile.");
 
 teacherInfo.innerHTML = `<strong>Teacher:</strong> ${profile.full_name}`;
 
+ // ---------------------------------------------Logout part---------------------------------------------
+if (logoutBtn) {
+  logoutBtn.addEventListener('click', () => {
+      logoutModal.style.display = 'flex';
+  });
+}
+
+if (cancelLogoutBtn) {
+  cancelLogoutBtn.addEventListener('click', () => {
+      logoutModal.style.display = 'none';
+  });
+}
+
+if (confirmLogoutBtn) {
+  confirmLogoutBtn.addEventListener('click', async () => {
+      const { error } = await supabase.auth.signOut();
+      if (!error) {
+          window.location.href = '/login folder/second-design/login.html';
+      } else {
+          alert('Logout failed. Try again.');
+          console.error("Logout error:", error);
+      }
+  });
+}
 // ---------------------------------------------Add Class modal---------------------------------------------
 // Show "Add Class" Modal
  addClassBtn.addEventListener('click', () => {

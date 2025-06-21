@@ -483,6 +483,27 @@ canvas {
 .modal-content .close:hover {
   color: var(--text-light);
 }
+.modal-actions {
+  margin-top: 20px;
+  display: flex;
+  justify-content:space-evenly;
+}
+.confirm-btn, .cancel-btn {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.confirm-btn {
+  background-color: #e74c3c;
+  color: #fff;
+}
+
+.cancel-btn {
+  background-color: #bdc3c7;
+  color: #333;
+}
 
 /* Responsive Design */
 @media (max-width: 1200px) {
