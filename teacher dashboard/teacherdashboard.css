@@ -24,29 +24,16 @@ body {
   color: var(--text-light);
 }
 
+.dashboard-layout, .main-content {
+  max-width: 1700px;
+  margin: 0 auto;
+}
+
 .dashboard-layout {
   display: flex;
   height: 100vh;
   overflow: hidden;
 }
-
-/* Sidebar */
-.sidebar {
-  width: 250px;
-  background-color: var(--sidebar-bg);
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  overflow-y: auto;
-}
-
-.sidebar-header .logo {
-  font-size: 28px;
-  text-align: center;
-  margin-bottom: 15rem;
-  color: var(--text-light);
-}
-
 .nav-links {
   list-style: none;
 }
@@ -140,20 +127,38 @@ body {
 /* Content Cards Grid */
 .content-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: auto auto;
+  gap: 28px;
+  width: 100%;
+  margin: 0 auto;
+  max-width: 1500px;
+  align-items: stretch;
+  grid-auto-rows: 1fr;
+  justify-content: center;
 }
 
 .card {
   background-color: var(--card-bg);
-  padding: 20px;
+  padding: 28px;
   border-radius: 12px;
   display: flex;
   flex-direction: column;
+  min-width: 500px;
+  min-height: 340px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  font-size: 18px;
+  height: 100%;
 }
 
 .performance-card {
-    grid-column: 1 / -1; /* Span full width */
+  grid-column: 1 / 3;
+}
+
+.leaderboard-section {
+  grid-column: 3 / 4;
 }
 
 .section-header {
@@ -164,7 +169,7 @@ body {
 }
 
 .section-header h4 {
-  font-size: 18px;
+  font-size: 22px;
   display: flex;
   align-items: center;
 }
@@ -201,7 +206,7 @@ body {
 
 /* Scroll box inside cards */
 .scroll-box {
-  max-height: 150px;
+  max-height: 225px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
@@ -356,14 +361,100 @@ body {
   justify-content:space-around;
 }
 
+/* Profile Card Styles (from student dashboard) */
+.profile-card {
+  grid-column: span 1;
+}
+.profile-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  padding: 1rem 0;
+}
+.avatar.large {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background-color: var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3.5rem;
+}
+.avatar.large i {
+  font-size: 4rem;
+}
+.avatar.small {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #1a237e;
+  display: inline-block;
+  margin: 0 0.25rem;
+  border: 2px solid #fff;
+  object-fit: cover;
+  vertical-align: middle;
+}
+.teacher-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+.teacher-info h2 {
+  font-size: 28px;
+  color: var(--text-light);
+  margin-bottom: 6px;
+}
+.teacher-info p {
+  font-size: 18px;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.logout-btn {
+  background-color: transparent;
+  color: var(--text-muted);
+  border: 1px solid var(--border-color);
+  padding: 0.38rem 1rem;
+  border-radius: 5px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.logout-btn:hover {
+  background-color: var(--item-bg);
+  color: var(--text-light);
+}
+
+.leaderboard-section .item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.leaderboard-name {
+  text-align: left;
+}
+
+.leaderboard-points {
+  text-align: right;
+}
 
 /* Responsive */
 @media (max-width: 1200px) {
   .content-cards {
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: auto auto auto;
+  }
+  .performance-card {
+    grid-column: 1 / 3;
   }
 }
-
 
 @media (max-width: 992px) {
     .dashboard-layout {
@@ -388,6 +479,13 @@ body {
     .sidebar-header {
         margin: 0;
     }
+    .content-cards {
+      grid-template-columns: 1fr;
+      grid-template-rows: none;
+    }
+    .card {
+      min-height: 180px;
+    }
 }
 
 @media (max-width: 768px) {
@@ -396,14 +494,14 @@ body {
         align-items: flex-start;
         gap: 10px;
     }
-    .sidebar {
-        flex-direction: column;
-        align-items: flex-start;
-    }
     .nav-links {
         justify-content: flex-start;
     }
     .content-cards {
         grid-template-columns: 1fr;
+        grid-template-rows: auto auto auto auto auto;
+    }
+    .performance-card {
+        grid-column: 1 / 2;
     }
 }

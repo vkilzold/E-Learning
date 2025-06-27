@@ -8,39 +8,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const message = document.getElementById('message');
     const navigateToSignupBtn = document.getElementById('navigateToSignupBtn');
     const loginButton = document.querySelector('.login-btn'); 
-    const rememberMeCheckbox = document.getElementById('rememberMe');
     const emailInput = document.getElementById('email');
     const passwordInput = document.getElementById('password');
 
-
-// ------------------------------------ Remember me checkbox ------------------------------------
-    // Load saved credentials if "Remember me" was checked
-    function loadSavedCredentials() {
-        const savedEmail = localStorage.getItem('rememberedEmail');
-        const savedPassword = localStorage.getItem('rememberedPassword');
-        const wasRemembered = localStorage.getItem('rememberMe') === 'true';
-        
-        if (wasRemembered && savedEmail && savedPassword) {
-            if (emailInput) emailInput.value = savedEmail;
-            if (passwordInput) passwordInput.value = savedPassword;
-            if (rememberMeCheckbox) rememberMeCheckbox.checked = true;
-        }
-    }
-
-    // Save credentials to localStorage
-    function saveCredentials(email, password) {
-        localStorage.setItem('rememberedEmail', email);
-        localStorage.setItem('rememberedPassword', password);
-        localStorage.setItem('rememberMe', 'true');
-    }
-
-    // Clear saved credentials
-    function clearSavedCredentials() {
-        localStorage.removeItem('rememberedEmail');
-        localStorage.removeItem('rememberedPassword');
-        localStorage.removeItem('rememberMe');
-    }
-    
 // ------------------------------------ User Session Check Function ------------------------------------
     // Check if user was logged out from dashboard
     async function checkIfLoggedOut() {
@@ -49,14 +19,11 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // If no user or error, user was logged out
             if (error || !user) {
-                // Clear saved credentials when user is logged out
-                clearSavedCredentials();
                 return true;
             }
             return false;
         } catch (err) {
-            // If there's any error, assume user was logged out and clear credentials
-            clearSavedCredentials();
+            // If there's any error, assume user was logged out
             return true;
         }
     }
@@ -69,6 +36,18 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Only load saved credentials if user wasn't logged out
         if (!wasLoggedOut) {
+            // Load saved credentials if "Remember me" was checked
+            function loadSavedCredentials() {
+                const savedEmail = localStorage.getItem('rememberedEmail');
+                const savedPassword = localStorage.getItem('rememberedPassword');
+                const wasRemembered = localStorage.getItem('rememberMe') === 'true';
+                
+                if (wasRemembered && savedEmail && savedPassword) {
+                    if (emailInput) emailInput.value = savedEmail;
+                    if (passwordInput) passwordInput.value = savedPassword;
+                }
+            }
+
             loadSavedCredentials();
         }
     }
@@ -76,28 +55,24 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize the page
     initializePage();
 
-    // Remember me checkbox event listener
-    if (rememberMeCheckbox) {
-        rememberMeCheckbox.addEventListener('change', () => {
-            if (!rememberMeCheckbox.checked) {
-                // If unchecked, clear saved credentials
-                clearSavedCredentials();
-                // Clear the input fields
-                if (emailInput) emailInput.value = '';
-                if (passwordInput) passwordInput.value = '';
-            }
+    // Prevent form submission and handle it manually
+    if (loginForm) {
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            console.log("Form submission prevented, handling manually");
         });
     }
 
 // ------------------------------------ Login Button Functionality ------------------------------------
     // Event listener for the Login button
     if (loginButton) {
+        console.log("Login button found and event listener attached");
         loginButton.addEventListener('click', async (e) => {
+            console.log("Login button clicked");
             e.preventDefault(); 
 
             const email = emailInput ? emailInput.value.trim() : '';
             const password = passwordInput ? passwordInput.value.trim() : '';
-            const rememberMe = rememberMeCheckbox ? rememberMeCheckbox.checked : false;
 
             if (!email || !password) {
                 if (message) {
@@ -105,13 +80,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     message.style.color = 'red';
                 }
                 return;
-            }
-
-            // Handle "Remember me" functionality
-            if (rememberMe) {
-                saveCredentials(email, password);
-            } else {
-                clearSavedCredentials();
             }
 
             // Display "Logging in..." message immediately
@@ -189,6 +157,19 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     } else {
         console.warn("Warning: navigateToSignupBtn element not found in the DOM.");
+    }
+
+    // Event listener for the "Sign up" link (to navigate to signup.html)
+    const navigateToSignupLink = document.getElementById('navigateToSignupLink');
+    if (navigateToSignupLink) {
+        console.log("Sign up link found and event listener attached");
+        navigateToSignupLink.addEventListener('click', (e) => {
+            console.log("Sign up link clicked, navigating to signup.html");
+            e.preventDefault();
+            window.location.href = 'signup.html';
+        });
+    } else {
+        console.error("Error: navigateToSignupLink element not found in the DOM.");
     }
 
 });
