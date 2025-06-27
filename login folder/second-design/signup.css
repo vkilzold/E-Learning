@@ -19,6 +19,7 @@ body {
   width: 90%;
   max-width: 900px;
   height: auto;
+  margin: 3vh auto;
   background-color: white;
   border-radius: 10px;
   overflow: hidden;
@@ -37,6 +38,7 @@ body {
 .image-section img {
   width: 100%;
   height: 100%;
+  object-fit: cover;
 }
 
 .login-section {
@@ -51,7 +53,8 @@ body {
 .form-container {
   max-width: 350px;
   width: 100%;
-  text-align: center;
+  margin: 0 auto;
+  padding: 0;
 }
 
 h2 {
@@ -248,23 +251,129 @@ form input {
 }
 
 /* Responsive layout */
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   .container {
-    flex-direction: column;
+    max-width: 98vw;
+    width: 100%;
   }
+}
 
+@media (max-width: 600px) {
+  .container {
+    display: block;
+    max-width: 100vw;
+    margin: 0;
+    border-radius: 0;
+  }
   .image-section {
-    width: 100%;
-    padding: 20px;
-    justify-content: center;
+    display: none;
   }
-
   .login-section {
-    width: 100%;
-    padding: 30px 20px;
+    padding: 20px 8px;
   }
+  .form-container {
+    padding: 0;
+  }
+}
 
-  .image-section img {
-    max-width: 150px;
-  }
-} 
+.name-fields input,
+.name-fields .gender-select {
+  flex: 1;
+  min-width: 0;
+  padding: 8px;
+  font-size: 14px;
+  margin-bottom: 0;
+  height: 38px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #fff;
+  color: #333;
+  box-sizing: border-box;
+}
+
+.gender-select {
+  background: #fff;
+  color: #333;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  padding: 8px;
+  height: 38px;
+  box-sizing: border-box;
+  max-width: none;
+  font-family: inherit;
+}
+
+/* Top login link styling */
+.login-link {
+  text-align: right;
+  font-size: 15px;
+  margin-bottom: 18px;
+  color: #444;
+}
+
+.login-link a {
+  color: #7c5cff;
+  text-decoration: underline;
+  font-weight: 500;
+}
+
+/* Name fields side by side */
+.name-fields {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 15px;
+}
+
+.name-fields input {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+/* Gender selection styling */
+.gender-selection {
+  display: flex;
+  gap: 18px;
+  justify-content: flex-start;
+  margin-bottom: 15px;
+}
+
+.gender-selection label {
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Update button style to match the image */
+.signup-btn {
+  background-color: #7c5cff;
+  color: #fff;
+  border: none;
+  font-weight: 500;
+  font-size: 16px;
+  padding: 14px 0;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  transition: background 0.2s;
+}
+
+.signup-btn:hover {
+  background-color: #6847e6;
+}
+
+.login-btn {
+  background: none;
+  color: #7c5cff;
+  border: 1px solid #7c5cff;
+  font-weight: 500;
+  font-size: 16px;
+  padding: 14px 0;
+  border-radius: 8px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.login-btn:hover {
+  background: #f3f0ff;
+  color: #6847e6;
+}

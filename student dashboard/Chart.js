@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
             data: [80, 70, 65, 75, 60, 85],
             fill: true,
             backgroundColor: 'rgba(81, 16, 105, 0.2)',
-            borderColor: '#511069',
+            borderColor: '#fff',
             pointBackgroundColor: '#511069',
             pointBorderColor: '#fff',
             pointHoverBackgroundColor: '#fff',
@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
           plugins: {
             legend: {
               labels: {
-                color: '#511069',
+                color: '#fff',
                 font: { size: 14 }
               }
             }
@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
               angleLines: { color: '#ddd' },
               grid: { color: '#eee' },
               pointLabels: {
-                color: '#333',
+                color: '#fff',
                 font: { size: 10}
               },
               ticks: {
