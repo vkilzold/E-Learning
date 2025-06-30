@@ -84,13 +84,21 @@ form a {
 }
 
 .login-btn {
-  background-color: #0073b1;
+  background-color: #7c3aed;
   color: white;
   border: none;
-  padding: 12px 20px;
-  border-radius: 6px;
+  padding: 14px 0;
+  border-radius: 8px;
   cursor: pointer;
-  flex: 1;
+  width: 100%;
+  font-size: 14px;
+  font-weight: 400;
+  margin-bottom: 14px;
+  transition: background 0.2s;
+}
+
+.login-btn:hover {
+  background-color: #5b21b6;
 }
 
 .signup-btn {
@@ -101,32 +109,6 @@ form a {
   border-radius: 6px;
   cursor: pointer;
   flex: 1;
-}
-
-.divider {
-  text-align: center;
-  margin: 20px 0 10px 0;
-  position: relative;
-}
-
-.divider span {
-  background-color: #fff;
-  padding: 0 12px;
-  position: relative;
-  z-index: 1;
-  color: #7c3aed;
-  font-size: 14px;
-}
-
-.divider::before {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background-color: #ccc;
-  z-index: 0;
 }
 
 .social-buttons {
@@ -149,18 +131,6 @@ form a {
   cursor: pointer;
   font-weight: 500;
   transition: background 0.2s, color 0.2s;
-}
-
-.google-btn {
-  background: #fff;
-  border: 2px solid #7c3aed;
-  color: #1C1D22;
-}
-
-.google-btn:hover {
-  background: #f3e8ff;
-  border-color: #5b21b6;
-  color: #5b21b6;
 }
 
 .facebook-btn {
@@ -228,14 +198,16 @@ form a {
 
 .forgot-remember {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
-  margin-bottom: 20px;
+  margin-bottom: 18px;
   font-size: 14px;
 }
 
-.forgot-remember label,
-.forgot-remember a {
+.forgot-remember label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   margin-bottom: 0;
 }
 
@@ -251,13 +223,38 @@ form a {
 }
 
 .forgot-remember a {
-  color: #0073b1;
+  color: #7c3aed;
   text-decoration: none;
   font-size: 14px;
   margin-left: 10px;
+  margin-bottom: 0;
+  transition: color 0.2s;
 }
 
 .forgot-remember a:hover {
+  color: #5b21b6;
+  text-decoration: underline;
+}
+
+.signup-link-row {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  margin-bottom: 16px;
+  font-size: 14px;
+  color: #888;
+}
+
+.signup-link-row a {
+  color: #7c3aed;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.signup-link-row a:hover {
+  color: #5b21b6;
   text-decoration: underline;
 }
 

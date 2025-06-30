@@ -10,6 +10,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 const scrollBox = document.querySelector('.class-section .scroll-box'); // Main class display
 const studentBox = document.querySelector('.student-section .scroll-box'); // Main student display
 const teacherInfo = document.querySelector('.teacher-info');
+const profileName = document.getElementById('profileName');
+const profileAvatar = document.getElementById('profileAvatar');
+const topbarAvatar = document.getElementById('topbarAvatar');
 
 const addClassBtn = document.getElementById('addClassBtn');
 const addClassForm = document.getElementById('addClassForm');
@@ -44,10 +47,10 @@ if (userError || !user) {
  }
 
  // ---------------------------------------------Profile part---------------------------------------------
- // 👤 Fetch teacher name
+ // �� Fetch teacher name and email
  const { data: profile, error: profileError } = await supabase
  .from('user_profiles')
- .select('full_name')
+ .select('full_name, email')
  .eq('id', user.id)
  .single();
 
@@ -56,7 +59,17 @@ alert("⚠️ Failed to load teacher profile.");
  return;
  }
 
-teacherInfo.innerHTML = `<strong>Teacher:</strong> ${profile.full_name}`;
+// Populate teacher name and email in profile card
+if (profileName) profileName.textContent = profile.full_name;
+const profileEmail = document.getElementById('profileEmail');
+if (profileEmail) profileEmail.textContent = profile.email;
+
+// Set avatar initials (first letter of name)
+const initials = profile.full_name ? profile.full_name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0,2) : 'T';
+if (profileAvatar) {
+  profileAvatar.innerHTML = `<span style='font-size:3rem;font-weight:bold;'>${initials}</span>`;
+}
+if (topbarAvatar) topbarAvatar.textContent = initials;
 
  // ---------------------------------------------Logout part---------------------------------------------
 if (logoutBtn) {
@@ -281,5 +294,158 @@ if (viewStudentsModal) { // Ensure modal exists
  viewStudentsModal.style.display = 'none';
  }
 });
+}
+
+// Performance Chart (dummy data)
+const perfCanvas = document.getElementById('performanceChart');
+if (perfCanvas) {
+  const ctx = perfCanvas.getContext('2d');
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['Class A', 'Class B', 'Class C'],
+      datasets: [
+        {
+          label: 'Math',
+          data: [85, 70, 90],
+          backgroundColor: 'rgba(54, 162, 235, 0.7)'
+        },
+        {
+          label: 'Science',
+          data: [78, 88, 80],
+          backgroundColor: 'rgba(255, 206, 86, 0.7)'
+        },
+        {
+          label: 'English',
+          data: [92, 75, 85],
+          backgroundColor: 'rgba(75, 192, 192, 0.7)'
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: 'top' },
+        title: { display: true, text: 'Class Performance by Subject' }
+      },
+      scales: {
+        y: { beginAtZero: true, max: 100 }
+      }
+    }
+  });
+}
+
+const ctx2 = document.getElementById('studentProficiencyChart');
+if (ctx2) {
+  new Chart(ctx2, {
+    type: 'bar',
+    data: {
+      labels: ['Sabine Klein', 'Dante Podenzana', 'Susan Chan'],
+      datasets: [
+        {
+          label: 'Needing Attention',
+          data: [45, 6, 1],
+          backgroundColor: '#ff6b6b',
+          stack: 'Stack 0',
+          borderRadius: 10,
+          barPercentage: 0.6
+        },
+        {
+          label: 'Working Towards',
+          data: [8, 35, 14],
+          backgroundColor: '#ffd166',
+          stack: 'Stack 0',
+          borderRadius: 10,
+          barPercentage: 0.6
+        },
+        {
+          label: 'Mastered',
+          data: [7, 19, 45],
+          backgroundColor: '#06d6a0',
+          stack: 'Stack 0',
+          borderRadius: 10,
+          barPercentage: 0.6
+        }
+      ]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      plugins: {
+        legend: { position: 'top', labels: { color: '#fff' } },
+        title: { display: true, text: 'Students Proficiency', color: '#fff' },
+        tooltip: {
+          enabled: true,
+          callbacks: {
+            label: function(context) {
+              return `${context.dataset.label}: ${context.parsed.x}`;
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          stacked: true,
+          beginAtZero: true,
+          max: 60,
+          title: { display: true, text: 'Count', color: '#fff' },
+          ticks: { color: '#fff' },
+          grid: { color: '#444' }
+        },
+        y: {
+          stacked: true,
+          title: { display: false },
+          ticks: { color: '#fff' },
+          grid: { color: '#444' }
+        }
+      }
+    }
+  });
+}
+
+const ctx3 = document.getElementById('radarStatsChart');
+if (ctx3) {
+  new Chart(ctx3, {
+    type: 'radar',
+    data: {
+      labels: ['Basic Algebra', 'Fraction', 'Basic Operation', 'Geometry', 'Number theory'],
+      datasets: [{
+        label: 'Skill Scores',
+        data: [80, 70, 65, 75, 60, 85],
+        fill: true,
+        backgroundColor: 'rgba(81, 16, 105, 0.2)',
+        borderColor: '#fff',
+        pointBackgroundColor: '#511069',
+        pointBorderColor: '#fff',
+        pointHoverBackgroundColor: '#fff',
+        pointHoverBorderColor: '#511069'
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          labels: {
+            color: '#fff',
+            font: { size: 14 }
+          }
+        }
+      },
+      scales: {
+        r: {
+          angleLines: { color: '#ddd' },
+          grid: { color: '#eee' },
+          pointLabels: {
+            color: '#fff',
+            font: { size: 10}
+          },
+          ticks: {
+            color: '#999',
+            backdropColor: 'transparent'
+          }
+        }
+      }
+    }
+  });
 }
 });

@@ -15,9 +15,19 @@
       
       <main class="login-section">
         <div class="form-container">
-          <h2>Sign Up</h2>
+          <h2>Create an account</h2>
+          <p class="login-link" style="margin-bottom: 18px; text-align: left;">Already have an account? <a href="login.html">Log in</a></p>
           <form id="signupForm">
-            <input type="text" id="fullName" placeholder="Full Name" required />
+            <div class="name-fields">
+              <input type="text" id="firstName" placeholder="First name" required />
+              <input type="text" id="lastName" placeholder="Last name" required />
+              <select id="gender" name="gender" class="gender-select" required>
+                <option value="" disabled selected>Gender</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
             <input type="email" id="email" placeholder="Email" required />
             
             <div class="password-field">
@@ -33,7 +43,7 @@
             <div class="terms-agreement">
               <label>
                 <input type="checkbox" id="termsCheckbox" required>
-                I agree with the <a href="#">privacy</a> and <a href="#">policy</a>
+                I agree with the <a href="#">Terms & Conditions</a>
               </label>
             </div>
             
@@ -47,8 +57,7 @@
             </div>
             
             <div class="buttons">
-              <button type="submit" class="signup-btn">Sign Up</button>
-              <button type="button" class="login-btn" id="navigateToLoginBtn">Login</button>
+              <button type="submit" class="signup-btn">Create account</button>
             </div>
           </form>
   
@@ -57,9 +66,7 @@
           <div class="footer-links">
             <a href="#">Copyright Policy</a>
             <a href="#">Privacy Policy</a>
-            <a href="#">Send Feedback</a>
             <a href="#">User Agreement</a>
-            <a href="#">Cookie Policy</a>
             <a href="#">Community Guidelines</a>
           </div>
           <p class="copyright">E-Learning © 2025</p>
