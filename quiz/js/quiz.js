@@ -815,10 +815,22 @@ async function checkAnswerAndAnimate() {
   
   // Update database with new mastery status
   try {
+    const { data: { session } } = await supabase.auth.getSession();
+    const studentId = session?.user?.id || null;
+
+    const performanceRecord = {
+      student_id: studentId,
+      question_id: currentQuestion.id,
+      math_topic: currentQuestion[topicColumnName],
+      is_correct: isCorrect,
+      time_taken_seconds: timeSpent,
+      difficulty: currentQuestion.difficulty
+    };
+    
     const { error } = await supabase
-      .from('questions')
-      .update({ "isCorrect": isCorrect ? 'correct' : 'incorrect' })
-      .eq('id', questionId);
+      .from('student_answers')
+      .insert(performanceRecord);
+    
     if (error) {
       console.error('Error updating mastery in database:', error);
     } else {
@@ -830,14 +842,16 @@ async function checkAnswerAndAnimate() {
   
   // Record performance in student_answers table
   try {
+    const { data: { session } } = await supabase.auth.getSession();
+    const studentId = session?.user?.id || null;
+
     const performanceRecord = {
-      user_id: getCurrentUserId(),
+      student_id: studentId,
       question_id: currentQuestion.id,
-      question_difficulty: currentQuestion.difficulty,
-      question_topic: currentQuestion[topicColumnName],
-      isCorrect: isCorrect,
-      time: timeSpent,
-      mastery_level: questionMastery[questionId].correctCount
+      math_topic: currentQuestion[topicColumnName],
+      is_correct: isCorrect,
+      time_taken_seconds: timeSpent,
+      difficulty: currentQuestion.difficulty
     };
     
     const { error: performanceError } = await supabase
@@ -870,14 +884,16 @@ async function checkAnswerAndAnimate() {
     console.error('Failed to record performance:', err);
     
     // Store in localStorage as fallback
+    const { data: { session } } = await supabase.auth.getSession();
+    const studentId = session?.user?.id || null;
+
     const performanceRecord = {
-      user_id: getCurrentUserId(),
+      student_id: studentId,
       question_id: currentQuestion.id,
-      question_difficulty: currentQuestion.difficulty,
-      question_topic: currentQuestion[topicColumnName],
-      isCorrect: isCorrect,
-      time: timeSpent,
-      mastery_level: questionMastery[questionId].correctCount,
+      math_topic: currentQuestion[topicColumnName],
+      is_correct: isCorrect,
+      time_taken_seconds: timeSpent,
+      difficulty: currentQuestion.difficulty,
       timestamp: new Date().toISOString(),
       stored_locally: true
     };
@@ -1175,14 +1191,16 @@ async function handleTimeOut() {
   
   // Record performance in student_answers table for timeout
   try {
+    const { data: { session } } = await supabase.auth.getSession();
+    const studentId = session?.user?.id || null;
+
     const performanceRecord = {
-      user_id: getCurrentUserId(),
+      student_id: studentId,
       question_id: currentQuestion.id,
-      question_difficulty: currentQuestion.difficulty,
-      question_topic: currentQuestion[topicColumnName],
-      isCorrect: false,
-      time: 60, // Full time spent since timeout
-      mastery_level: questionMastery[questionId].correctCount
+      math_topic: currentQuestion[topicColumnName],
+      is_correct: false,
+      time_taken_seconds: 60, // Full time spent since timeout
+      difficulty: currentQuestion.difficulty
     };
     
     const { error: performanceError } = await supabase
@@ -1215,14 +1233,16 @@ async function handleTimeOut() {
     console.error('Failed to record timeout performance:', err);
     
     // Store in localStorage as fallback
+    const { data: { session } } = await supabase.auth.getSession();
+    const studentId = session?.user?.id || null;
+
     const performanceRecord = {
-      user_id: getCurrentUserId(),
+      student_id: studentId,
       question_id: currentQuestion.id,
-      question_difficulty: currentQuestion.difficulty,
-      question_topic: currentQuestion[topicColumnName],
-      isCorrect: false,
-      time: 60, // Full time spent since timeout
-      mastery_level: questionMastery[questionId].correctCount,
+      math_topic: currentQuestion[topicColumnName],
+      is_correct: false,
+      time_taken_seconds: 60, // Full time spent since timeout
+      difficulty: currentQuestion.difficulty,
       timestamp: new Date().toISOString(),
       stored_locally: true
     };
