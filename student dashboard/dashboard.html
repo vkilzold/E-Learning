@@ -3,47 +3,166 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>E-Learning Gamification</title>
+  <title>Student Dashboard - E-Learning</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
   <link rel="stylesheet" href="dashboard.css" />
   <script src="Chart.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <div class="container">
-      <div class="avatar"></div>
-      <div class="user-id">ID: student_001</div>
-      <button class="logout-btn">Logout</button>
+  <div class="dashboard-layout">
+    <!-- Main Content Only, no sidebar -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="main-header">
+                    <h1>Student Profile</h1>
+             
+            <div class="header-actions">
+                <button class="add-class-btn" id="addClassBtn">+ Add Class</button>
+                <button class="play-btn" onclick="window.location.href='../quiz/title.html'"><i class="fas fa-play"></i> Play</button>
+                <button class="logout-btn" type="button">Logout</button>
+                <div class="avatar small"></div>
+            </div>
+        </header>
 
-    <!-- Main Content -->
-    <div class="main">
-      <div class="header">Learning Dashboard</div>
+        <div class="content-cards">
+            <!-- Profile Card First -->
+            <div class="card profile-card">
+                <div class="section-header">
+                    <h4><i class="fas fa-user"></i> Profile Info</h4>
+                </div>
+                <div class="profile-section">
+                    <div class="avatar large"><i class="fas fa-user"></i></div>
+                    <div class="student-info">
+                        <h2 id="studentFullName">Student Name</h2>
+                        <p id="studentEmail">student@email.com</p>
+                        <p id="studentClassName">Class: Not assigned</p>
+                        <button class="edit-profile-btn"><i class="fas fa-edit"></i> Edit Profile</button>
+                    </div>
+                </div>
+            </div>
 
-      <!-- Stats Grid -->
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-number">120</div>
-          <div class="stat-label">Learning Time</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-number">15</div>
-          <div class="stat-label">Subjects</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-number">42</div>
-          <div class="stat-label">Achievements</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-number">89%</div>
-          <div class="stat-label">Progress</div>
-        </div>
-      </div>
+            <!-- Top Row: 2 Cards -->
+            <div class="card stats-card">
+                <div class="section-header">
+                    <h4><i class="fas fa-play"></i> Learning Statistics</h4>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-number">120</div>
+                        <div class="stat-label">Learning Time (hrs)</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">15</div>
+                        <div class="stat-label">Subjects</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">42</div>
+                        <div class="stat-label">Achievements</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">89%</div>
+                        <div class="stat-label">Progress</div>
+                    </div>
+                </div>
+            </div>
 
-      <!-- Radar Placeholder -->
-      <div class="radar-chart">
-  <canvas id="radarStatsChart"></canvas>
-      </div>
-</div>
+            <div class="card leaderboard-section">
+                <div class="section-header">
+                    <h4><i class="fas fa-trophy"></i> Leaderboard</h4>
+                    <button class="action-btn">View All</button>
+                </div>
+                <div class="scroll-box">
+                    <div class="item"><span class="leaderboard-name">1. Roldan Aguila</span><span class="leaderboard-points">4520 pts</span></div>
+                    <div class="item"><span class="leaderboard-name">2. Lorens Mangubat</span><span class="leaderboard-points">4300 pts</span></div>
+                    <div class="item"><span class="leaderboard-name">3. Arvin Pira</span><span class="leaderboard-points">4180 pts</span></div>
+                    <div class="item"><span class="leaderboard-name">4. Arjhay Calaguan</span><span class="leaderboard-points">3900 pts</span></div>
+                    <div class="item"><span class="leaderboard-name">5. Steph Mendoza</span><span class="leaderboard-points">3420 pts</span></div>
+                </div>
+            </div>
+
+            <div class="card written-stats-card">
+                <div class="section-header">
+                    <h4><i class="fas fa-clipboard-list"></i> Academic Summary</h4>
+                </div>
+                <div class="stats-list">
+                    <div class="stat-row">
+                        <span class="stat-label">Quizzes Completed:</span>
+                        <span class="stat-value">18</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Exams Taken:</span>
+                        <span class="stat-value">5</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Average Score:</span>
+                        <span class="stat-value">89%</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Last Active:</span>
+                        <span class="stat-value">June 16, 2025</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Row: 2 Cards -->
+            <div class="card activity-card">
+                <div class="section-header">
+                    <h4><i class="fas fa-clock"></i> Recent Activity</h4>
+                </div>
+                <div class="activity-list">
+                    <div class="activity-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Completed Math Quiz - 95%</span>
+                        <small>2 hours ago</small>
+                    </div>
+                    <div class="activity-item">
+                        <i class="fas fa-book"></i>
+                        <span>Started Science Module 3</span>
+                        <small>1 day ago</small>
+                    </div>
+                    <div class="activity-item">
+                        <i class="fas fa-trophy"></i>
+                        <span>Earned "Math Master" badge</span>
+                        <small>3 days ago</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card performance-card">
+                <div class="section-header">
+                    <h4><i class="fas fa-chart-line"></i> Performance Overview</h4>
+                </div>
+                <div class="radar-chart">
+                    <canvas id="radarStatsChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </main>
+  </div>
+
+  <!-- Modal pop up-->
+  <div id="classModal" class="modal hidden">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h3>Join a Class</h3>
+      <input type="text" id="classCodeInput" placeholder="Enter class code" />
+      <button id="joinClassBtn">Join</button>
+      <p id="modalMessage" style="margin-top: 10px;"></p>
     </div>
   </div>
+  <!-- Logout Confirmation Modal -->
+<div id="logoutModal" class="modal hidden">
+    <div class="modal-content">
+      <p>Are you sure you want to logout?</p>
+      <div class="modal-actions">
+        <button id="confirmLogoutBtn" class="confirm-btn">Yes, Logout</button>
+        <button id="cancelLogoutBtn" class="cancel-btn">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script type="module" src="studentdashboard.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </body>
 </html>

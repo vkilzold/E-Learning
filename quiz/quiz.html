@@ -3,42 +3,51 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="quiz.css" />
+  <link rel="stylesheet" href="css/quiz.css" />
   <link href="https://fonts.googleapis.com/css2?family=Jersey+10&family=Pixelify+Sans:wght@400;700&display=swap" rel="stylesheet">
   <title>InQUIZition</title>
 </head>
 <body>
   <div class="quiz-section">
     <div class="container">
-      <div class="title">
-        <h1>Round 1</h1>
-        <h2>Question 1</h2>
-        <div class="quiz-content">
-            <h3 id="question">Loading question...</h3>
-            <ul class="choices">
-              <li class="choice" data-choice="A" id="firstChoice"></li>
-              <li class="choice" data-choice="B" id="secondChoice"></li>
-              <li class="choice" data-choice="C" id="thirdChoice"></li>
-              <li class="choice" data-choice="D" id="fourthChoice"></li>
-            </ul>
-          </div>
-      </div>
-      <div id="loadingPopup" class="loading-popup hidden">
-        <div class="popup-content">
-          <p>Loading...</p>
-        </div>
-      </div>      
-      <div class="play-button">
-        <button class = "playButton" id="playButton">
-          <img src="playBtn.png" alt="Play" class="button-bg" />
-          <span></span></button>
-      </div>
       <div class="score">
-        <p class ="temp-score" id = "temp-score">llll</p>
+        <p class ="temp-score" id = "temp-score">0</p>
+        <span id="streak-fire" class="streak-fire" style="display:none;">🔥</span>
+        <div id="score-animation"></div>
+      </div>
+      <span id="timer-number" class="timer-number">30</span>
+      <div class="content-area">
+        <div class="quiz-main-content" id="quiz-main-content">
+          <div class="title">
+            <h1>Round 1</h1>
+            <h2>Question 1</h2>
+            <div class="quiz-content">
+              <h3 id="question">Loading question...</h3>
+              <ul class="choices">
+                <li class="choice" data-choice="A" id="firstChoice"></li>
+                <li class="choice" data-choice="B" id="secondChoice"></li>
+                <li class="choice" data-choice="C" id="thirdChoice"></li>
+                <li class="choice" data-choice="D" id="fourthChoice"></li>
+              </ul>
+            </div>
+          </div>
+          <div class="play-button">
+            <button class = "playButton" id="playButton">
+              <img src="assets/buttons/playBtn.png" alt="Play" class="button-bg" />
+              <span></span></button>
+          </div>
+        </div>
+        <div id="loadingPopup" class="loading-popup hidden">
+          <div class="popup-content">
+            <div class="popup-spinner"></div>
+            <p>Loading next question...</p>
+          </div>
+        </div>
+        <div id="end-message" class="end-message" style="display:none;"></div>
       </div>
       <canvas id="gameCanvas"></canvas>
     </div>
   </div>
-  <script type="module" src="quiz.js"></script>
-</body>
+  <script type="module" src="js/quiz.js"></script>
+  </body>
 </html>

@@ -1,37 +1,119 @@
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+// --- Supabase Client Initialization ---
+import { supabase } from '../../utils/supabaseClient.js';
 
-const supabaseUrl = 'https://uwbkcarkmgawqhzcyrkc.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV3YmtjYXJrbWdhd3FoemN5cmtjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkwNDI0NDAsImV4cCI6MjA2NDYxODQ0MH0.BozcjvIAFN94yzI3KPOAdJrR6BZRsKZgnAVbqYw3b_I'; 
-const supabase = createClient(supabaseUrl, supabaseKey);
+// ------------------------------------ Password eye Function ------------------------------------
+function togglePassword(fieldId) {
+  const passwordField = document.getElementById(fieldId);
+  const toggle = passwordField.nextElementSibling;
 
-const signupForm = document.getElementById('signupForm');
-const message = document.getElementById('message');
+  if (passwordField.type === 'password') {
+    passwordField.type = 'text';
+    toggle.textContent = 'Hide';
+  } else {
+    passwordField.type = 'password';
+    toggle.textContent = 'Show';
+  }
+}
 
-signupForm.addEventListener('submit', async (e) => {
-  e.preventDefault();
+document.addEventListener('DOMContentLoaded', () => {
+  const signupForm = document.getElementById('signupForm');
+  const message = document.getElementById('message');
+  const navigateToLoginBtn = document.getElementById('navigateToLoginBtn');
+  const passwordToggles = document.querySelectorAll('.password-toggle');
 
-  const fullName = document.getElementById('fullName').value.trim();
-  const email = document.getElementById('email').value.trim();
-  const password = document.getElementById('password').value.trim();
-  const role = document.querySelector('input[name="role"]:checked').value;
-
-  // Sign up using Supabase Auth
-  console.log("Signing up with:", email, password, fullName, role);
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      data: { full_name: fullName, role: role }
-    }
-  });
-  console.log("Supabase response:", data, error);
-
-
-  if (error) {
-    message.textContent = `❌ Signup failed: ${error.message}`;
-    return;
+  // ------------------------------------ Navigate to Login Button ------------------------------------
+  if (navigateToLoginBtn) {
+    navigateToLoginBtn.addEventListener('click', () => {
+      window.location.href = 'login.html';
+    });
   }
 
-  message.style.color = 'green';
-  message.textContent = `✅ Signup successful! Please check your email to verify.`;
+  passwordToggles.forEach(toggle => {
+    toggle.addEventListener('click', () => {
+      const targetFieldId = toggle.dataset.target;
+      if (targetFieldId) {
+        togglePassword(targetFieldId);
+      }
+    });
+  });
+
+  // ------------------------------------ Signup Form ------------------------------------
+  if (signupForm) {
+    signupForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      // ✅ Define variables properly
+      const firstName = document.getElementById('firstName').value.trim();
+      const lastName = document.getElementById('lastName').value.trim();
+      const fullName = `${firstName} ${lastName}`;
+      const gender = document.getElementById('gender').value;
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value.trim();
+      const confirmPassword = document.getElementById('confirmPassword').value.trim();
+      const termsCheckbox = document.getElementById('termsCheckbox');
+      const roleInput = document.querySelector('input[name="role"]:checked');
+      const role = roleInput ? roleInput.value : '';
+
+      // ------------------------------------ Checks if all required fields are filled ------------------------------------
+      if (!firstName || !lastName || !gender || !email || !password || !confirmPassword || !role) {
+        message.textContent = 'Please fill in all required fields.';
+        message.style.color = 'red';
+        return;
+      }
+
+      // ------------------------------------ password and confirm password fields match ------------------------------------
+      if (password !== confirmPassword) {
+        message.textContent = 'Passwords do not match.';
+        message.style.color = 'red';
+        return;
+      }
+
+      // ------------------------------------ privacy and policy terms ------------------------------------
+      if (!termsCheckbox.checked) {
+        message.textContent = 'You must agree to the privacy and policy.';
+        message.style.color = 'red';
+        return;
+      }
+
+      // ------------------------------------ Display "Signing Up" Message ------------------------------------
+      message.textContent = 'Signing up....';
+      message.style.color = 'blue';
+
+      // ------------------------------------ Supabase User Registration (Sign Up) ------------------------------------
+      const { data: existingUserData, error: signupError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            first_name: firstName,
+            last_name: lastName,
+            full_name: fullName,
+            gender: gender,
+            role: role
+          }
+        }
+      });
+
+      // ------------------------------------ Signup Error Handling ------------------------------------
+      if (signupError) {
+        message.textContent = `❌ Signup failed: ${signupError.message}`;
+        message.style.color = 'red';
+        return;
+      }
+
+      if (!existingUserData || !existingUserData.user) {
+        message.textContent = '❌ Signup failed: Unexpected error.';
+        message.style.color = 'red';
+        return;
+      }
+
+      // ✅ Success (no need for manual insert because your DB trigger should handle it)
+      message.textContent = '✅ Signup successful! Please check your email. Redirecting...';
+      message.style.color = 'green';
+
+      setTimeout(() => {
+        window.location.href = 'login.html';
+      }, 1800);
+    });
+  }
 });

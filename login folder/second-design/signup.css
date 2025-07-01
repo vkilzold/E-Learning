@@ -1,0 +1,379 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+body {
+  height: 100vh;
+  background-color: #1C1D22;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.container {
+  display: flex;
+  width: 90%;
+  max-width: 900px;
+  height: auto;
+  margin: 3vh auto;
+  background-color: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Left side image section */
+.image-section {
+  flex: 1;
+  background: #005582;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.image-section img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.login-section {
+  flex: 2;
+  background-color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 30px;
+}
+
+.form-container {
+  max-width: 350px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0;
+}
+
+h2 {
+  font-size: 40px;
+  margin-bottom: 20px;
+  color: #0073b1;
+}
+
+/* Form group styles */
+.form-group {
+  margin-bottom: 15px;
+  text-align: left;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  color: #333;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+form input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+/* Password field with Show/Hide toggle */
+.password-field {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.password-field input {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  margin-bottom: 0;
+  flex-grow: 1;
+}
+
+.password-field input:focus {
+  outline: none;
+}
+
+.password-toggle {
+  padding: 0 12px;
+  cursor: pointer;
+  color: #0073b1;
+  font-size: 14px;
+  user-select: none;
+  white-space: nowrap;
+  opacity: 0; /* Hidden by default */
+  pointer-events: none;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.password-field input:not(:placeholder-shown) + .password-toggle {
+  opacity: 1; /* Show when there is text */
+  pointer-events: auto;
+}
+
+/* Role selection styles */
+.role-selection {
+  display: flex;
+  gap: 20px;
+  margin: 15px 0;
+  justify-content: center;
+}
+
+.role-selection label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: normal;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.role-selection input[type="radio"] {
+  width: auto;
+  margin: 0;
+}
+
+.terms-agreement {
+  margin: 15px 0;
+  text-align: left;
+}
+
+.terms-agreement label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #333;
+  cursor: pointer;
+}
+
+.terms-agreement input[type="checkbox"] {
+  width: auto;
+  margin: 0;
+}
+
+.terms-agreement a {
+  color: #0073b1;
+  text-decoration: none;
+}
+
+.terms-agreement a:hover {
+  text-decoration: underline;
+}
+
+.buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.login-btn {
+  background-color: #0073b1;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  flex: 1;
+}
+
+.signup-btn {
+  background-color: white;
+  color: #0073b1;
+  border: 1px solid #0073b1;
+  padding: 12px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  flex: 1;
+}
+
+.google-btn {
+  color: white;
+  background-color: white;
+  border: none;
+  padding: 8px 14px;       
+  border-radius: 30px;     
+  cursor: pointer;
+  flex: none;             
+  width: auto;       
+}
+
+.footer-links {
+  width: 100%;
+  max-width: 900px;
+  margin: 20px auto 0;
+  padding: 10px 20px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: #888;
+  background: transparent;
+  text-align: center;
+}
+
+.footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 15px;
+  justify-content: center;
+  flex: 1;
+}
+
+.footer-links a {
+  color: #666;
+  text-decoration: none;
+  font-size: 12px;
+}
+
+.footer-links a:hover {
+  text-decoration: underline;
+}
+
+.copyright {
+  text-align: center;
+  font-size: 12px;
+  color: #888;
+}
+
+/* Responsive layout */
+@media (max-width: 900px) {
+  .container {
+    max-width: 98vw;
+    width: 100%;
+  }
+}
+
+@media (max-width: 600px) {
+  .container {
+    display: block;
+    max-width: 100vw;
+    margin: 0;
+    border-radius: 0;
+  }
+  .image-section {
+    display: none;
+  }
+  .login-section {
+    padding: 20px 8px;
+  }
+  .form-container {
+    padding: 0;
+  }
+}
+
+.name-fields input,
+.name-fields .gender-select {
+  flex: 1;
+  min-width: 0;
+  padding: 8px;
+  font-size: 14px;
+  margin-bottom: 0;
+  height: 38px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #fff;
+  color: #333;
+  box-sizing: border-box;
+}
+
+.gender-select {
+  background: #fff;
+  color: #333;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  padding: 8px;
+  height: 38px;
+  box-sizing: border-box;
+  max-width: none;
+  font-family: inherit;
+}
+
+/* Top login link styling */
+.login-link {
+  text-align: right;
+  font-size: 15px;
+  margin-bottom: 18px;
+  color: #444;
+}
+
+.login-link a {
+  color: #7c5cff;
+  text-decoration: underline;
+  font-weight: 500;
+}
+
+/* Name fields side by side */
+.name-fields {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 15px;
+}
+
+.name-fields input {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+/* Gender selection styling */
+.gender-selection {
+  display: flex;
+  gap: 18px;
+  justify-content: flex-start;
+  margin-bottom: 15px;
+}
+
+.gender-selection label {
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Update button style to match the image */
+.signup-btn {
+  background-color: #7c5cff;
+  color: #fff;
+  border: none;
+  font-weight: 500;
+  font-size: 16px;
+  padding: 14px 0;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  transition: background 0.2s;
+}
+
+.signup-btn:hover {
+  background-color: #6847e6;
+}
+
+.login-btn {
+  background: none;
+  color: #7c5cff;
+  border: 1px solid #7c5cff;
+  font-weight: 500;
+  font-size: 16px;
+  padding: 14px 0;
+  border-radius: 8px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.login-btn:hover {
+  background: #f3f0ff;
+  color: #6847e6;
+}
