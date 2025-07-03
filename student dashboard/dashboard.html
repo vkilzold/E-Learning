@@ -17,9 +17,8 @@
                     <h1>Student Profile</h1>
              
             <div class="header-actions">
-                <button class="add-class-btn" id="addClassBtn">+ Add Class</button>
-                <button class="play-btn" onclick="window.location.href='../quiz/title.html'"><i class="fas fa-play"></i> Play</button>
-                <button class="logout-btn" type="button">Logout</button>
+                <button class="dark-mode-toggle" title="Toggle dark mode" style="background: none; border: none; font-size: 1.3rem; cursor: pointer; margin-right: 0.5rem;"><i class="fas fa-moon"></i></button>
+                <button class="logout-btn" id="logoutBtn"><i class="fas fa-trophy"></i>&nbsp;Logout</button>
                 <div class="avatar small"></div>
             </div>
         </header>
@@ -28,23 +27,29 @@
             <!-- Profile Card First -->
             <div class="card profile-card">
                 <div class="section-header">
-                    <h4><i class="fas fa-user"></i> Profile Info</h4>
+                    <h4><i class="fas fa-trophy"></i> Profile Info</h4>
+                    <div style="display: flex; gap: 0.5rem;">
+                      <button class="add-class-btn" id="addClassBtn">+ Add Class</button>
+                      <button class="play-btn" onclick="window.location.href='../quiz/title.html'"><i class="fas fa-gamepad"></i> Play</button>
+                    </div>
                 </div>
                 <div class="profile-section">
-                    <div class="avatar large"><i class="fas fa-user"></i></div>
-                    <div class="student-info">
-                        <h2 id="studentFullName">Student Name</h2>
-                        <p id="studentEmail">student@email.com</p>
-                        <p id="studentClassName">Class: Not assigned</p>
-                        <button class="edit-profile-btn"><i class="fas fa-edit"></i> Edit Profile</button>
-                    </div>
+                  <div class="profile-avatar-col" style="display: flex; flex-direction: column; align-items: center;">
+                    <div class="avatar large"><i class="fas fa-star"></i></div>
+                    <button class="edit-profile-btn" style="margin-top: 1rem;"><i class="fas fa-award"></i> Edit Profile</button>
+                  </div>
+                  <div class="student-info">
+                    <h2 id="studentFullName">Student Name</h2>
+                    <p id="studentEmail">student@email.com</p>
+                    <p id="studentClassName">Class: Not assigned</p>
+                  </div>
                 </div>
             </div>
 
             <!-- Top Row: 2 Cards -->
             <div class="card stats-card">
                 <div class="section-header">
-                    <h4><i class="fas fa-play"></i> Learning Statistics</h4>
+                    <h4><i class="fas fa-star"></i> Learning Statistics</h4>
                 </div>
                 <div class="stats-grid">
                     <div class="stat-item">
@@ -68,7 +73,7 @@
 
             <div class="card leaderboard-section">
                 <div class="section-header">
-                    <h4><i class="fas fa-trophy"></i> Leaderboard</h4>
+                    <h4><i class="fas fa-medal"></i> Leaderboard</h4>
                     <button class="action-btn">View All</button>
                 </div>
                 <div class="scroll-box">
@@ -82,7 +87,7 @@
 
             <div class="card written-stats-card">
                 <div class="section-header">
-                    <h4><i class="fas fa-clipboard-list"></i> Academic Summary</h4>
+                    <h4><i class="fas fa-award"></i> Academic Summary</h4>
                 </div>
                 <div class="stats-list">
                     <div class="stat-row">
@@ -107,16 +112,16 @@
             <!-- Bottom Row: 2 Cards -->
             <div class="card activity-card">
                 <div class="section-header">
-                    <h4><i class="fas fa-clock"></i> Recent Activity</h4>
+                    <h4><i class="fas fa-gamepad"></i> Recent Activity</h4>
                 </div>
                 <div class="activity-list">
                     <div class="activity-item">
-                        <i class="fas fa-check-circle"></i>
+                        <i class="fas fa-star"></i>
                         <span>Completed Math Quiz - 95%</span>
                         <small>2 hours ago</small>
                     </div>
                     <div class="activity-item">
-                        <i class="fas fa-book"></i>
+                        <i class="fas fa-gamepad"></i>
                         <span>Started Science Module 3</span>
                         <small>1 day ago</small>
                     </div>
@@ -130,7 +135,7 @@
 
             <div class="card performance-card">
                 <div class="section-header">
-                    <h4><i class="fas fa-chart-line"></i> Performance Overview</h4>
+                    <h4><i class="fas fa-gem"></i> Performance Overview</h4>
                 </div>
                 <div class="radar-chart">
                     <canvas id="radarStatsChart"></canvas>
@@ -164,5 +169,14 @@
   <!-- Scripts -->
   <script type="module" src="studentdashboard.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    const toggleBtn = document.querySelector('.dark-mode-toggle');
+    toggleBtn.addEventListener('click', () => {
+      const root = document.documentElement;
+      const isDark = root.getAttribute('data-theme') === 'dark';
+      root.setAttribute('data-theme', isDark ? 'light' : 'dark');
+      toggleBtn.innerHTML = isDark ? '<i class="fas fa-moon"></i>' : '<i class="fas fa-sun"></i>';
+    });
+  </script>
 </body>
 </html>

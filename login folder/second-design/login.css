@@ -7,19 +7,19 @@
 
 body {
   height: 100vh;
-  background-color: #1C1D22;
-   display: flex;
+  background-color: #8AA8AB;
+  display: flex;
   justify-content: center;
   align-items: center;
-  padding: 20px;
+  padding: 0;
 }
 
 .container {
   display: flex;
-  width: 90%;
-  max-width: 900px;
-  height: auto;
-  background-color: white;
+  width: 80%;
+  max-width: 1000px;
+  height: 550px;
+  background-color: #5D7C8C;
   border-radius: 10px;
   overflow: hidden;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
@@ -262,6 +262,10 @@ form a {
 @media (max-width: 768px) {
   .container {
     flex-direction: column;
+    width: 95vw;
+    height: auto;
+    min-width: 300px;
+    max-width: 98vw;
   }
 
   .image-section {
@@ -278,4 +282,17 @@ form a {
   .image-section img {
     max-width: 150px;
   }
+}
+
+.branding {
+  position: absolute;
+  top: 30px;
+  left: 40px;
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #fff;
+  letter-spacing: 2px;
+  z-index: 10;
+  text-shadow: 1px 1px 8px #005582;
+  font-family: 'Press Start 2P', monospace;
 }
