@@ -337,6 +337,8 @@ if (perfCanvas) {
 
 const ctx2 = document.getElementById('studentProficiencyChart');
 if (ctx2) {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  const textColor = isDark ? '#fff' : '#222';
   new Chart(ctx2, {
     type: 'bar',
     data: {
@@ -372,8 +374,8 @@ if (ctx2) {
       indexAxis: 'y',
       responsive: true,
       plugins: {
-        legend: { position: 'top', labels: { color: '#fff' } },
-        title: { display: true, text: 'Students Proficiency', color: '#fff' },
+        legend: { position: 'top', labels: { color: textColor } },
+        title: { display: true, text: 'Students Proficiency', color: textColor },
         tooltip: {
           enabled: true,
           callbacks: {
@@ -388,14 +390,14 @@ if (ctx2) {
           stacked: true,
           beginAtZero: true,
           max: 60,
-          title: { display: true, text: 'Count', color: '#fff' },
-          ticks: { color: '#fff' },
+          title: { display: true, text: 'Count', color: textColor },
+          ticks: { color: textColor },
           grid: { color: '#444' }
         },
         y: {
           stacked: true,
           title: { display: false },
-          ticks: { color: '#fff' },
+          ticks: { color: textColor },
           grid: { color: '#444' }
         }
       }
@@ -427,7 +429,7 @@ if (ctx3) {
         legend: {
           labels: {
             color: '#fff',
-            font: { size: 14 }
+            font: { size: 16 }
           }
         }
       },
@@ -437,7 +439,7 @@ if (ctx3) {
           grid: { color: '#eee' },
           pointLabels: {
             color: '#fff',
-            font: { size: 10}
+            font: { size: 14}
           },
           ticks: {
             color: '#999',
