@@ -336,12 +336,16 @@ function startQuiz() {
 
 // ---------------------- Initialize ----------------------
 document.addEventListener("DOMContentLoaded", async () => {
-  // Load progress from student_answers table for the current user
-  await progressManager.updateProgressFromStudentAnswers();
-  
   // Check for quiz attempts from quiz page
   const quizAttempts = JSON.parse(localStorage.getItem('currentQuizAttempts') || '[]');
+  const progressContent = document.querySelector('.progress-content');
+  // Remove any previous summary message
+  const prevMsg = document.getElementById('quiz-summary-message');
+  if (prevMsg) prevMsg.remove();
+
   if (quizAttempts.length > 0) {
+    // Load progress from student_answers table for the current user
+    await progressManager.updateProgressFromStudentAnswers();
     // Process the attempts
     for (const attempt of quizAttempts) {
       await progressManager.recordQuestionAttempt(
@@ -355,17 +359,23 @@ document.addEventListener("DOMContentLoaded", async () => {
         attempt.timeSpent
       );
     }
-    
     // Clear the attempts from localStorage
     localStorage.removeItem('currentQuizAttempts');
-    
     // Show completion message
     showCompletionMessage(quizAttempts[0]);
+    // Show progress values
+    if (progressContent) progressContent.style.display = '';
+    updateProgressDisplay();
+  } else {
+    // Hide progress values and show message
+    if (progressContent) progressContent.style.display = 'none';
+    const summaryContainer = document.createElement('div');
+    summaryContainer.id = 'quiz-summary-message';
+    summaryContainer.style.cssText = 'text-align:center;margin-top:1rem;font-family:Pixelify Sans,sans-serif;font-size:1.1rem;color:#888;';
+    summaryContainer.textContent = 'No recent quiz summary';
+    const mainContent = document.getElementById('progress-main-content');
+    if (mainContent) mainContent.appendChild(summaryContainer);
   }
-  
-  // Update display
-  updateProgressDisplay();
-  
   // Add event listener for play button
   document.getElementById('playButton').addEventListener('click', startQuiz);
   
