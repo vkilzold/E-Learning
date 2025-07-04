@@ -43,6 +43,56 @@ document.addEventListener('DOMContentLoaded', async () => {
             return;
         }
 
+        // --- Academic Summary Stats ---
+        async function updateAcademicSummary(userId) {
+            const totalItemsElem = document.getElementById('totalItemsAnswered');
+            const avgScoreElem = document.getElementById('averageScore');
+            const lastActiveElem = document.getElementById('lastActive');
+
+            // Fetch all answers for this user
+            const { data: answers, error } = await supabase
+                .from('student_answers')
+                .select('is_correct, answered_at')
+                .eq('student_id', userId);
+
+            if (error) {
+                if (totalItemsElem) totalItemsElem.textContent = '-';
+                if (avgScoreElem) avgScoreElem.textContent = '-';
+                if (lastActiveElem) lastActiveElem.textContent = '-';
+                console.error('Error fetching academic summary:', error);
+                return;
+            }
+
+            // Total items answered
+            const totalAnswered = answers.length;
+            if (totalItemsElem) totalItemsElem.textContent = totalAnswered;
+
+            // Average score (percentage of correct answers)
+            const correctCount = answers.filter(a => a.is_correct === true).length;
+            const avgScore = totalAnswered > 0 ? Math.round((correctCount / totalAnswered) * 100) : 0;
+            if (avgScoreElem) avgScoreElem.textContent = totalAnswered > 0 ? `${avgScore}%` : '-';
+
+            // Last active (latest answered_at)
+            let lastActive = '-';
+            if (answers.length > 0) {
+                // answered_at may be null or undefined, so filter those out
+                const validDates = answers
+                    .map(a => a.answered_at)
+                    .filter(date => !!date)
+                    .sort();
+                if (validDates.length > 0) {
+                    // Get the latest date
+                    const latest = validDates[validDates.length - 1];
+                    // Format as readable date
+                    const dateObj = new Date(latest);
+                    lastActive = dateObj.toLocaleString(undefined, { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+                }
+            }
+            if (lastActiveElem) lastActiveElem.textContent = lastActive;
+        }
+        // Call the function with the current user id
+        updateAcademicSummary(currentUser.id);
+
 // ------------------------------------ Update Dashboard Content ------------------------------------
         if (nameElement) nameElement.textContent = profile.full_name;
         if (emailElement) emailElement.textContent = profile.email;
