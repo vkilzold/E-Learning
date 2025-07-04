@@ -108,7 +108,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     .single();
 
                 if (!classError && currentClass) {
-                    classElement.textContent = `Class: ${currentClass.name}`; // Display class name
+                    classElement.textContent = `Section: ${currentClass.name}`; // Display class name
                 } else {
                     console.error("Error fetching joined class details:", classError);
                     classElement.textContent = `Class: Error loading details`; // Indicate an error
