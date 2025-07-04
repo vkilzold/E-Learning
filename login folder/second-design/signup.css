@@ -7,7 +7,7 @@
 
 body {
   height: 100vh;
-  background: linear-gradient(120deg, #8baebe 30%, #686c79 100%), url('/index folder/image/indexnewnewnew.jpg') center/cover no-repeat;
+  background: #8ca8ab;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -29,7 +29,7 @@ body {
 /* Left side image section */
 .image-section {
   flex: 1;
-  background: #005582;
+  background: #5D7C8C;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -60,7 +60,7 @@ body {
 h2 {
   font-size: 40px;
   margin-bottom: 20px;
-  color: #0073b1;
+  color: #232627;
 }
 
 /* Form group styles */
@@ -370,7 +370,7 @@ form input {
   left: 40px;
   font-size: 1.3rem;
   font-weight: bold;
-  color: #fff;
+  color: #1f1919;
   letter-spacing: 2px;
   z-index: 10;
   text-shadow: 1px 1px 8px #005582;
