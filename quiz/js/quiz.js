@@ -813,33 +813,6 @@ async function checkAnswerAndAnimate() {
     console.log(`Question ${questionId} incorrect, correct count: ${questionMastery[questionId].correctCount}/2`);
   }
   
-  // Update database with new mastery status
-  try {
-    const { data: { session } } = await supabase.auth.getSession();
-    const studentId = session?.user?.id || null;
-
-    const performanceRecord = {
-      student_id: studentId,
-      question_id: currentQuestion.id,
-      math_topic: currentQuestion[topicColumnName],
-      is_correct: isCorrect,
-      time_taken_seconds: timeSpent,
-      difficulty: currentQuestion.difficulty
-    };
-    
-    const { error } = await supabase
-      .from('student_answers')
-      .insert(performanceRecord);
-    
-    if (error) {
-      console.error('Error updating mastery in database:', error);
-    } else {
-      console.log(`Updated question ${questionId} mastery to ${isCorrect ? 'correct' : 'incorrect'}`);
-    }
-  } catch (err) {
-    console.error('Failed to update database mastery:', err);
-  }
-  
   // Record performance in student_answers table
   try {
     const { data: { session } } = await supabase.auth.getSession();

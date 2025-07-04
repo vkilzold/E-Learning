@@ -1,10 +1,5 @@
 // ---------------------- Supabase Setup ----------------------
-import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
-
-const supabaseUrl = "https://idaklprhflgtctumqeus.supabase.co";
-const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlkYWtscHJoZmxndGN0dW1xZXVzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk3OTM4NTUsImV4cCI6MjA2NTM2OTg1NX0.Hw47aaPqJeVFWGz4Sx_1qz4EtsWy9rIVv-bFmkpuhX0";
-
-const supabase = createClient(supabaseUrl, supabaseKey);
+import { supabase } from "../../utils/supabaseClient.js";
 
 // ---------------------- Progress Management ----------------------
 class ProgressManager {
@@ -181,7 +176,6 @@ class ProgressManager {
 
     this.userProgress.questionHistory.push(attempt);
     this.userProgress.answeredQuestions.add(question.id);
-    this.userProgress.questionsAnswered++;
 
     // Update the database isCorrect column
     if (isCorrect) {
@@ -265,6 +259,43 @@ class ProgressManager {
     };
     localStorage.removeItem('quizProgress');
   }
+
+  // Update progress stats from the latest 5 student_answers for the current user
+  async updateProgressFromStudentAnswers() {
+    // Get current user session
+    const { data: { session } } = await supabase.auth.getSession();
+    const studentId = session?.user?.id || null;
+    if (!studentId) {
+      console.error('No logged-in user found for progress update.');
+      return;
+    }
+    // Fetch the latest 5 answers for this user
+    const { data: answers, error } = await supabase
+      .from('student_answers')
+      .select('*')
+      .eq('student_id', studentId)
+      .order('id', { ascending: false })
+      .limit(5);
+    if (error) {
+      console.error('Error fetching student_answers for progress:', error);
+      return;
+    }
+    // Compute stats for the latest 5 answers
+    const questionsAnswered = answers.length;
+    const correctAnswers = answers.filter(a => a.is_correct === true).length;
+    const accuracy = questionsAnswered > 0 ? (correctAnswers / questionsAnswered) * 100 : 0;
+    // Optionally, update completionPercentage if you know total questions
+    const completionPercentage = (correctAnswers / 100) * 100; // Assuming 100 total questions
+    // Update state
+    this.userProgress.questionsAnswered = questionsAnswered;
+    this.userProgress.correctAnswers = correctAnswers;
+    this.userProgress.accuracy = accuracy;
+    this.userProgress.completionPercentage = completionPercentage;
+    // Optionally, update answeredQuestions set
+    this.userProgress.answeredQuestions = new Set(answers.map(a => a.question_id));
+    // Save to localStorage for consistency
+    this.saveProgress();
+  }
 }
 
 // ---------------------- Progress Display ----------------------
@@ -273,13 +304,13 @@ const progressManager = new ProgressManager();
 function updateProgressDisplay() {
   const stats = progressManager.getProgressStats();
   
-  // Update percentage
+  // Update percentage circle to show accuracy
   const percentageElement = document.getElementById('progress-percentage');
   const circleElement = document.querySelector('.progress-circle');
   
   if (percentageElement && circleElement) {
-    percentageElement.textContent = `${Math.round(stats.completionPercentage)}%`;
-    circleElement.style.setProperty('--target-progress', stats.completionPercentage);
+    percentageElement.textContent = `${Math.round(stats.accuracy)}%`;
+    circleElement.style.setProperty('--target-progress', stats.accuracy);
     circleElement.classList.add('animate');
   }
 
@@ -305,12 +336,16 @@ function startQuiz() {
 
 // ---------------------- Initialize ----------------------
 document.addEventListener("DOMContentLoaded", async () => {
-  // Load correct answer count from database
-  await progressManager.updateCorrectAnswerCount();
-  
   // Check for quiz attempts from quiz page
   const quizAttempts = JSON.parse(localStorage.getItem('currentQuizAttempts') || '[]');
+  const progressContent = document.querySelector('.progress-content');
+  // Remove any previous summary message
+  const prevMsg = document.getElementById('quiz-summary-message');
+  if (prevMsg) prevMsg.remove();
+
   if (quizAttempts.length > 0) {
+    // Load progress from student_answers table for the current user
+    await progressManager.updateProgressFromStudentAnswers();
     // Process the attempts
     for (const attempt of quizAttempts) {
       await progressManager.recordQuestionAttempt(
@@ -324,17 +359,23 @@ document.addEventListener("DOMContentLoaded", async () => {
         attempt.timeSpent
       );
     }
-    
     // Clear the attempts from localStorage
     localStorage.removeItem('currentQuizAttempts');
-    
     // Show completion message
     showCompletionMessage(quizAttempts[0]);
+    // Show progress values
+    if (progressContent) progressContent.style.display = '';
+    updateProgressDisplay();
+  } else {
+    // Hide progress values and show message
+    if (progressContent) progressContent.style.display = 'none';
+    const summaryContainer = document.createElement('div');
+    summaryContainer.id = 'quiz-summary-message';
+    summaryContainer.style.cssText = 'text-align:center;margin-top:1rem;font-family:Pixelify Sans,sans-serif;font-size:1.1rem;color:#888;';
+    summaryContainer.textContent = 'No recent quiz summary';
+    const mainContent = document.getElementById('progress-main-content');
+    if (mainContent) mainContent.appendChild(summaryContainer);
   }
-  
-  // Update display
-  updateProgressDisplay();
-  
   // Add event listener for play button
   document.getElementById('playButton').addEventListener('click', startQuiz);
   
@@ -356,20 +397,24 @@ document.addEventListener("DOMContentLoaded", async () => {
   `;
   resetButton.addEventListener('click', async () => {
     if (confirm('Are you sure you want to reset all progress? This cannot be undone.')) {
-      // Reset all isCorrect values in database to 0
+      // Optionally, you may want to delete all student_answers for this user
       try {
-        const { error } = await supabase
-          .from('questions_test_two')
-          .update({ isCorrect: 0 });
-        
-        if (error) {
-          console.error('Error resetting database:', error);
-          alert('Error resetting database. Please try again.');
-        } else {
-          progressManager.resetProgress();
-          await progressManager.updateCorrectAnswerCount();
-          updateProgressDisplay();
-          alert('Progress reset successfully!');
+        const { data: { session } } = await supabase.auth.getSession();
+        const studentId = session?.user?.id || null;
+        if (studentId) {
+          const { error } = await supabase
+            .from('student_answers')
+            .delete()
+            .eq('student_id', studentId);
+          if (error) {
+            console.error('Error resetting student_answers:', error);
+            alert('Error resetting database. Please try again.');
+          } else {
+            progressManager.resetProgress();
+            await progressManager.updateProgressFromStudentAnswers();
+            updateProgressDisplay();
+            alert('Progress reset successfully!');
+          }
         }
       } catch (err) {
         console.error('Failed to reset database:', err);
