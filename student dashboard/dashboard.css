@@ -429,24 +429,56 @@ input, textarea {
   background-color: var(--primary-blue);
 }
 
-/* Radar Chart */
-.radar-chart {
-  flex-grow: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 250px;
-  max-height: 250px;
-  height: 100%;
-  font-family: 'Orbitron', sans-serif !important;
+/* Skill Chart */
+.badge-grid {
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  max-height: 180px;
 }
-.radar-chart, .radar-chart canvas {
-  font-family: 'Orbitron', sans-serif !important;
+.badge {
+  min-height: 70px;
+  min-width: 70px;
+  height: 70px;
+  font-size: 1em;
 }
-canvas {
-  max-width: 100%;
-  height: 100% !important;
-  max-height: 100% !important;
+
+
+/* Skill Badge Grid */
+.badge-grid {
+display: grid;
+grid-template-columns: repeat(2, 1fr);
+gap: 16px;
+max-height: 240px;
+overflow-y: auto;
+padding-right: 10px;
+}
+.badge {
+background-color: var(--item-bg);
+border-radius: 10px;
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+min-height: 100px;
+min-width: 100px;
+height: 100px;
+width: 100%;
+font-size: 1.1em;
+color: var(--text-main);
+box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+border: 2px solid var(--border-color);
+text-align: center;
+transition: box-shadow 0.2s, background 0.2s;
+margin: 0 auto;
+}
+.badge.achieved {
+background-color: #ffe066;
+color: var(--btn-orange);
+font-weight: bold;
+}
+.badge i {
+font-size: 1.5em;
+margin-bottom: 8px;
 }
 
 /* Modal */
