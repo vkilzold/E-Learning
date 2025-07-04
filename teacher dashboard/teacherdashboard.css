@@ -603,7 +603,6 @@ body {
   margin-right: 6px;
   vertical-align: middle;
 }
-
 @media (max-width: 600px) {
   .main-content {
     padding: 8px !important;

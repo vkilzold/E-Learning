@@ -7,7 +7,7 @@
 
 body {
   height: 100vh;
-  background: linear-gradient(120deg, #8baebe 30%, #686c79 100%), url('/index folder/image/indexnewnewnew.jpg') center/cover no-repeat;
+  background: #8AA8AB;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -28,7 +28,7 @@ body {
 /* Left side image section */
 .image-section {
   flex: 1;
-  background: #005582;
+  background: #5D7C8C;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -57,7 +57,7 @@ body {
 h2 {
   font-size: 40px;
   margin-bottom: 20px;
-  color: #0073b1;
+  color: #191922;
 }
 
 form input {
@@ -284,13 +284,69 @@ form a {
   }
 }
 
+@media (max-width: 600px) {
+  .container {
+    max-width: 340px;
+    width: 98vw;
+    margin: 2vh auto;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    background: #fff;
+    padding: 4px 0;
+    height: auto;
+    min-width: unset;
+  }
+  .form-container {
+    max-width: 98vw;
+    width: 100%;
+    padding: 0 6px;
+  }
+  h2 {
+    font-size: 18px;
+    margin-bottom: 8px;
+  }
+  .form-group label,
+  .forgot-remember label,
+  .signup-link-row,
+  .footer-links,
+  .footer-links a {
+    font-size: 11px;
+  }
+  form input {
+    font-size: 12px;
+    padding: 6px;
+    height: 28px;
+  }
+  .forgot-remember {
+    font-size: 11px;
+  }
+  .buttons {
+    gap: 4px;
+  }
+  .login-btn, .signup-btn, .social-buttons button {
+    font-size: 12px;
+    padding: 8px 0;
+    border-radius: 5px;
+  }
+  .footer-links {
+    font-size: 9px;
+    padding: 4px 2px;
+    gap: 4px 6px;
+  }
+  .branding {
+    font-size: 0.8rem;
+    top: 8px;
+    left: 6px;
+  }
+}
+
 .branding {
   position: absolute;
   top: 30px;
   left: 40px;
   font-size: 1.3rem;
   font-weight: bold;
-  color: #fff;
+  color: #221d1d;
   letter-spacing: 2px;
   z-index: 10;
   text-shadow: 1px 1px 8px #005582;
