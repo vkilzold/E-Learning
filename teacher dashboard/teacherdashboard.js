@@ -445,9 +445,81 @@ if (ctx3) {
             color: '#999',
             backdropColor: 'transparent'
           }
+
         }
       }
     }
+  });
+}
+
+// --- DARK MODE TOGGLE ---
+const themeToggleBtn = document.getElementById('themeToggleBtn');
+const htmlEl = document.documentElement;
+
+function updateChartColorsForTheme(theme) {
+  if (!window.Chart) return;
+  // Hanapin lahat ng canvas na may Chart instance
+  const chartCanvases = [
+    document.getElementById('studentProficiencyChart'),
+    document.getElementById('performanceChart'),
+    document.getElementById('radarStatsChart')
+  ];
+  chartCanvases.forEach(canvas => {
+    if (!canvas) return;
+    const chart = Chart.getChart(canvas);
+    if (!chart) return;
+    const textColor = theme === 'dark' ? '#fff' : '#222';
+    // Legend
+    if (chart.options.plugins && chart.options.plugins.legend && chart.options.plugins.legend.labels) {
+      chart.options.plugins.legend.labels.color = textColor;
+    }
+    // Title
+    if (chart.options.plugins && chart.options.plugins.title) {
+      chart.options.plugins.title.color = textColor;
+    }
+    // X/Y axes
+    if (chart.options.scales) {
+      Object.values(chart.options.scales).forEach(scale => {
+        if (scale.ticks) scale.ticks.color = textColor;
+        if (scale.title) scale.title.color = textColor;
+        if (scale.grid) scale.grid.color = theme === 'dark' ? '#444' : '#ccc';
+      });
+    }
+    // Radar chart
+    if (chart.options.scales && chart.options.scales.r) {
+      const r = chart.options.scales.r;
+      if (r.pointLabels) r.pointLabels.color = textColor;
+      if (r.angleLines) r.angleLines.color = theme === 'dark' ? '#ddd' : '#888';
+      if (r.grid) r.grid.color = theme === 'dark' ? '#eee' : '#ccc';
+      if (r.ticks) r.ticks.color = theme === 'dark' ? '#999' : '#444';
+    }
+    chart.update();
+  });
+}
+
+function setTheme(theme) {
+  htmlEl.setAttribute('data-theme', theme);
+  localStorage.setItem('theme', theme);
+  if (themeToggleBtn) {
+    const icon = theme === 'dark' ? 'fa-sun' : 'fa-moon';
+    themeToggleBtn.innerHTML = `<i class=\"fas ${icon}\"></i>`;
+  }
+  // Update chart colors for theme
+  updateChartColorsForTheme(theme);
+}
+
+// On load, apply theme from localStorage
+const savedTheme = localStorage.getItem('theme');
+if (savedTheme) {
+  setTheme(savedTheme);
+} else {
+  setTheme('light');
+}
+
+if (themeToggleBtn) {
+  themeToggleBtn.addEventListener('click', () => {
+    const current = htmlEl.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+    setTheme(current === 'dark' ? 'light' : 'dark');
   });
 }
 });
