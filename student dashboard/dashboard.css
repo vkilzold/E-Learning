@@ -474,7 +474,8 @@ margin: 0 auto;
 .badge.achieved {
 background-color: #ffe066;
 color: var(--btn-orange);
-font-weight: bold;
+color:rgb(26, 23, 23);
+
 }
 .badge i {
 font-size: 1.5em;
