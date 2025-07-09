@@ -141,7 +141,7 @@ input, textarea {
 }
 
 /* Buttons */
-.add-class-btn, .logout-btn {
+/*.add-class-btn,*/ .logout-btn {
   background-color: var(--btn-orange);
   color: #fff;
   border: none;
@@ -153,10 +153,10 @@ input, textarea {
   transition: 0.3s ease;
   font-family: 'Orbitron', sans-serif !important;
 }
-.add-class-btn:hover, .logout-btn:hover {
+/*.add-class-btn:hover,*/ .logout-btn:hover {
   background-color: #ff5722;
 }
-.add-class-btn {
+/*.add-class-btn {
   background-color: var(--btn-orange);
   color: #fff;
   border: none;
@@ -165,6 +165,7 @@ input, textarea {
 .add-class-btn:hover {
   background-color: #ff5722;
 }
+  */
 .play-btn {
   background-color: var(--btn-yellow);
   color: var(--text-main);

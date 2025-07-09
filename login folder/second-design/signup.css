@@ -108,6 +108,7 @@ form input {
 }
 
 /* Role selection styles */
+/*
 .role-selection {
   display: flex;
   gap: 20px;
@@ -128,7 +129,7 @@ form input {
   width: auto;
   margin: 0;
 }
-
+*/
 .terms-agreement {
   margin: 15px 0;
   text-align: left;
