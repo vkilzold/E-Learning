@@ -1259,7 +1259,7 @@ async function handleTimeOut() {
   }, 3000);
 }*/
 
-// === New Quiz Logic for New Layout ===
+// ================================================== New Quiz Logic for New Layout ==================================================
 document.addEventListener('DOMContentLoaded', function() {
   // --- New: Fetch main_questions and sub_questions from Supabase ---
   let mainQuestions = [];
