@@ -6,13 +6,17 @@
 }
 
 body {
-  min-height: 100vh;
   height: 100vh;
-  width: 100vw;
   background: #8AA8AB;
   display: flex;
   justify-content: center;
   align-items: center;
+  padding: 20px;
+  transform: scale(0.75);
+  transform-origin: top left;
+  width: 133.33vw;
+  height: 133.33vh;
+  overflow-x: auto;
 }
 
 .container {
@@ -237,14 +241,34 @@ form input {
 
 /* Responsive layout */
 @media (max-width: 900px) {
+  body {
+    min-height: 100vh;
+    min-width: 100vw;
+    height: auto;
+    width: 100vw;
+    transform: none;
+    transform-origin: unset;
+    padding: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
   .container {
-    max-width: 98vw;
-    width: 100%;
+    margin: 0 auto;
+    width: 70vw;
+    max-width: 360px;
+    min-height: unset;
+    display: block;
   }
 }
 
 @media (max-width: 600px) {
   .container {
+    align-items: center;
+    justify-items: center;
+    justify-content: center;
     max-width: 340px;
     width: 98vw;
     margin: 2vh auto;

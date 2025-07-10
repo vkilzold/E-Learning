@@ -263,28 +263,83 @@ form a {
 }
 
 /* Responsive layout */
-@media (max-width: 768px) {
-  .container {
-    flex-direction: column;
-    width: 95vw;
+@media (max-width: 900px) {
+  body {
+    min-height: 100vh;
+    min-width: 100vw;
     height: auto;
-    min-width: 300px;
-    max-width: 98vw;
-  }
-
-  .image-section {
-    width: 100%;
-    padding: 20px;
+    width: 100vw;
+    transform: none;
+    transform-origin: unset;
+    padding: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    display: flex;
     justify-content: center;
+    align-items: center;
   }
-
-  .login-section {
+  .container {
+    margin: 0 auto;
     width: 100%;
-    padding: 30px 20px;
+    max-width: 100%;
+    min-height: unset;
+    display: block;
   }
+}
 
-  .image-section img {
-    max-width: 150px;
+@media (max-width: 600px) {
+  body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    height: 100vh;
+    width: 100vw;
+    padding: 0;
+    margin: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    background: #8AA8AB;
+  }
+  .container {
+    align-items: center;
+    justify-items: center;
+    justify-content: center;
+    max-width: 340px;
+    width: 95%;
+    margin: auto;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    background: #fff;
+    padding: 4px 0;
+    height: auto;
+    min-height: unset;
+  }
+  .image-section {
+    display: none;
+  }
+  .login-section {
+    padding: 10px 4px;
+  }
+  .form-container {
+    max-width: 98vw;
+    width: 100%;
+    padding: 0 6px;
+  }
+  h2 {
+    font-size: 18px;
+    margin-bottom: 8px;
+  }
+  .footer-links {
+    font-size: 9px;
+    padding: 4px 2px;
+    gap: 4px 6px;
+  }
+  .branding {
+    font-size: 0.8rem;
+    top: 8px;
+    left: 6px;
   }
 }
 
@@ -300,3 +355,4 @@ form a {
   text-shadow: 1px 1px 8px #005582;
   font-family: 'Press Start 2P', monospace;
 }
+

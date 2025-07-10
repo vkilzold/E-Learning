@@ -100,6 +100,13 @@ input, textarea {
   border: 2px solid var(--border-color);
   padding: 25px;
   transition: box-shadow 0.2s;
+  max-height: 260px;
+  height: 100%;
+  padding-top: 18px;
+  padding-bottom: 18px;
+  padding-left: 16px;
+  padding-right: 16px;
+  font-size: 0.92em;
 }
 .card:hover {
   box-shadow: 0 4px 24px rgba(0,0,0,0.12);
@@ -117,7 +124,7 @@ input, textarea {
   gap: 1rem;
 }
 .section-header h4 {
-  font-size: 20px;
+  font-size: 16px;
   display: flex;
   align-items: center;
   color: var(--text-main);
@@ -217,8 +224,8 @@ input, textarea {
   vertical-align: middle;
 }
 .avatar.large {
-  width: 180px;
-  height: 180px;
+  width: 100px;
+  height: 100px;
   border-radius: 50%;
   background-color: var(--avatar-bg);
   color: #fff;
@@ -303,7 +310,7 @@ input, textarea {
   display: grid !important;
   grid-template-columns: repeat(2, 1fr) !important;
   grid-template-rows: repeat(2, 1fr) !important;
-  gap: 18px;
+  gap: 10px !important;
 }
 .stat-item {
   background-color: var(--item-bg);
@@ -318,13 +325,13 @@ input, textarea {
   transform: translateY(-2px);
 }
 .stat-number {
-  font-size: 28px;
+  font-size: 20px;
   font-weight: bold;
   color: var(--primary-blue);
   margin-bottom: 6px;
 }
 .stat-label {
-  font-size: 14px;
+  font-size: 12px;
   color: var(--text-muted);
 }
 .stats-list {
@@ -391,16 +398,16 @@ input, textarea {
 .activity-item span {
   flex: 1;
   color: var(--text-light);
-  font-size: 15px;
+  font-size: 13px;
 }
 .activity-item small {
   color: var(--text-muted);
-  font-size: 13px;
+  font-size: 11px;
 }
 
 /* Scroll Box */
 .scroll-box {
-  max-height: 240px;
+  max-height: 165px;
   overflow-y: auto;
   flex-grow: 1;
   border-color: var(--border-color) !important;
@@ -432,55 +439,71 @@ input, textarea {
 
 /* Skill Chart */
 .badge-grid {
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  max-height: 180px;
-}
-.badge {
-  min-height: 70px;
-  min-width: 70px;
-  height: 70px;
-  font-size: 1em;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 10px;
+  max-height: 100px;
+  padding: 0 4px;
+  width: 100%;
+  align-items: center;
+  justify-items: center;
+  box-sizing: border-box;
+  overflow-y: auto;
 }
 
+.badge {
+  min-height: 40px;
+  min-width: 40px;
+  height: 40px;
+  width: 90%;
+  font-size: 0.85em;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
 /* Skill Badge Grid */
 .badge-grid {
-display: grid;
-grid-template-columns: repeat(2, 1fr);
-gap: 16px;
-max-height: 240px;
-overflow-y: auto;
-padding-right: 10px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  max-height: 170px;
+  padding: 0 4px;
+  width: 100%;
+  align-items: center;
+  justify-items: center;
+  box-sizing: border-box;
 }
 .badge {
-background-color: var(--item-bg);
-border-radius: 10px;
-display: flex;
-flex-direction: column;
-align-items: center;
-justify-content: center;
-min-height: 100px;
-min-width: 100px;
-height: 100px;
-width: 100%;
-font-size: 1.1em;
-color: var(--text-main);
-box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-border: 2px solid var(--border-color);
-text-align: center;
-transition: box-shadow 0.2s, background 0.2s;
-margin: 0 auto;
+  background-color: var(--item-bg);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100px;
+  min-width: 100px;
+  height: 100px;
+  width: 100%;
+  font-size: 1.1em;
+  color: var(--text-main);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  border: 2px solid var(--border-color);
+  text-align: center;
+  transition: box-shadow 0.2s, background 0.2s;
+  margin: 0 auto;
 }
 .badge.achieved {
-background-color: #AB8C8C;
-color: var(--btn-orange);
-color:rgb(26, 23, 23);
+  background-color: #AB8C8C;
+  color: var(--btn-orange);
+  color:rgb(26, 23, 23);
 
 }
 .badge i {
-font-size: 1.5em;
-margin-bottom: 8px;
+  font-size: 1em;
+  margin-bottom: 4px;
 }
 
 /* Modal */
@@ -503,7 +526,8 @@ margin-bottom: 8px;
   background-color: var(--card-bg);
   padding: 25px;
   border-radius: 12px;
-  min-width: 350#Aosition: relative;
+  min-width: 350px;
+  position: relative;
   font-family: 'Orbitron', sans-serif !important;
 }
 .modal-content h3 {
@@ -652,24 +676,57 @@ margin-bottom: 8px;
     gap: 10px !important;
   }
   .profile-section {
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    text-align: left !important;
+    gap: 12px !important;
+    min-width: 0 !important;
+    min-height: 100px !important;
+    width: 100% !important;
+    padding: 0.5rem 0.5rem !important;
+  }
+  .profile-avatar-col {
     flex-direction: column !important;
     align-items: center !important;
     justify-content: center !important;
-    text-align: center !important;
-    gap: 10px !important;
-  }
-  .profile-avatar-col {
-    align-items: center !important;
-    justify-content: center !important;
+    width: auto !important;
+    min-width: 80px !important;
+    margin-bottom: 0 !important;
+    margin-right: 10px !important;
   }
   .avatar.large {
-    width: 100px !important;
-    height: 100px !important;
-    font-size: 2rem !important;
-    margin: 0 auto !important;
+    width: 70px !important;
+    height: 70px !important;
+    font-size: 1.7rem !important;
+    margin: 0 !important;
+  }
+  .edit-profile-btn {
+    margin-top: 0.4rem !important;
+    width: auto !important;
+    max-width: 90px !important;
+    font-size: 0.78em !important;
+    padding: 0.22rem 0.5rem !important;
+    display: block !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+  }
+  .student-info {
+    width: 100% !important;
+    align-items: flex-start !important;
+    text-align: left !important;
     display: flex !important;
-    align-items: center !important;
+    flex-direction: column !important;
+    gap: 0.2rem !important;
     justify-content: center !important;
+  }
+  .student-info h2 {
+    font-size: 0.98em !important;
+    line-height: 1.1 !important;
+  }
+  .student-info p {
+    font-size: 0.88em !important;
+    line-height: 1.1 !important;
   }
   .profile-action-buttons-right {
     flex-direction: column;
@@ -684,5 +741,36 @@ margin-bottom: 8px;
   .profile-action-buttons-right .play-btn:only-child {
     margin-left: 0;
     margin-right: 0;
+  }
+}
+
+/* Center .play-btn text and icon */
+.play-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 8px;
+}
+
+@media (max-width: 600px) {
+  /* Fix .edit-profile-btn text overflow */
+  .edit-profile-btn {
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    max-width: 100px !important;
+    min-width: 0 !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  .edit-profile-btn {
+    font-size: 0.68em !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .edit-profile-btn {
+    font-size: 0.45em !important;
   }
 }
