@@ -10,42 +10,89 @@
 <body>
   <div class="quiz-section">
     <div class="container">
-      <div class="score">
-        <p class ="temp-score" id = "temp-score">0</p>
-        <span id="streak-fire" class="streak-fire" style="display:none;">🔥</span>
-        <div id="score-animation"></div>
-      </div>
-      <span id="timer-number" class="timer-number">30</span>
-      <div class="content-area">
-        <div class="quiz-main-content" id="quiz-main-content">
-          <div class="title">
-            <h1>Round 1</h1>
-            <h2>Question 1</h2>
-            <div class="quiz-content">
-              <h3 id="question">Loading question...</h3>
-              <ul class="choices">
-                <li class="choice" data-choice="A" id="firstChoice"></li>
-                <li class="choice" data-choice="B" id="secondChoice"></li>
-                <li class="choice" data-choice="C" id="thirdChoice"></li>
-                <li class="choice" data-choice="D" id="fourthChoice"></li>
-              </ul>
+      <!-- Hide old content for now -->
+      <div id="old-quiz-content" style="display:none;">
+        <div class="score">
+          <p class ="temp-score" id = "temp-score">0</p>
+          <span id="streak-fire" class="streak-fire" style="display:none;">🔥</span>
+          <div id="score-animation"></div>
+        </div>
+        <span id="timer-number" class="timer-number">30</span>
+        <div class="content-area">
+          <div class="quiz-main-content" id="quiz-main-content">
+            <div class="title">
+              <h1>Round 1</h1>
+              <h2>Question 1</h2>
+              <div class="quiz-content">
+                <h3 id="question">Loading question...</h3>
+                <ul class="choices">
+                  <li class="choice" data-choice="A" id="firstChoice"></li>
+                  <li class="choice" data-choice="B" id="secondChoice"></li>
+                  <li class="choice" data-choice="C" id="thirdChoice"></li>
+                  <li class="choice" data-choice="D" id="fourthChoice"></li>
+                </ul>
+              </div>
+            </div>
+            <div class="play-button">
+              <button class = "playButton" id="playButton">
+                <img src="assets/buttons/playBtn.png" alt="Play" class="button-bg" />
+                <span></span></button>
             </div>
           </div>
-          <div class="play-button">
-            <button class = "playButton" id="playButton">
-              <img src="assets/buttons/playBtn.png" alt="Play" class="button-bg" />
-              <span></span></button>
-          </div>
+          <div id="end-message" class="end-message" style="display:none;"></div>
         </div>
-        <div id="loadingPopup" class="loading-popup hidden">
-          <div class="popup-content">
-            <div class="popup-spinner"></div>
-            <p>Loading next question...</p>
-          </div>
+        <canvas id="gameCanvas"></canvas>
+      </div> <!-- end of #old-quiz-content -->
+      <div id="loadingPopup" class="loading-popup hidden">
+        <div class="popup-content">
+          <div class="popup-spinner"></div>
+          <p>Loading next question...</p>
         </div>
-        <div id="end-message" class="end-message" style="display:none;"></div>
       </div>
-      <canvas id="gameCanvas"></canvas>
+      <!-- New layout starts here -->
+      <div class="quiz-new-layout">
+        <!-- Progress Bar -->
+        <div class="progress-bar">
+          <div class="progress-node active"></div>
+          <div class="progress-line"></div>
+          <div class="progress-node"></div>
+          <div class="progress-line"></div>
+          <div class="progress-node"></div>
+          <div class="progress-line"></div>
+          <div class="progress-node"></div>
+          <div class="progress-line"></div>
+          <div class="progress-node"></div>
+          <div class="progress-line"></div>
+          <div class="progress-node"></div>
+        </div>
+        <!-- Header -->
+        <div class="quiz-header">
+          <div class="round-label">Round 1</div>
+          <div class="question-label">
+            <span class="question-number">Question 1</span>
+            &nbsp;|&nbsp; Topic: Fractions &nbsp;|&nbsp; Difficulty: <span style='color:#388e3c;'>Easy</span>
+          </div>
+        </div>
+        <!-- Main Content -->
+        <div class="quiz-main-area">
+          <div class="quiz-left">
+            <div class="quiz-question-text">
+              A recipe calls for <b>3/4 cup of sugar</b>. If you only have a <b>1/4 cup</b> measuring cup, how many times do you need to fill it to get the right amount?
+            </div>
+            <div class="quiz-help-icon">?</div>
+          </div>
+          <div class="quiz-right">
+            <div class="quiz-info-label">Choose the correct answer:</div>
+            <form class="quiz-choices-form">
+              <label class="quiz-choice-label"><input type="radio" name="answer" value="A"> A) 2</label>
+              <label class="quiz-choice-label"><input type="radio" name="answer" value="B"> B) 3</label>
+              <label class="quiz-choice-label"><input type="radio" name="answer" value="C"> C) 4</label>
+              <label class="quiz-choice-label"><input type="radio" name="answer" value="D"> D) 5</label>
+            </form>
+            <button class="quiz-submit-btn">SUBMIT</button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
   <script type="module" src="js/quiz.js"></script>

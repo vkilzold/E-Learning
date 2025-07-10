@@ -9,7 +9,7 @@
   --text-main: #222;
   --text-muted: #444;
   --border-color: #111;
-  --item-bg: #ffe066;
+  --item-bg: #AB8C8C;
   --btn-orange: #ff7043;
   --btn-yellow: #ffd600;
   --btn-red: #f44336;
@@ -473,7 +473,7 @@ transition: box-shadow 0.2s, background 0.2s;
 margin: 0 auto;
 }
 .badge.achieved {
-background-color: #ffe066;
+background-color: #AB8C8C;
 color: var(--btn-orange);
 color:rgb(26, 23, 23);
 
@@ -503,8 +503,7 @@ margin-bottom: 8px;
   background-color: var(--card-bg);
   padding: 25px;
   border-radius: 12px;
-  min-width: 350px;
-  position: relative;
+  min-width: 350#Aosition: relative;
   font-family: 'Orbitron', sans-serif !important;
 }
 .modal-content h3 {
