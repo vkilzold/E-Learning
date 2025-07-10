@@ -117,7 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // check user profile in public.user_profiles
             const { data: profile, error: profileError } = await supabase
                 .from('user_profiles')
-                .select('*')
+                .select('full_name,email')
                 .eq('id', data.user.id)
                 .single();
 
@@ -137,13 +137,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 message.textContent = '✅ Login successful! Redirecting...';
             }
 
-            //in default go to classcode but if the user is a teacher he/she wil go directly to dashboard 
+            // Redirect all users to the student dashboard
             setTimeout(() => {
-                if (profile.role === 'teacher') {
-                    window.location.href = '\\teacher dashboard/teacherdashboard.html';
-                } else if (profile.role === 'student') {
-                    window.location.href = '\\student dashboard/dashboard.html';
-                }
+                window.location.href = '\\student dashboard/dashboard.html';
             }, 1500);
         });
     } else {
