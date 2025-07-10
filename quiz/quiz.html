@@ -11,10 +11,10 @@
   <div class="quiz-section">
     <div class="container">
       <!-- Hide old content for now -->
-      <div id="old-quiz-content" style="display:none;">
+      <div id="old-quiz-content" class="hidden">
         <div class="score">
           <p class ="temp-score" id = "temp-score">0</p>
-          <span id="streak-fire" class="streak-fire" style="display:none;">🔥</span>
+          <span id="streak-fire" class="streak-fire hidden">🔥</span>
           <div id="score-animation"></div>
         </div>
         <span id="timer-number" class="timer-number">30</span>
@@ -39,7 +39,7 @@
                 <span></span></button>
             </div>
           </div>
-          <div id="end-message" class="end-message" style="display:none;"></div>
+          <div id="end-message" class="end-message hidden"></div>
         </div>
         <canvas id="gameCanvas"></canvas>
       </div> <!-- end of #old-quiz-content -->
@@ -70,7 +70,7 @@
           <div class="round-label">Round 1</div>
           <div class="question-label">
             <span class="question-number">Question 1</span>
-            &nbsp;|&nbsp; Topic: Fractions &nbsp;|&nbsp; Difficulty: <span style='color:#388e3c;'>Easy</span>
+            &nbsp;|&nbsp; Topic: Fractions &nbsp;|&nbsp; Difficulty: <span class="difficulty-easy">Easy</span>
           </div>
         </div>
         <!-- Main Content -->
