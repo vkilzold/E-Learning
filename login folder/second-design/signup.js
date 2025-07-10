@@ -51,11 +51,10 @@ document.addEventListener('DOMContentLoaded', () => {
       const password = document.getElementById('password').value.trim();
       const confirmPassword = document.getElementById('confirmPassword').value.trim();
       const termsCheckbox = document.getElementById('termsCheckbox');
-      const roleInput = document.querySelector('input[name="role"]:checked');
-      const role = roleInput ? roleInput.value : '';
+      const username = document.getElementById('User Name').value.trim();
 
       // ------------------------------------ Checks if all required fields are filled ------------------------------------
-      if (!firstName || !lastName || !gender || !email || !password || !confirmPassword || !role) {
+      if (!firstName || !lastName || !gender || !email || !password || !confirmPassword || !username) {
         message.textContent = 'Please fill in all required fields.';
         message.style.color = 'red';
         return;
@@ -89,7 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
             last_name: lastName,
             full_name: fullName,
             gender: gender,
-            role: role
+            username: username
           }
         }
       });
