@@ -51,6 +51,11 @@ body {
   color: var(--text-main);
   margin: 0;
   padding: 10px;
+  transform: scale(0.75);
+  transform-origin: top left;
+  width: 133.33vw;
+  height: 133.33vh;
+  overflow-x: auto;
 }
 
 .dashboard-layout, .main-content {

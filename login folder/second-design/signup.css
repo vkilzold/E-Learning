@@ -6,12 +6,13 @@
 }
 
 body {
+  min-height: 100vh;
   height: 100vh;
+  width: 100vw;
   background: #8AA8AB;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 20px;
 }
 
 .container {
