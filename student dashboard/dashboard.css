@@ -9,7 +9,7 @@
   --text-main: #222;
   --text-muted: #444;
   --border-color: #111;
-  --item-bg: #ffe066;
+  --item-bg: #AB8C8C;
   --btn-orange: #ff7043;
   --btn-yellow: #ffd600;
   --btn-red: #f44336;
@@ -141,7 +141,7 @@ input, textarea {
 }
 
 /* Buttons */
-.add-class-btn, .logout-btn {
+/*.add-class-btn,*/ .logout-btn {
   background-color: var(--btn-orange);
   color: #fff;
   border: none;
@@ -153,10 +153,10 @@ input, textarea {
   transition: 0.3s ease;
   font-family: 'Orbitron', sans-serif !important;
 }
-.add-class-btn:hover, .logout-btn:hover {
+/*.add-class-btn:hover,*/ .logout-btn:hover {
   background-color: #ff5722;
 }
-.add-class-btn {
+/*.add-class-btn {
   background-color: var(--btn-orange);
   color: #fff;
   border: none;
@@ -165,6 +165,7 @@ input, textarea {
 .add-class-btn:hover {
   background-color: #ff5722;
 }
+  */
 .play-btn {
   background-color: var(--btn-yellow);
   color: var(--text-main);
@@ -472,9 +473,10 @@ transition: box-shadow 0.2s, background 0.2s;
 margin: 0 auto;
 }
 .badge.achieved {
-background-color: #ffe066;
+background-color: #AB8C8C;
 color: var(--btn-orange);
-font-weight: bold;
+color:rgb(26, 23, 23);
+
 }
 .badge i {
 font-size: 1.5em;
@@ -501,8 +503,7 @@ margin-bottom: 8px;
   background-color: var(--card-bg);
   padding: 25px;
   border-radius: 12px;
-  min-width: 350px;
-  position: relative;
+  min-width: 350#Aosition: relative;
   font-family: 'Orbitron', sans-serif !important;
 }
 .modal-content h3 {

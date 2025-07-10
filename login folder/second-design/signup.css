@@ -6,16 +6,13 @@
 }
 
 body {
+  min-height: 100vh;
   height: 100vh;
-<<<<<<< HEAD
+  width: 100vw;
   background: #8AA8AB;
-=======
-  background: #8ca8ab;
->>>>>>> 1e759fb754e6930ed650d33757c10d75336d4a52
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 20px;
 }
 
 .container {
@@ -64,11 +61,7 @@ body {
 h2 {
   font-size: 40px;
   margin-bottom: 20px;
-<<<<<<< HEAD
   color: #222c31;
-=======
-  color: #232627;
->>>>>>> 1e759fb754e6930ed650d33757c10d75336d4a52
 }
 
 /* Form group styles */
@@ -116,6 +109,7 @@ form input {
 }
 
 /* Role selection styles */
+/*
 .role-selection {
   display: flex;
   gap: 20px;
@@ -136,7 +130,7 @@ form input {
   width: auto;
   margin: 0;
 }
-
+*/
 .terms-agreement {
   margin: 15px 0;
   text-align: left;
@@ -423,11 +417,7 @@ form input {
   left: 40px;
   font-size: 1.3rem;
   font-weight: bold;
-<<<<<<< HEAD
   color: #221d1d;
-=======
-  color: #1f1919;
->>>>>>> 1e759fb754e6930ed650d33757c10d75336d4a52
   letter-spacing: 2px;
   z-index: 10;
   text-shadow: 1px 1px 8px #005582;

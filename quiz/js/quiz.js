@@ -658,7 +658,7 @@ const playerAnimations = {
 
 const enemyAnimations = {
   attack: { image: null, frameWidth: 256, frameHeight: 64, totalFrames: 33, fps: 12 },
-  death: { image: null, frameWidth: 256, frameHeight: 64, totalFrames: 13, fps: 12 },
+  death: { image: null, frameHeight: 64, totalFrames: 13, fps: 12 },
 };
 
 let currentAnimation = null;
@@ -1257,4 +1257,142 @@ async function handleTimeOut() {
       await loadQuiz();
     }
   }, 3000);
-} 
+}
+
+// === New Quiz Logic for New Layout ===
+document.addEventListener('DOMContentLoaded', function() {
+  const questions = [
+    {
+      round: 1,
+      topic: 'Fractions',
+      difficulty: 'Easy',
+      question: 'A recipe calls for <b>3/4 cup of sugar</b>. If you only have a <b>1/4 cup</b> measuring cup, how many times do you need to fill it to get the right amount?',
+      choices: ['2', '3', '4', '5'],
+      correct: 2 // index (C)
+    },
+    {
+      round: 2,
+      topic: 'Percentages',
+      difficulty: 'Hard',
+      question: 'If you score 18 out of 20 on a test, what percentage did you get?',
+      choices: ['80%', '85%', '90%', '95%'],
+      correct: 2 // index (C)
+    },
+    {
+      round: 3,
+      topic: 'Algebra',
+      difficulty: 'Easy',
+      question: 'Solve for x: 2x + 3 = 11',
+      choices: ['3', '4', '5', '6'],
+      correct: 1 // index (B)
+    }
+  ];
+
+  let current = 0;
+  let score = 0;
+
+  const quizHeader = document.querySelector('.quiz-header');
+  const roundLabel = quizHeader.querySelector('.round-label');
+  const questionLabel = quizHeader.querySelector('.question-label');
+  const questionText = document.querySelector('.quiz-question-text');
+  const choicesForm = document.querySelector('.quiz-choices-form');
+  const submitBtn = document.querySelector('.quiz-submit-btn');
+  const progressNodes = document.querySelectorAll('.progress-node');
+  const loadingPopup = document.getElementById('loadingPopup');
+  const quizMainArea = document.querySelector('.quiz-main-area');
+
+  // Add score display at the top if not present
+  let scoreDisplay = document.querySelector('.quiz-score-display');
+  if (!scoreDisplay) {
+    scoreDisplay = document.createElement('div');
+    scoreDisplay.className = 'quiz-score-display';
+    scoreDisplay.style.cssText = 'position:absolute;top:1.5rem;right:2rem;font-size:1.3rem;font-family:Pixelify Sans,sans-serif;font-weight:700;color:#23282b;background:#ffd740;padding:0.5rem 1.2rem;border-radius:0.7rem;z-index:20;box-shadow:0 2px 8px #ffd74055;';
+    quizHeader.appendChild(scoreDisplay);
+  }
+
+  function updateScoreDisplay() {
+    scoreDisplay.textContent = `Score: ${score} / ${questions.length}`;
+  }
+
+  function renderQuestion(idx) {
+    const q = questions[idx];
+    roundLabel.textContent = `Round ${q.round}`;
+    // Update header
+    questionLabel.innerHTML = `<span class='question-number'>Question ${idx + 1}</span> | Topic: ${q.topic} | Difficulty: <span style='color:${q.difficulty==='Easy' ? '#388e3c' : '#B0323A'};'>${q.difficulty}</span>`;
+    questionText.innerHTML = q.question;
+    // Update choices
+    const formHtml = q.choices.map((choice, i) => {
+      const letter = String.fromCharCode(65 + i);
+      return `<label class="quiz-choice-label"><input type="radio" name="answer" value="${letter}"> ${letter}) ${choice}</label>`;
+    }).join('');
+    choicesForm.innerHTML = formHtml;
+    // Update progress bar
+    progressNodes.forEach((node, i) => {
+      node.classList.remove('active', 'checked', 'wrong');
+      if (i < idx) {
+        node.classList.add('checked');
+      } else if (i === idx) {
+        node.classList.add('active');
+      }
+    });
+    updateScoreDisplay();
+  }
+
+  function showLoadingPopup(show) {
+    if (loadingPopup) loadingPopup.classList.toggle('hidden', !show);
+  }
+
+  function showEndMessage() {
+    window.location.href = 'progress.html';
+  }
+
+  submitBtn.addEventListener('click', function(e) {
+    e.preventDefault();
+    const selected = choicesForm.querySelector('input[type="radio"]:checked');
+    if (!selected) {
+      alert('Please select an answer!');
+      return;
+    }
+    // Determine if answer is correct
+    const q = questions[current];
+    const answerIndex = selected.value.charCodeAt(0) - 65;
+    const isCorrect = answerIndex === q.correct;
+    // Mark progress node
+    progressNodes[current].classList.remove('checked', 'wrong');
+    if (isCorrect) {
+      progressNodes[current].classList.add('checked');
+      score++;
+    } else {
+      progressNodes[current].classList.add('wrong');
+    }
+    updateScoreDisplay();
+    // Immediate feedback: highlight selected choice
+    const choiceLabels = choicesForm.querySelectorAll('.quiz-choice-label');
+    choiceLabels.forEach((label, i) => {
+      label.classList.remove('correct', 'wrong');
+      if (i === answerIndex) {
+        label.classList.add(isCorrect ? 'correct' : 'wrong');
+      } else if (isCorrect && i === q.correct) {
+        label.classList.add('correct');
+      }
+    });
+    // Disable further selection
+    choicesForm.querySelectorAll('input[type="radio"]').forEach(input => input.disabled = true);
+    // Wait 1 second, then show loading popup and go to next question
+    setTimeout(() => {
+      showLoadingPopup(true);
+      setTimeout(() => {
+        showLoadingPopup(false);
+        current++;
+        if (current < questions.length) {
+          renderQuestion(current);
+        } else {
+          showEndMessage();
+        }
+      }, 1200);
+    }, 1000);
+  });
+
+  // Initial render
+  renderQuestion(current);
+}); 
