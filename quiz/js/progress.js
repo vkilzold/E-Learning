@@ -210,6 +210,25 @@ class ProgressManager {
 
     // Save progress
     this.saveProgress();
+
+    // Get current user session
+    const { data: { session } } = await supabase.auth.getSession();
+    const studentId = session?.user?.id || null;
+    if (studentId) {
+      const { error: insertError } = await supabase
+        .from('user_answers')
+        .insert([{
+          student_id: studentId,
+          main_question_id: question.id,
+          is_correct: isCorrect,
+          time_taken_seconds: timeSpent,
+          difficulty: question.difficulty,
+          // add sub_question_id if you have it, otherwise leave as null
+        }]);
+      if (insertError) {
+        console.error('Error inserting into user_answers:', insertError);
+      }
+    }
   }
 
   // Update correct answer count based on database isCorrect column
@@ -261,7 +280,7 @@ class ProgressManager {
   }
 
   // Update progress stats from the latest 5 student_answers for the current user
-  async updateProgressFromStudentAnswers() {
+  async updateProgressFromUserAnswers() {
     // Get current user session
     const { data: { session } } = await supabase.auth.getSession();
     const studentId = session?.user?.id || null;
@@ -271,13 +290,13 @@ class ProgressManager {
     }
     // Fetch the latest 5 answers for this user
     const { data: answers, error } = await supabase
-      .from('student_answers')
+      .from('user_answers')
       .select('*')
       .eq('student_id', studentId)
       .order('id', { ascending: false })
-      .limit(5);
+      .limit(6);
     if (error) {
-      console.error('Error fetching student_answers for progress:', error);
+      console.error('Error fetching user_answers for progress:', error);
       return;
     }
     // Compute stats for the latest 5 answers
@@ -292,7 +311,7 @@ class ProgressManager {
     this.userProgress.accuracy = accuracy;
     this.userProgress.completionPercentage = completionPercentage;
     // Optionally, update answeredQuestions set
-    this.userProgress.answeredQuestions = new Set(answers.map(a => a.question_id));
+    this.userProgress.answeredQuestions = new Set(answers.map(a => a.main_question_id));
     // Save to localStorage for consistency
     this.saveProgress();
   }
@@ -336,17 +355,16 @@ function startQuiz() {
 
 // ---------------------- Initialize ----------------------
 document.addEventListener("DOMContentLoaded", async () => {
-  // Check for quiz attempts from quiz page
   const quizAttempts = JSON.parse(localStorage.getItem('currentQuizAttempts') || '[]');
   const progressContent = document.querySelector('.progress-content');
-  // Remove any previous summary message
   const prevMsg = document.getElementById('quiz-summary-message');
   if (prevMsg) prevMsg.remove();
 
+  // Always update from user_answers
+  await progressManager.updateProgressFromUserAnswers();
+
+  // If there are quiz attempts, process and record them
   if (quizAttempts.length > 0) {
-    // Load progress from student_answers table for the current user
-    await progressManager.updateProgressFromStudentAnswers();
-    // Process the attempts
     for (const attempt of quizAttempts) {
       await progressManager.recordQuestionAttempt(
         {
@@ -359,15 +377,16 @@ document.addEventListener("DOMContentLoaded", async () => {
         attempt.timeSpent
       );
     }
-    // Clear the attempts from localStorage
     localStorage.removeItem('currentQuizAttempts');
-    // Show completion message
     showCompletionMessage(quizAttempts[0]);
-    // Show progress values
+  }
+
+  // After updating, check if there is any progress to show
+  const stats = progressManager.getProgressStats();
+  if (stats.questionsAnswered > 0) {
     if (progressContent) progressContent.style.display = '';
     updateProgressDisplay();
   } else {
-    // Hide progress values and show message
     if (progressContent) progressContent.style.display = 'none';
     const summaryContainer = document.createElement('div');
     summaryContainer.id = 'quiz-summary-message';
@@ -376,12 +395,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     const mainContent = document.getElementById('progress-main-content');
     if (mainContent) mainContent.appendChild(summaryContainer);
   }
+
   // Add event listener for play button
   document.getElementById('playButton').addEventListener('click', startQuiz);
   
   // Add reset button
   const resetButton = document.createElement('button');
-  resetButton.textContent = 'Reset Progress';
+  resetButton.textContent = 'Home';
   resetButton.style.cssText = `
     position: fixed;
     top: 20px;
@@ -396,24 +416,24 @@ document.addEventListener("DOMContentLoaded", async () => {
     font-size: 14px;
   `;
   resetButton.addEventListener('click', async () => {
-    if (confirm('Are you sure you want to reset all progress? This cannot be undone.')) {
-      // Optionally, you may want to delete all student_answers for this user
+    if (confirm('Are you sure you want to go back to dashboard?')) {
       try {
         const { data: { session } } = await supabase.auth.getSession();
         const studentId = session?.user?.id || null;
         if (studentId) {
           const { error } = await supabase
-            .from('student_answers')
+            .from('user_answers')
             .delete()
             .eq('student_id', studentId);
           if (error) {
-            console.error('Error resetting student_answers:', error);
+            console.error('Error resetting user_answers:', error);
             alert('Error resetting database. Please try again.');
           } else {
             progressManager.resetProgress();
-            await progressManager.updateProgressFromStudentAnswers();
+            await progressManager.updateProgressFromUserAnswers();
             updateProgressDisplay();
-            alert('Progress reset successfully!');
+            // Redirect to student dashboard after successful reset
+            window.location.href = '../student dashboard/dashboard.html';
           }
         }
       } catch (err) {

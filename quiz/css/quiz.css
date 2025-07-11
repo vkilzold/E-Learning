@@ -1407,3 +1407,14 @@ canvas {
   left: 6px;
   top: 6px;
 }
+
+.sub-question-text {
+  font-family: 'Jersey 10', cursive;
+  font-size: 1.35rem;
+  color: #23282b;
+  margin-bottom: 1.1rem;
+  text-align: center;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  line-height: 1.4;
+}
