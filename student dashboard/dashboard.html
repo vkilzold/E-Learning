@@ -6,7 +6,6 @@
   <title>Student Dashboard - E-Learning</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
   <link rel="stylesheet" href="dashboard.css" />
-  <script src="Chart.js"></script>
 </head>
 <body>
   <div class="dashboard-layout">
@@ -18,7 +17,7 @@
              
             <div class="header-actions">
                 <button class="dark-mode-toggle" title="Toggle dark mode" style="background: none; border: none; font-size: 1.3rem; cursor: pointer; margin-right: 0.5rem;"><i class="fas fa-moon"></i></button>
-                <button class="logout-btn" id="logoutBtn"><i class="fas fa-trophy"></i>&nbsp;Logout</button>
+                <button class="logout-btn" id="logoutBtn"></i>&nbsp;Logout</button>
                 <div class="avatar small"></div>
             </div>
         </header>
@@ -29,7 +28,7 @@
                 <div class="section-header">
                     <h4><i class="fas fa-trophy"></i> Profile Info</h4>
                     <div style="display: flex; gap: 0.5rem;">
-                      <button class="add-class-btn" id="addClassBtn">+ Add Class</button>
+                      <!--<button class="add-class-btn" id="addClassBtn">+ Add Section</button>-->
                       <button class="play-btn" onclick="window.location.href='../quiz/title.html'"><i class="fas fa-gamepad"></i> Play</button>
                     </div>
                 </div>
@@ -41,7 +40,7 @@
                   <div class="student-info">
                     <h2 id="studentFullName">Student Name</h2>
                     <p id="studentEmail">student@email.com</p>
-                    <p id="studentClassName">Class: Not assigned</p>
+                    <!--<p id="studentClassName">Section: Not assigned</p>-->
                   </div>
                 </div>
             </div>
@@ -129,12 +128,19 @@
                 </div>
             </div>
 
+            
             <div class="card performance-card">
                 <div class="section-header">
-                    <h4><i class="fas fa-gem"></i> Performance Overview</h4>
+                    <h4><i class="fas fa-gem"></i> Skill Badge Grid</h4>
                 </div>
-                <div class="radar-chart">
-                    <canvas id="radarStatsChart"></canvas>
+                <div class="badge-grid">
+                  <div class="badge achieved"><i class="fas fa-star"></i> Time Calculation</div>
+                  <div class="badge"><i class="far fa-star"></i> Unit Conversion</div>
+                  <div class="badge achieved"><i class="fas fa-star"></i> Fraction Application</div>
+                  <div class="badge"><i class="far fa-star"></i> Word Problems</div>
+                  <div class="badge achieved"><i class="fas fa-star"></i> Basic Operation</div>
+                  <div class="badge achieved"><i class="far fa-star"></i> Speed Distance</div>
+                  <div class="badge achieved"><i class="far fa-star"></i> Elapsed Time Reasoning</div>
                 </div>
             </div>
         </div>

@@ -55,12 +55,14 @@ h3, li {
 
 .center-nav, .nav-links, .nav-links a {
   font-family: 'Orbitron', Arial, sans-serif !important;
+  justify-items: center;
 }
 
 .nav-links {
   list-style: none;
-  justify-content: center;
   display: flex;
+  justify-content: center;
+  align-items: center;
   gap: 2.5rem;
   padding: 0;
   margin: 0;
@@ -555,7 +557,7 @@ html {
     text-align: center;
   }
   .nav-links {
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
     justify-content: center;
     gap: 1rem;
@@ -565,13 +567,13 @@ html {
     border-radius: 0 0 1rem 1rem;
   }
   .nav-links li {
-    width: 100%;
+    width: auto;
   }
   .nav-links a {
-    display: block;
-    width: 100%;
-    padding: 0.7rem 0;
-    font-size: 1.1rem;
+    display: inline-block;
+    width: auto;
+    padding: 0.7rem 1rem;
+    font-size: 1rem;
     text-align: center;
   }
   .logo {
@@ -581,7 +583,7 @@ html {
     flex-direction: row;
     align-items: center;
     padding: 7rem 4vw 2rem 4vw;
-    background: linear-gradient(120deg, #232946 60%, #181a20 100%), url('/index folder/image/indexnewnewnew.jpg') center/cover no-repeat;
+    background: linear-gradient(120deg, #7dd3fc 50%, #686c79 100%), url('/index folder/image/indexnewnewnew.jpg') center/cover no-repeat;
   }
   .home-content {
     max-width: 600px;

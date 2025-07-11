@@ -6,12 +6,16 @@
 }
 
 body {
-  height: 100vh;
-  background: #8ca8ab;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 0;
+  min-height: 100vh;
+  background: #8AA8AB;
+  transform: scale(0.75);
+  transform-origin: top left;
+  width: 133.33vw;
+  height: 133.33vh;
+  overflow-x: auto;
 }
 
 .container {

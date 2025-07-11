@@ -324,6 +324,7 @@ if (perfCanvas) {
     },
     options: {
       responsive: true,
+      maintainAspectRatio: false,
       plugins: {
         legend: { position: 'top' },
         title: { display: true, text: 'Class Performance by Subject' }
@@ -373,6 +374,7 @@ if (ctx2) {
     options: {
       indexAxis: 'y',
       responsive: true,
+      maintainAspectRatio: false,
       plugins: {
         legend: { position: 'top', labels: { color: textColor } },
         title: { display: true, text: 'Students Proficiency', color: textColor },
@@ -425,6 +427,7 @@ if (ctx3) {
     },
     options: {
       responsive: true,
+      maintainAspectRatio: false,
       plugins: {
         legend: {
           labels: {

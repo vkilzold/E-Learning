@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Get profile from user_profiles, including class_id
         const { data: profile, error: profileError } = await supabase
             .from('user_profiles')
-            .select('full_name, email, class_id')
+            .select('full_name, email')
             .eq('id', currentUser.id)
             .single();
 
@@ -49,9 +49,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             const avgScoreElem = document.getElementById('averageScore');
             const lastActiveElem = document.getElementById('lastActive');
 
-            // Fetch all answers for this user
+            // Fetch all answers for this user (now from user_answers)
             const { data: answers, error } = await supabase
-                .from('student_answers')
+                .from('user_answers')
                 .select('is_correct, answered_at')
                 .eq('student_id', userId);
 
@@ -99,23 +99,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 
 // ------------------------------------ Display Current Class Name ------------------------------------
-        if (classElement) { // Ensure the element exists
-            if (profile.class_id) {
-                const { data: currentClass, error: classError } = await supabase
-                    .from('classes')
-                    .select('name') // Only need the name
-                    .eq('id', profile.class_id)
-                    .single();
-
-                if (!classError && currentClass) {
-                    classElement.textContent = `Class: ${currentClass.name}`; // Display class name
-                } else {
-                    console.error("Error fetching joined class details:", classError);
-                    classElement.textContent = `Class: Error loading details`; // Indicate an error
-                }
-            } else {
-                classElement.textContent = 'Class: Not assigned'; // Default text if no class_id
-            }
+        if (classElement) {
+            classElement.textContent = 'Class: Not assigned'; // Or any default message
         }
 
 

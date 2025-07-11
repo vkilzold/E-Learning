@@ -6,12 +6,13 @@
 }
 
 body {
+  min-height: 100vh;
   height: 100vh;
-  background: #8ca8ab;
+  width: 100vw;
+  background: #8AA8AB;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 20px;
 }
 
 .container {
@@ -60,7 +61,7 @@ body {
 h2 {
   font-size: 40px;
   margin-bottom: 20px;
-  color: #232627;
+  color: #222c31;
 }
 
 /* Form group styles */
@@ -108,6 +109,7 @@ form input {
 }
 
 /* Role selection styles */
+/*
 .role-selection {
   display: flex;
   gap: 20px;
@@ -128,7 +130,7 @@ form input {
   width: auto;
   margin: 0;
 }
-
+*/
 .terms-agreement {
   margin: 15px 0;
   text-align: left;
@@ -243,22 +245,67 @@ form input {
 
 @media (max-width: 600px) {
   .container {
-    display: block;
-    max-width: 95vw;
-    width: 100%;
-    margin: 3vh auto;
-    border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.18);
+    max-width: 340px;
+    width: 98vw;
+    margin: 2vh auto;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
     background: #fff;
+    padding: 4px 0;
   }
   .image-section {
     display: none;
   }
   .login-section {
-    padding: 20px 8px;
+    padding: 10px 4px;
   }
   .form-container {
-    padding: 0;
+    max-width: 98vw;
+    width: 100%;
+    padding: 0 6px;
+  }
+  h2 {
+    font-size: 18px;
+    margin-bottom: 8px;
+  }
+  .form-group label,
+  .role-selection label,
+  .terms-agreement label,
+  .gender-selection label {
+    font-size: 11px;
+  }
+  form input,
+  .password-field input,
+  .name-fields input,
+  .gender-select {
+    font-size: 12px;
+    padding: 6px;
+    height: 28px;
+  }
+  .role-selection {
+    gap: 8px;
+    font-size: 11px;
+  }
+  .terms-agreement {
+    font-size: 11px;
+  }
+  .buttons {
+    gap: 4px;
+  }
+  .signup-btn, .login-btn {
+    font-size: 12px;
+    padding: 8px 0;
+    border-radius: 5px;
+  }
+  .footer-links {
+    font-size: 9px;
+    padding: 4px 2px;
+    gap: 4px 6px;
+  }
+  .branding {
+    font-size: 0.8rem;
+    top: 8px;
+    left: 6px;
   }
 }
 
@@ -370,7 +417,7 @@ form input {
   left: 40px;
   font-size: 1.3rem;
   font-weight: bold;
-  color: #1f1919;
+  color: #221d1d;
   letter-spacing: 2px;
   z-index: 10;
   text-shadow: 1px 1px 8px #005582;

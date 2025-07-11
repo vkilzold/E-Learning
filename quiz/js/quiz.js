@@ -15,7 +15,7 @@ function getCurrentUserId() {
 // Test Supabase connection on load
 console.log('Supabase client created with URL:', supabase);
 console.log('Testing basic connection...');
-
+/*
 // Simple connection test - will be updated after we find the correct table
 supabase.from('questions').select('count').limit(1).then(({ data, error }) => {
   if (error) {
@@ -236,7 +236,7 @@ let currentTopic = null;
 // Select questions for current quiz session with adaptive learning
 async function selectQuizQuestions() {
   console.log('selectQuizQuestions called with adaptive learning');
-  const questionsPerQuiz = 6;
+  const questionsPerQuiz = 5;
   const selectedQuestions = [];
   
   try {
@@ -658,7 +658,7 @@ const playerAnimations = {
 
 const enemyAnimations = {
   attack: { image: null, frameWidth: 256, frameHeight: 64, totalFrames: 33, fps: 12 },
-  death: { image: null, frameWidth: 256, frameHeight: 64, totalFrames: 13, fps: 12 },
+  death: { image: null, frameHeight: 64, totalFrames: 13, fps: 12 },
 };
 
 let currentAnimation = null;
@@ -1257,4 +1257,284 @@ async function handleTimeOut() {
       await loadQuiz();
     }
   }, 3000);
-} 
+}*/
+
+// ================================================== New Quiz Logic for New Layout ==================================================
+document.addEventListener('DOMContentLoaded', function() {
+  // --- New: Fetch main_questions and sub_questions from Supabase ---
+  let mainQuestions = [];
+  let currentMainIdx = 0;
+  let currentSubIdx = 0;
+  let score = 0;
+  let subQuestionResults = [];
+
+  const quizHeader = document.querySelector('.quiz-header');
+  const roundLabel = quizHeader.querySelector('.round-label');
+  const questionLabel = quizHeader.querySelector('.question-label');
+  const questionText = document.querySelector('.quiz-question-text');
+  const choicesForm = document.querySelector('.quiz-choices-form');
+  const submitBtn = document.querySelector('.quiz-submit-btn');
+  const progressNodes = document.querySelectorAll('.progress-node');
+  const loadingPopup = document.getElementById('loadingPopup');
+  const quizMainArea = document.querySelector('.quiz-main-area');
+
+  // Add score display at the top if not present
+  let scoreDisplay = document.querySelector('.quiz-score-display');
+  if (!scoreDisplay) {
+    scoreDisplay = document.createElement('div');
+    scoreDisplay.className = 'quiz-score-display';
+    scoreDisplay.style.cssText = 'position:absolute;top:1.5rem;right:2rem;font-size:1.3rem;font-family:Pixelify Sans,sans-serif;font-weight:700;color:#23282b;background:#ffd740;padding:0.5rem 1.2rem;border-radius:0.7rem;z-index:20;box-shadow:0 2px 8px #ffd74055;';
+    quizHeader.appendChild(scoreDisplay);
+  }
+
+  function updateScoreDisplay() {
+    let totalSubQuestions = 0;
+    mainQuestions.forEach(mq => { if (mq.sub_questions) totalSubQuestions += mq.sub_questions.length; });
+    scoreDisplay.textContent = `Score: ${score} / ${totalSubQuestions}`;
+  }
+
+  async function fetchQuestions() {
+    // Fetch all main_questions
+    const { data: mains, error: mainErr } = await supabase
+      .from('main_questions')
+      .select('*')
+      .order('id', { ascending: true });
+    if (mainErr) {
+      alert('Error fetching main questions: ' + mainErr.message);
+      return [];
+    }
+    // For each main_question, fetch its sub_questions
+    for (const mq of mains) {
+      const { data: subs, error: subErr } = await supabase
+        .from('sub_questions')
+        .select('*')
+        .eq('main_question_id', mq.id)
+        .order('step_number', { ascending: true });
+      if (subErr) {
+        alert('Error fetching sub-questions: ' + subErr.message);
+        mq.sub_questions = [];
+      } else {
+        mq.sub_questions = subs;
+      }
+    }
+    return mains;
+  }
+
+  function renderCurrentQuestion() {
+    if (!mainQuestions.length) return;
+    const mq = mainQuestions[currentMainIdx];
+    const sq = mq.sub_questions[currentSubIdx];
+    // Header
+    roundLabel.textContent = `Round ${currentMainIdx + 1}`;
+    questionLabel.innerHTML = `<span class='question-number'>Main Q${currentMainIdx + 1}</span> | Topic: ${mq.topic || ''} | Difficulty: <span style='color:${(mq.difficulty||'').toLowerCase()==='easy' ? '#388e3c' : '#B0323A'};'>${mq.difficulty||''}</span>`;
+    // Main question as context (optional)
+    let mainQHtml = mq.main_question ? `<div class='main-question-context'><b>Main Question:</b> ${mq.main_question}</div>` : '';
+    // Remove sub-question from quiz-question-text (left column)
+    questionText.innerHTML = mainQHtml;
+    // --- Insert sub-question above choices in quiz-right ---
+    const quizRight = document.querySelector('.quiz-right');
+    if (quizRight) {
+      // Remove any previous sub-question
+      let prevSubQ = quizRight.querySelector('.sub-question-text');
+      if (prevSubQ) prevSubQ.remove();
+      // Create new sub-question div
+      const subQDiv = document.createElement('div');
+      subQDiv.className = 'sub-question-text';
+      subQDiv.innerHTML = sq.question;
+      // Insert above quiz-info-label
+      const infoLabel = quizRight.querySelector('.quiz-info-label');
+      if (infoLabel) {
+        quizRight.insertBefore(subQDiv, infoLabel);
+      } else {
+        quizRight.prepend(subQDiv);
+      }
+    }
+    // Choices
+    let choices = Array.isArray(sq.choices) ? sq.choices : (typeof sq.choices === 'string' ? JSON.parse(sq.choices) : []);
+    const formHtml = choices.map((choice, i) => {
+      const letter = String.fromCharCode(65 + i);
+      return `<label class="quiz-choice-label"><input type="radio" name="answer" value="${letter}"> ${letter}) ${choice}</label>`;
+    }).join('');
+    choicesForm.innerHTML = formHtml;
+    // --- Dynamic Progress Bar ---
+    const progressBar = document.querySelector('.progress-bar');
+    progressBar.innerHTML = '';
+    for (let i = 0; i < mq.sub_questions.length; i++) {
+      const node = document.createElement('div');
+      node.className = 'progress-node';
+      progressBar.appendChild(node);
+      if (i < mq.sub_questions.length - 1) {
+        const line = document.createElement('div');
+        line.className = 'progress-line';
+        progressBar.appendChild(line);
+      }
+    }
+    // Select the new nodes for progress logic
+    const progressNodes = progressBar.querySelectorAll('.progress-node');
+    progressNodes.forEach((node, i) => {
+      node.classList.remove('active', 'checked', 'wrong');
+      if (subQuestionResults[i] === true) {
+        node.classList.add('checked');
+      } else if (subQuestionResults[i] === false) {
+        node.classList.add('wrong');
+      }
+      if (i === currentSubIdx) {
+        node.classList.add('active');
+      }
+    });
+    updateScoreDisplay();
+    // Re-enable submit button and unlock submit for the next question
+    submitLocked = false;
+    submitBtn.disabled = false;
+  }
+
+  function showLoadingPopupFn(show) {
+    if (loadingPopup) loadingPopup.classList.toggle('hidden', !show);
+  }
+
+  function showEndMessage() {
+    window.location.href = 'progress.html';
+  }
+
+  // --- Add running clock for new quiz layout ---
+  let quizStartTimestamp = null;
+  let quizTimerInterval = null;
+  let elapsedSeconds = 0;
+  let subQuestionStartTimestamp = null;
+  // Add a clock display to the header
+  let clockDisplay = document.querySelector('.quiz-clock-display');
+  if (!clockDisplay) {
+    clockDisplay = document.createElement('div');
+    clockDisplay.className = 'quiz-clock-display';
+    clockDisplay.style.cssText = 'position:absolute;top:1.5rem;left:2rem;font-size:1.3rem;font-family:Pixelify Sans,sans-serif;font-weight:700;color:#23282b;background:#e0e0e0;padding:0.5rem 1.2rem;border-radius:0.7rem;z-index:20;box-shadow:0 2px 8px #e0e0e055;';
+    quizHeader.appendChild(clockDisplay);
+  }
+  function updateClockDisplay() {
+    const mins = Math.floor(elapsedSeconds / 60);
+    const secs = elapsedSeconds % 60;
+    clockDisplay.textContent = `Time: ${mins}:${secs.toString().padStart(2, '0')}`;
+  }
+  function startQuizClock() {
+    quizStartTimestamp = Date.now();
+    elapsedSeconds = 0;
+    updateClockDisplay();
+    quizTimerInterval = setInterval(() => {
+      elapsedSeconds = Math.floor((Date.now() - quizStartTimestamp) / 1000);
+      updateClockDisplay();
+    }, 1000);
+    subQuestionStartTimestamp = Date.now(); // Start timer for first sub-question
+  }
+  function stopQuizClock() {
+    if (quizTimerInterval) clearInterval(quizTimerInterval);
+    updateClockDisplay();
+  }
+
+  // --- Insert answer into user_answers on submit ---
+  let submitLocked = false;
+  submitBtn.addEventListener('click', async function(e) {
+    e.preventDefault();
+    if (submitLocked) return;
+    submitLocked = true;
+    submitBtn.disabled = true;
+    if (!mainQuestions.length) {
+      submitLocked = false;
+      submitBtn.disabled = false;
+      return;
+    }
+    const mq = mainQuestions[currentMainIdx];
+    const sq = mq.sub_questions[currentSubIdx];
+    const selected = choicesForm.querySelector('input[type="radio"]:checked');
+    if (!selected) {
+      alert('Please select an answer!');
+      submitLocked = false;
+      submitBtn.disabled = false;
+      return;
+    }
+    // Check answer
+    let choices = Array.isArray(sq.choices) ? sq.choices : (typeof sq.choices === 'string' ? JSON.parse(sq.choices) : []);
+    const answerIndex = selected.value.charCodeAt(0) - 65;
+    const isCorrect = choices[answerIndex] === sq.correct_answer;
+    // Time taken for this sub-question
+    let timeTakenSeconds = 0;
+    if (subQuestionStartTimestamp) {
+      timeTakenSeconds = Math.floor((Date.now() - subQuestionStartTimestamp) / 1000);
+    }
+    // Insert into user_answers
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const studentId = session?.user?.id || null;
+      const answerRecord = {
+        student_id: studentId,
+        sub_question_id: sq.id,
+        main_question_id: mq.id,
+        is_correct: isCorrect,
+        time_taken_seconds: timeTakenSeconds,
+        difficulty: mq.difficulty
+      };
+      await supabase.from('user_answers').insert(answerRecord);
+    } catch (err) {
+      console.error('Failed to insert answer into user_answers:', err);
+    }
+    // Reset timer for next sub-question
+    subQuestionStartTimestamp = Date.now();
+    // --- Update dynamic progress bar after answer ---
+    const progressBar = document.querySelector('.progress-bar');
+    const progressNodes = progressBar.querySelectorAll('.progress-node');
+    progressNodes[currentSubIdx]?.classList.remove('active');
+    subQuestionResults[currentSubIdx] = isCorrect;
+    if (isCorrect) {
+      progressNodes[currentSubIdx]?.classList.add('checked');
+      score++;
+    } else {
+      progressNodes[currentSubIdx]?.classList.add('wrong');
+    }
+    updateScoreDisplay();
+    // Immediate feedback: highlight selected choice
+    const choiceLabels = choicesForm.querySelectorAll('.quiz-choice-label');
+    choiceLabels.forEach((label, i) => {
+      label.classList.remove('correct', 'wrong');
+      if (i === answerIndex) {
+        label.classList.add(isCorrect ? 'correct' : 'wrong');
+      } else if (isCorrect && choices[i] === sq.correct_answer) {
+        label.classList.add('correct');
+      }
+    });
+    // Disable further selection
+    choicesForm.querySelectorAll('input[type="radio"]').forEach(input => input.disabled = true);
+    // Wait 1 second, then show loading popup and go to next sub-question/main-question
+    setTimeout(() => {
+      showLoadingPopupFn(true);
+      setTimeout(() => {
+        showLoadingPopupFn(false);
+        // Next sub-question or next main question
+        if (currentSubIdx + 1 < mq.sub_questions.length) {
+          currentSubIdx++;
+        } else {
+          currentSubIdx = 0;
+          currentMainIdx++;
+        }
+        if (currentMainIdx < mainQuestions.length && mainQuestions[currentMainIdx].sub_questions.length > 0) {
+          renderCurrentQuestion();
+          submitLocked = false;
+          submitBtn.disabled = false;
+        } else {
+          showEndMessage();
+        }
+      }, 1200);
+    }, 1000);
+  });
+
+  // Initial fetch and render
+  (async () => {
+    showLoadingPopupFn(true);
+    mainQuestions = await fetchQuestions();
+    currentMainIdx = 0;
+    currentSubIdx = 0;
+    showLoadingPopupFn(false);
+    if (mainQuestions.length && mainQuestions[0].sub_questions.length) {
+      renderCurrentQuestion();
+    } else {
+      questionText.innerHTML = 'No questions available.';
+    }
+  })();
+}); 
