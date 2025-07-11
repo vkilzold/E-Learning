@@ -1484,3 +1484,58 @@ canvas {
   color: #fff;
   cursor: pointer;
 }
+
+/* === Desktop Responsiveness Improvements === */
+@media (min-width: 1400px) {
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2.5rem 2rem;
+  }
+  .quiz-main-area {
+    max-width: 1000px;
+    gap: 2.5rem;
+    height: 350px;
+  }
+  .quiz-new-layout {
+    padding: 2.5rem 2rem 2rem 2rem;
+  }
+}
+@media (min-width: 1600px) {
+  .container {
+    max-width: 1350px;
+    padding: 3rem 3rem;
+  }
+  .quiz-main-area {
+    max-width: 1200px;
+    gap: 3rem;
+    height: 400px;
+  }
+  .quiz-new-layout {
+    padding: 3rem 3rem 2.5rem 3rem;
+  }
+}
+@media (min-width: 1800px) {
+  .container {
+    max-width: 1500px;
+    padding: 4rem 4rem;
+  }
+  .quiz-main-area {
+    max-width: 1400px;
+    gap: 4rem;
+    height: 450px;
+  }
+  .quiz-new-layout {
+    padding: 4rem 4rem 3rem 4rem;
+  }
+  .quiz-question-text, .sub-question-text {
+    font-size: 20px;
+  }
+  .quiz-info-label {
+    font-size: 16px;
+  }
+  .quiz-choices-buttons button {
+    font-size: 14px;
+    padding: 14px 24px;
+  }
+}

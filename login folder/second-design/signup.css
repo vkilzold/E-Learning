@@ -7,28 +7,26 @@
 
 body {
   height: 100vh;
+  width: 100vw;
   background: #8AA8AB;
   display: flex;
   justify-content: center;
   align-items: center;
   padding: 20px;
-  transform: scale(0.75);
-  transform-origin: top left;
-  width: 133.33vw;
-  height: 133.33vh;
   overflow-x: auto;
+  overflow: hidden !important;
 }
 
 .container {
   display: flex;
   width: 90%;
-  max-width: 900px;
+  max-width: 750px;
   height: auto;
-  margin: 3vh auto;
+  margin: 2.25vh auto;
   background-color: #FFFFFF;
-  border-radius: 10px;
+  border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 3px 11px rgba(0, 0, 0, 0.2);
 }
 
 /* Left side image section */
@@ -52,42 +50,42 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 40px 30px;
+  padding: 30px 22px;
 }
 
 .form-container {
-  max-width: 350px;
+  max-width: 262px;
   width: 100%;
   margin: 0 auto;
   padding: 0;
 }
 
 h2 {
-  font-size: 40px;
-  margin-bottom: 20px;
+  font-size: 30px;
+  margin-bottom: 15px;
   color: #222c31;
 }
 
 /* Form group styles */
 .form-group {
-  margin-bottom: 15px;
+  margin-bottom: 11px;
   text-align: left;
 }
 
 .form-group label {
   display: block;
-  margin-bottom: 5px;
+  margin-bottom: 4px;
   color: #333;
   font-weight: 500;
-  font-size: 14px;
+  font-size: 11px;
 }
 
 form input {
   width: 100%;
-  padding: 12px;
-  margin-bottom: 15px;
+  padding: 9px;
+  margin-bottom: 11px;
   border: 1px solid #ccc;
-  border-radius: 6px;
+  border-radius: 4px;
 }
 
 /* Password field with Show/Hide toggle */
@@ -95,14 +93,14 @@ form input {
   position: relative;
   display: flex;
   align-items: center;
-  margin-bottom: 15px;
+  margin-bottom: 11px;
   border: 1px solid #ccc;
-  border-radius: 6px;
+  border-radius: 4px;
 }
 
 .password-field input {
   width: 100%;
-  padding: 12px;
+  padding: 9px;
   border: none;
   margin-bottom: 0;
   flex-grow: 1;
@@ -136,15 +134,15 @@ form input {
 }
 */
 .terms-agreement {
-  margin: 15px 0;
+  margin: 11px 0;
   text-align: left;
 }
 
 .terms-agreement label {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 14px;
+  gap: 6px;
+  font-size: 11px;
   color: #333;
   cursor: pointer;
 }
@@ -166,15 +164,15 @@ form input {
 .buttons {
   display: flex;
   justify-content: space-between;
-  gap: 10px;
+  gap: 8px;
 }
 
 .login-btn {
   background-color: #0073b1;
   color: white;
   border: none;
-  padding: 12px 20px;
-  border-radius: 6px;
+  padding: 9px 15px;
+  border-radius: 4px;
   cursor: pointer;
   flex: 1;
 }
@@ -183,8 +181,8 @@ form input {
   background-color: white;
   color: #0073b1;
   border: 1px solid #0073b1;
-  padding: 12px 20px;
-  border-radius: 6px;
+  padding: 9px 15px;
+  border-radius: 4px;
   cursor: pointer;
   flex: 1;
 }
@@ -193,23 +191,23 @@ form input {
   color: white;
   background-color: white;
   border: none;
-  padding: 8px 14px;       
-  border-radius: 30px;     
+  padding: 6px 11px;
+  border-radius: 22px;
   cursor: pointer;
-  flex: none;             
-  width: auto;       
+  flex: none;
+  width: auto;
 }
 
 .footer-links {
   width: 100%;
-  max-width: 900px;
-  margin: 20px auto 0;
-  padding: 10px 20px;
+  max-width: 675px;
+  margin: 15px auto 0;
+  padding: 8px 15px;
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
-  font-size: 12px;
+  font-size: 9px;
   color: #888;
   background: transparent;
   text-align: center;
@@ -218,7 +216,7 @@ form input {
 .footer-links {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px 15px;
+  gap: 8px 11px;
   justify-content: center;
   flex: 1;
 }
@@ -226,7 +224,7 @@ form input {
 .footer-links a {
   color: #666;
   text-decoration: none;
-  font-size: 12px;
+  font-size: 9px;
 }
 
 .footer-links a:hover {
@@ -235,7 +233,7 @@ form input {
 
 .copyright {
   text-align: center;
-  font-size: 12px;
+  font-size: 9px;
   color: #888;
 }
 
@@ -254,6 +252,7 @@ form input {
     display: flex;
     justify-content: center;
     align-items: center;
+    overflow: hidden !important;
   }
   .container {
     margin: 0 auto;
@@ -333,16 +332,34 @@ form input {
   }
 }
 
+@media (min-width: 1400px) {
+  .container {
+    max-width: 1200px;
+    width: 80vw;
+    margin: 4vh auto;
+  }
+  h2 {
+    font-size: 48px;
+  }
+  .form-container {
+    max-width: 500px;
+  }
+  .footer-links {
+    max-width: 1200px;
+    font-size: 14px;
+  }
+}
+
 .name-fields input,
 .name-fields .gender-select {
   flex: 1;
   min-width: 0;
-  padding: 8px;
-  font-size: 14px;
+  padding: 6px;
+  font-size: 11px;
   margin-bottom: 0;
-  height: 38px;
+  height: 28px;
   border: 1px solid #ccc;
-  border-radius: 6px;
+  border-radius: 4px;
   background: #fff;
   color: #333;
   box-sizing: border-box;
@@ -352,10 +369,10 @@ form input {
   background: #fff;
   color: #333;
   border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 14px;
-  padding: 8px;
-  height: 38px;
+  border-radius: 4px;
+  font-size: 11px;
+  padding: 6px;
+  height: 28px;
   box-sizing: border-box;
   max-width: none;
   font-family: inherit;
@@ -364,8 +381,8 @@ form input {
 /* Top login link styling */
 .login-link {
   text-align: right;
-  font-size: 15px;
-  margin-bottom: 18px;
+  font-size: 11px;
+  margin-bottom: 13px;
   color: #444;
 }
 
@@ -378,8 +395,8 @@ form input {
 /* Name fields side by side */
 .name-fields {
   display: flex;
-  gap: 12px;
-  margin-bottom: 15px;
+  gap: 9px;
+  margin-bottom: 11px;
 }
 
 .name-fields input {
@@ -390,16 +407,16 @@ form input {
 /* Gender selection styling */
 .gender-selection {
   display: flex;
-  gap: 18px;
+  gap: 13px;
   justify-content: flex-start;
-  margin-bottom: 15px;
+  margin-bottom: 11px;
 }
 
 .gender-selection label {
-  font-size: 14px;
+  font-size: 11px;
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 3px;
 }
 
 /* Update button style to match the image */
@@ -408,10 +425,10 @@ form input {
   color: #fff;
   border: none;
   font-weight: 500;
-  font-size: 16px;
-  padding: 14px 0;
-  border-radius: 8px;
-  margin-bottom: 10px;
+  font-size: 12px;
+  padding: 11px 0;
+  border-radius: 6px;
+  margin-bottom: 8px;
   transition: background 0.2s;
 }
 
@@ -424,9 +441,9 @@ form input {
   color: #7c5cff;
   border: 1px solid #7c5cff;
   font-weight: 500;
-  font-size: 16px;
-  padding: 14px 0;
-  border-radius: 8px;
+  font-size: 12px;
+  padding: 11px 0;
+  border-radius: 6px;
   transition: background 0.2s, color 0.2s;
 }
 
@@ -437,13 +454,13 @@ form input {
 
 .branding {
   position: absolute;
-  top: 30px;
-  left: 40px;
-  font-size: 1.3rem;
+  top: 23px;
+  left: 30px;
+  font-size: 1rem;
   font-weight: bold;
   color: #221d1d;
-  letter-spacing: 2px;
+  letter-spacing: 1.5px;
   z-index: 10;
-  text-shadow: 1px 1px 8px #005582;
+  text-shadow: 1px 1px 6px #005582;
   font-family: 'Press Start 2P', monospace;
 }
