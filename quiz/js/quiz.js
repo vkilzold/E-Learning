@@ -1393,6 +1393,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function showEndMessage() {
+    stopQuizClock(); // Stop the quiz clock
     window.location.href = 'progress.html';
   }
 
@@ -1401,6 +1402,7 @@ document.addEventListener('DOMContentLoaded', function() {
   let quizTimerInterval = null;
   let elapsedSeconds = 0;
   let subQuestionStartTimestamp = null;
+  
   // Add a clock display to the header
   let clockDisplay = document.querySelector('.quiz-clock-display');
   if (!clockDisplay) {
@@ -1409,11 +1411,13 @@ document.addEventListener('DOMContentLoaded', function() {
     clockDisplay.style.cssText = 'position:absolute;top:1.5rem;left:2rem;font-size:1.3rem;font-family:Pixelify Sans,sans-serif;font-weight:700;color:#23282b;background:#e0e0e0;padding:0.5rem 1.2rem;border-radius:0.7rem;z-index:20;box-shadow:0 2px 8px #e0e0e055;';
     quizHeader.appendChild(clockDisplay);
   }
+  
   function updateClockDisplay() {
     const mins = Math.floor(elapsedSeconds / 60);
     const secs = elapsedSeconds % 60;
     clockDisplay.textContent = `Time: ${mins}:${secs.toString().padStart(2, '0')}`;
   }
+  
   function startQuizClock() {
     quizStartTimestamp = Date.now();
     elapsedSeconds = 0;
@@ -1424,8 +1428,12 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 1000);
     subQuestionStartTimestamp = Date.now(); // Start timer for first sub-question
   }
+  
   function stopQuizClock() {
-    if (quizTimerInterval) clearInterval(quizTimerInterval);
+    if (quizTimerInterval) {
+      clearInterval(quizTimerInterval);
+      quizTimerInterval = null;
+    }
     updateClockDisplay();
   }
 
@@ -1533,6 +1541,7 @@ document.addEventListener('DOMContentLoaded', function() {
     showLoadingPopupFn(false);
     if (mainQuestions.length && mainQuestions[0].sub_questions.length) {
       renderCurrentQuestion();
+      startQuizClock(); // Start the quiz clock
     } else {
       questionText.innerHTML = 'No questions available.';
     }

@@ -1408,3 +1408,86 @@ canvas {
   letter-spacing: 0.01em;
   line-height: 1.4;
 }
+
+/* Clock Display Styling */
+.quiz-clock-display {
+  position: absolute;
+  top: 1.5rem;
+  left: 2rem;
+  font-size: 1.3rem;
+  font-family: 'Pixelify Sans', sans-serif;
+  font-weight: 700;
+  color: #23282b;
+  background: #e0e0e0;
+  padding: 0.5rem 1.2rem;
+  border-radius: 0.7rem;
+  z-index: 20;
+  box-shadow: 0 2px 8px rgba(224, 224, 224, 0.3);
+  border: 2px solid #d0d0d0;
+  transition: all 0.3s ease;
+}
+
+.quiz-clock-display:hover {
+  background: #d5d5d5;
+  box-shadow: 0 4px 12px rgba(224, 224, 224, 0.4);
+  transform: translateY(-1px);
+}
+
+/* Score Display Styling */
+.quiz-score-display {
+  position: absolute;
+  top: 1.5rem;
+  right: 2rem;
+  font-size: 1.3rem;
+  font-family: 'Pixelify Sans', sans-serif;
+  font-weight: 700;
+  color: #23282b;
+  background: #ffd740;
+  padding: 0.5rem 1.2rem;
+  border-radius: 0.7rem;
+  z-index: 20;
+  box-shadow: 0 2px 8px rgba(255, 215, 64, 0.3);
+  border: 2px solid #e6c200;
+  transition: all 0.3s ease;
+}
+
+.quiz-score-display:hover {
+  background: #e6c200;
+  box-shadow: 0 4px 12px rgba(255, 215, 64, 0.4);
+  transform: translateY(-1px);
+}
+
+/* Responsive adjustments for clock and score displays */
+@media (max-width: 600px) {
+  .quiz-clock-display,
+  .quiz-score-display {
+    font-size: 1.1rem;
+    padding: 0.4rem 1rem;
+    top: 1rem;
+  }
+  
+  .quiz-clock-display {
+    left: 1rem;
+  }
+  
+  .quiz-score-display {
+    right: 1rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .quiz-clock-display,
+  .quiz-score-display {
+    font-size: 1rem;
+    padding: 0.3rem 0.8rem;
+    top: 0.8rem;
+  }
+  
+  .quiz-clock-display {
+    left: 0.8rem;
+  }
+  
+  .quiz-score-display {
+    right: 0.8rem;
+  }
+}
