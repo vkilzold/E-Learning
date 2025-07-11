@@ -1283,7 +1283,7 @@ document.addEventListener('DOMContentLoaded', function() {
   if (!scoreDisplay) {
     scoreDisplay = document.createElement('div');
     scoreDisplay.className = 'quiz-score-display';
-    scoreDisplay.style.cssText = 'position:absolute;top:1.5rem;right:2rem;font-size:1.3rem;font-family:Pixelify Sans,sans-serif;font-weight:700;color:#23282b;background:#ffd740;padding:0.5rem 1.2rem;border-radius:0.7rem;z-index:20;box-shadow:0 2px 8px #ffd74055;';
+    scoreDisplay.style.cssText = 'position:absolute;top:1.5rem;right:2rem;font-size:1rem;font-family:Pixelify Sans,sans-serif;font-weight:700;color:#23282b;background:#ffd740;padding:0.3rem 0.8rem;border-radius:0.7rem;z-index:20;box-shadow:0 2px 8px #ffd74055;';
     quizHeader.appendChild(scoreDisplay);
   }
 
@@ -1349,13 +1349,24 @@ document.addEventListener('DOMContentLoaded', function() {
         quizRight.prepend(subQDiv);
       }
     }
-    // Choices
+    // Choices as buttons
     let choices = Array.isArray(sq.choices) ? sq.choices : (typeof sq.choices === 'string' ? JSON.parse(sq.choices) : []);
-    const formHtml = choices.map((choice, i) => {
+    const buttonsHtml = choices.map((choice, i) => {
       const letter = String.fromCharCode(65 + i);
-      return `<label class="quiz-choice-label"><input type="radio" name="answer" value="${letter}"> ${letter}) ${choice}</label>`;
+      return `<button type="button" class="quiz-choice-btn" data-choice="${letter}">${letter}) ${choice}</button>`;
     }).join('');
-    choicesForm.innerHTML = formHtml;
+    const choicesButtons = quizRight.querySelector('.quiz-choices-buttons');
+    if (choicesButtons) choicesButtons.innerHTML = buttonsHtml;
+    // Add click event to each button
+    const btns = quizRight.querySelectorAll('.quiz-choice-btn');
+    btns.forEach(btn => {
+      btn.disabled = false; // Enable buttons on new question
+      btn.addEventListener('click', function() {
+        if (btns[0].disabled) return; // Prevent selection if disabled
+        btns.forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+      });
+    });
     // --- Dynamic Progress Bar ---
     const progressBar = document.querySelector('.progress-bar');
     progressBar.innerHTML = '';
@@ -1443,16 +1454,17 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     const mq = mainQuestions[currentMainIdx];
     const sq = mq.sub_questions[currentSubIdx];
-    const selected = choicesForm.querySelector('input[type="radio"]:checked');
-    if (!selected) {
+    // Get selected button
+    const quizRight = document.querySelector('.quiz-right');
+    const selectedBtn = quizRight.querySelector('.quiz-choice-btn.selected');
+    if (!selectedBtn) {
       alert('Please select an answer!');
       submitLocked = false;
       submitBtn.disabled = false;
       return;
     }
-    // Check answer
     let choices = Array.isArray(sq.choices) ? sq.choices : (typeof sq.choices === 'string' ? JSON.parse(sq.choices) : []);
-    const answerIndex = selected.value.charCodeAt(0) - 65;
+    const answerIndex = selectedBtn.getAttribute('data-choice').charCodeAt(0) - 65;
     const isCorrect = choices[answerIndex] === sq.correct_answer;
     // Time taken for this sub-question
     let timeTakenSeconds = 0;
@@ -1490,17 +1502,16 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     updateScoreDisplay();
     // Immediate feedback: highlight selected choice
-    const choiceLabels = choicesForm.querySelectorAll('.quiz-choice-label');
-    choiceLabels.forEach((label, i) => {
-      label.classList.remove('correct', 'wrong');
+    const btns = quizRight.querySelectorAll('.quiz-choice-btn');
+    btns.forEach((btn, i) => {
+      btn.classList.remove('correct', 'wrong');
+      btn.disabled = true; // Disable all buttons after submit
       if (i === answerIndex) {
-        label.classList.add(isCorrect ? 'correct' : 'wrong');
+        btn.classList.add(isCorrect ? 'correct' : 'wrong');
       } else if (isCorrect && choices[i] === sq.correct_answer) {
-        label.classList.add('correct');
+        btn.classList.add('correct');
       }
     });
-    // Disable further selection
-    choicesForm.querySelectorAll('input[type="radio"]').forEach(input => input.disabled = true);
     // Wait 1 second, then show loading popup and go to next sub-question/main-question
     setTimeout(() => {
       showLoadingPopupFn(true);
