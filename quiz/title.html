@@ -79,6 +79,17 @@
             transform: scale(1.05);
         }
 
+        .zoom-wrapper {
+            transform: scale(0.75);
+            transform-origin: center center;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) { /* Tablet size */
             .title-text {
@@ -130,16 +141,17 @@
         <a href="../index folder/index.html"><img src="assets/buttons/homeBtn.png" alt="Home"></a>
         <a href="#"><img src="assets/buttons/optionBtn.png" alt="Options"></a>
     </div>
-
-    <div class="title-container">
-        <h1 class="title-text"></h1>
-        <div class="action-buttons">
-            <a href="progress.html">
-                <img src="assets/buttons/playBtn.png" alt="Play Quiz" class="action-button-img">
-            </a>
-            <a href="../index folder/index.html">
-                <img src="assets/buttons/quitBtn.png" alt="Quit" class="action-button-img">
-            </a>
+    <div class="zoom-wrapper">
+        <div class="title-container">
+            <h1 class="title-text"></h1>
+            <div class="action-buttons">
+                <a href="progress.html">
+                    <img src="assets/buttons/playBtn.png" alt="Play Quiz" class="action-button-img">
+                </a>
+                <a href="../index folder/index.html">
+                    <img src="assets/buttons/quitBtn.png" alt="Quit" class="action-button-img">
+                </a>
+            </div>
         </div>
     </div>
 </body>

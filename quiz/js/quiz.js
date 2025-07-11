@@ -1278,15 +1278,8 @@ document.addEventListener('DOMContentLoaded', function() {
   const loadingPopup = document.getElementById('loadingPopup');
   const quizMainArea = document.querySelector('.quiz-main-area');
 
-  // Add score display at the top if not present
-  let scoreDisplay = document.querySelector('.quiz-score-display');
-  if (!scoreDisplay) {
-    scoreDisplay = document.createElement('div');
-    scoreDisplay.className = 'quiz-score-display';
-    scoreDisplay.style.cssText = 'position:absolute;top:1.5rem;right:2rem;font-size:1.3rem;font-family:Pixelify Sans,sans-serif;font-weight:700;color:#23282b;background:#ffd740;padding:0.5rem 1.2rem;border-radius:0.7rem;z-index:20;box-shadow:0 2px 8px #ffd74055;';
-    quizHeader.appendChild(scoreDisplay);
-  }
 
+ backend/quiz
   function updateScoreDisplay() {
     let totalSubQuestions = 0;
     mainQuestions.forEach(mq => { if (mq.sub_questions) totalSubQuestions += mq.sub_questions.length; });
@@ -1382,10 +1375,12 @@ document.addEventListener('DOMContentLoaded', function() {
         node.classList.add('active');
       }
     });
+ backend/quiz
     updateScoreDisplay();
     // Re-enable submit button and unlock submit for the next question
     submitLocked = false;
     submitBtn.disabled = false;
+ frontdev/quiz
   }
 
   function showLoadingPopupFn(show) {
@@ -1488,7 +1483,6 @@ document.addEventListener('DOMContentLoaded', function() {
     } else {
       progressNodes[currentSubIdx]?.classList.add('wrong');
     }
-    updateScoreDisplay();
     // Immediate feedback: highlight selected choice
     const choiceLabels = choicesForm.querySelectorAll('.quiz-choice-label');
     choiceLabels.forEach((label, i) => {
