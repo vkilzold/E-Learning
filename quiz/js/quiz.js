@@ -1283,7 +1283,7 @@ document.addEventListener('DOMContentLoaded', function() {
   if (!scoreDisplay) {
     scoreDisplay = document.createElement('div');
     scoreDisplay.className = 'quiz-score-display';
-    scoreDisplay.style.cssText = 'position:absolute;top:1.5rem;right:2rem;font-size:1.3rem;font-family:Pixelify Sans,sans-serif;font-weight:700;color:#23282b;background:#ffd740;padding:0.5rem 1.2rem;border-radius:0.7rem;z-index:20;box-shadow:0 2px 8px #ffd74055;';
+    scoreDisplay.style.cssText = 'position:absolute;top:1.5rem;right:2rem;font-size:1rem;font-family:Pixelify Sans,sans-serif;font-weight:700;color:#23282b;background:#ffd740;padding:0.3rem 0.8rem;border-radius:0.7rem;z-index:20;box-shadow:0 2px 8px #ffd74055;';
     quizHeader.appendChild(scoreDisplay);
   }
 
@@ -1349,13 +1349,24 @@ document.addEventListener('DOMContentLoaded', function() {
         quizRight.prepend(subQDiv);
       }
     }
-    // Choices
+    // Choices as buttons
     let choices = Array.isArray(sq.choices) ? sq.choices : (typeof sq.choices === 'string' ? JSON.parse(sq.choices) : []);
-    const formHtml = choices.map((choice, i) => {
+    const buttonsHtml = choices.map((choice, i) => {
       const letter = String.fromCharCode(65 + i);
-      return `<label class="quiz-choice-label"><input type="radio" name="answer" value="${letter}"> ${letter}) ${choice}</label>`;
+      return `<button type="button" class="quiz-choice-btn" data-choice="${letter}">${letter}) ${choice}</button>`;
     }).join('');
-    choicesForm.innerHTML = formHtml;
+    const choicesButtons = quizRight.querySelector('.quiz-choices-buttons');
+    if (choicesButtons) choicesButtons.innerHTML = buttonsHtml;
+    // Add click event to each button
+    const btns = quizRight.querySelectorAll('.quiz-choice-btn');
+    btns.forEach(btn => {
+      btn.disabled = false; // Enable buttons on new question
+      btn.addEventListener('click', function() {
+        if (btns[0].disabled) return; // Prevent selection if disabled
+        btns.forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+      });
+    });
     // --- Dynamic Progress Bar ---
     const progressBar = document.querySelector('.progress-bar');
     progressBar.innerHTML = '';
@@ -1451,17 +1462,118 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     const mq = mainQuestions[currentMainIdx];
     const sq = mq.sub_questions[currentSubIdx];
-    const selected = choicesForm.querySelector('input[type="radio"]:checked');
-    if (!selected) {
+    // Get selected button
+    const quizRight = document.querySelector('.quiz-right');
+    const selectedBtn = quizRight.querySelector('.quiz-choice-btn.selected');
+    if (!selectedBtn) {
       alert('Please select an answer!');
       submitLocked = false;
       submitBtn.disabled = false;
       return;
     }
-    // Check answer
     let choices = Array.isArray(sq.choices) ? sq.choices : (typeof sq.choices === 'string' ? JSON.parse(sq.choices) : []);
-    const answerIndex = selected.value.charCodeAt(0) - 65;
+    const answerIndex = selectedBtn.getAttribute('data-choice').charCodeAt(0) - 65;
     const isCorrect = choices[answerIndex] === sq.correct_answer;
+    // Play sound effect for correct or wrong answer
+    const correctSound = document.getElementById('correct-sound');
+    const wrongSound = document.getElementById('wrong-sound');
+    
+    // Function to play sound with better error handling
+    function playSound(audioElement, soundType) {
+      if (audioElement) {
+        try {
+          audioElement.currentTime = 0;
+          audioElement.play().then(() => {
+            console.log(`${soundType} sound played successfully`);
+          }).catch(error => {
+            console.warn(`Could not play ${soundType} sound:`, error.message);
+            // Fallback: create a simple beep sound using Web Audio API
+            playFallbackSound(isCorrect);
+          });
+        } catch (error) {
+          console.warn(`Error playing ${soundType} sound:`, error.message);
+          // Fallback: create a simple beep sound using Web Audio API
+          playFallbackSound(isCorrect);
+        }
+      } else {
+        console.warn(`${soundType} sound element not found`);
+        // Fallback: create a simple beep sound using Web Audio API
+        playFallbackSound(isCorrect);
+      }
+    }
+    
+    // Better sound effects using Web Audio API
+    function playFallbackSound(isCorrect) {
+      try {
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        
+        if (isCorrect) {
+          // Correct answer: Happy ascending chime sound
+          playCorrectSound(audioContext);
+        } else {
+          // Wrong answer: Sad descending sound
+          playWrongSound(audioContext);
+        }
+        
+        console.log(`Played ${isCorrect ? 'correct' : 'wrong'} sound effect`);
+      } catch (error) {
+        console.warn('Could not play sound effect:', error.message);
+      }
+    }
+    
+    // Correct answer sound - happy ascending chime
+    function playCorrectSound(audioContext) {
+      const frequencies = [523, 659, 784, 1047]; // C, E, G, C (ascending)
+      const duration = 0.15;
+      
+      frequencies.forEach((freq, index) => {
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        oscillator.frequency.setValueAtTime(freq, audioContext.currentTime);
+        oscillator.type = 'sine';
+        
+        const startTime = audioContext.currentTime + (index * 0.1);
+        gainNode.gain.setValueAtTime(0.2, startTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + duration);
+        
+        oscillator.start(startTime);
+        oscillator.stop(startTime + duration);
+      });
+    }
+    
+    // Wrong answer sound - descending chime (same style as correct)
+    function playWrongSound(audioContext) {
+      const frequencies = [400, 350, 300, 250]; // Lower frequencies for "wrong" feeling
+      const duration = 0.2; // Slightly longer duration
+      
+      frequencies.forEach((freq, index) => {
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        oscillator.frequency.setValueAtTime(freq, audioContext.currentTime);
+        oscillator.type = 'sine';
+        
+        const startTime = audioContext.currentTime + (index * 0.15); // Slower timing
+        gainNode.gain.setValueAtTime(0.15, startTime); // Lower volume
+        gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + duration);
+        
+        oscillator.start(startTime);
+        oscillator.stop(startTime + duration);
+      });
+    }
+    
+    if (isCorrect) {
+      playSound(correctSound, 'correct');
+    } else {
+      playSound(wrongSound, 'wrong');
+    }
     // Time taken for this sub-question
     let timeTakenSeconds = 0;
     if (subQuestionStartTimestamp) {
@@ -1498,17 +1610,16 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     updateScoreDisplay();
     // Immediate feedback: highlight selected choice
-    const choiceLabels = choicesForm.querySelectorAll('.quiz-choice-label');
-    choiceLabels.forEach((label, i) => {
-      label.classList.remove('correct', 'wrong');
+    const btns = quizRight.querySelectorAll('.quiz-choice-btn');
+    btns.forEach((btn, i) => {
+      btn.classList.remove('correct', 'wrong');
+      btn.disabled = true; // Disable all buttons after submit
       if (i === answerIndex) {
-        label.classList.add(isCorrect ? 'correct' : 'wrong');
+        btn.classList.add(isCorrect ? 'correct' : 'wrong');
       } else if (isCorrect && choices[i] === sq.correct_answer) {
-        label.classList.add('correct');
+        btn.classList.add('correct');
       }
     });
-    // Disable further selection
-    choicesForm.querySelectorAll('input[type="radio"]').forEach(input => input.disabled = true);
     // Wait 1 second, then show loading popup and go to next sub-question/main-question
     setTimeout(() => {
       showLoadingPopupFn(true);

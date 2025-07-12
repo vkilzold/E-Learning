@@ -402,6 +402,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Add reset button
   const resetButton = document.createElement('button');
   resetButton.textContent = 'Home';
+  resetButton.classList.add('home-btn');
   resetButton.style.cssText = `
     position: fixed;
     top: 20px;

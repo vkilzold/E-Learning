@@ -168,6 +168,24 @@ body {
   width: 100%;
 }
 
+/* === Card Content Zoom-Out Fixes === */
+.card {
+  min-width: 220px;
+  max-width: 100%;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  box-sizing: border-box;
+}
+.card h4, .card p, .card .stat-number, .card .stat-label {
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+.content-cards {
+  grid-auto-flow: row;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 24px;
+}
+
 .card {
   background-color: var(--card-bg);
   color: var(--text-main);
@@ -678,4 +696,17 @@ body {
 #themeToggleBtn .fa-sun {
   color: var(--btn-orange) !important;
   transition: color 0.2s;
+}
+
+/* === Universal Card Content Overflow Fix === */
+.card * {
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+.card img, .card table {
+  max-width: 100%;
+  height: auto;
+  display: block;
 }
