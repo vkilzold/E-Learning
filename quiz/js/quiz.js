@@ -1466,6 +1466,106 @@ document.addEventListener('DOMContentLoaded', function() {
     let choices = Array.isArray(sq.choices) ? sq.choices : (typeof sq.choices === 'string' ? JSON.parse(sq.choices) : []);
     const answerIndex = selectedBtn.getAttribute('data-choice').charCodeAt(0) - 65;
     const isCorrect = choices[answerIndex] === sq.correct_answer;
+    // Play sound effect for correct or wrong answer
+    const correctSound = document.getElementById('correct-sound');
+    const wrongSound = document.getElementById('wrong-sound');
+    
+    // Function to play sound with better error handling
+    function playSound(audioElement, soundType) {
+      if (audioElement) {
+        try {
+          audioElement.currentTime = 0;
+          audioElement.play().then(() => {
+            console.log(`${soundType} sound played successfully`);
+          }).catch(error => {
+            console.warn(`Could not play ${soundType} sound:`, error.message);
+            // Fallback: create a simple beep sound using Web Audio API
+            playFallbackSound(isCorrect);
+          });
+        } catch (error) {
+          console.warn(`Error playing ${soundType} sound:`, error.message);
+          // Fallback: create a simple beep sound using Web Audio API
+          playFallbackSound(isCorrect);
+        }
+      } else {
+        console.warn(`${soundType} sound element not found`);
+        // Fallback: create a simple beep sound using Web Audio API
+        playFallbackSound(isCorrect);
+      }
+    }
+    
+    // Better sound effects using Web Audio API
+    function playFallbackSound(isCorrect) {
+      try {
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        
+        if (isCorrect) {
+          // Correct answer: Happy ascending chime sound
+          playCorrectSound(audioContext);
+        } else {
+          // Wrong answer: Sad descending sound
+          playWrongSound(audioContext);
+        }
+        
+        console.log(`Played ${isCorrect ? 'correct' : 'wrong'} sound effect`);
+      } catch (error) {
+        console.warn('Could not play sound effect:', error.message);
+      }
+    }
+    
+    // Correct answer sound - happy ascending chime
+    function playCorrectSound(audioContext) {
+      const frequencies = [523, 659, 784, 1047]; // C, E, G, C (ascending)
+      const duration = 0.15;
+      
+      frequencies.forEach((freq, index) => {
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        oscillator.frequency.setValueAtTime(freq, audioContext.currentTime);
+        oscillator.type = 'sine';
+        
+        const startTime = audioContext.currentTime + (index * 0.1);
+        gainNode.gain.setValueAtTime(0.2, startTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + duration);
+        
+        oscillator.start(startTime);
+        oscillator.stop(startTime + duration);
+      });
+    }
+    
+    // Wrong answer sound - descending chime (same style as correct)
+    function playWrongSound(audioContext) {
+      const frequencies = [400, 350, 300, 250]; // Lower frequencies for "wrong" feeling
+      const duration = 0.2; // Slightly longer duration
+      
+      frequencies.forEach((freq, index) => {
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        oscillator.frequency.setValueAtTime(freq, audioContext.currentTime);
+        oscillator.type = 'sine';
+        
+        const startTime = audioContext.currentTime + (index * 0.15); // Slower timing
+        gainNode.gain.setValueAtTime(0.15, startTime); // Lower volume
+        gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + duration);
+        
+        oscillator.start(startTime);
+        oscillator.stop(startTime + duration);
+      });
+    }
+    
+    if (isCorrect) {
+      playSound(correctSound, 'correct');
+    } else {
+      playSound(wrongSound, 'wrong');
+    }
     // Time taken for this sub-question
     let timeTakenSeconds = 0;
     if (subQuestionStartTimestamp) {

@@ -27,7 +27,7 @@ body {
   font-size: 1.2rem; /* Reduced from 1.3rem - small adjustment */          
   margin-bottom: 1.1rem; /* Reduced from 1.2rem */
   text-align: center;
-  font-family: 'Jersey 10', cursive;
+  font-family: 'Montserrat', sans-serif;
 }
   
 #question {
@@ -42,7 +42,7 @@ body {
   font-size: 1.2rem; /* Reduced from 1.3rem - small adjustment */
   margin-bottom: 1.1rem; /* Reduced from 1.2rem */
   text-align: center;
-  font-family: 'Jersey 10', cursive;
+  font-family: 'Montserrat', sans-serif;
 }
 
 .content-area {
@@ -70,7 +70,7 @@ canvas#gameCanvas {
   border-radius: 0.9rem; /* Reduced from 1rem - small adjustment */
   box-shadow: none;
   padding: 1.8rem 1.8rem 1.1rem 1.8rem; /* Reduced from 2rem 2rem 1.2rem 2rem */
-  font-family: 'Pixelify Sans', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-size: 1.6rem; /* Reduced from 1.8rem - small adjustment */
   color: #fff;
   text-align: center;
@@ -106,7 +106,7 @@ canvas#gameCanvas {
   margin-top: 0.9rem; /* Reduced from 1rem - small adjustment */
   padding: 0.55rem 1.6rem; /* Reduced from 0.6rem 1.8rem - small adjustment */
   font-size: 0.95rem; /* Reduced from 1rem - small adjustment */
-  font-family: 'Pixelify Sans', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   background: linear-gradient(90deg, #ff9800 60%, #ffd740 100%);
   color: #23282b;
   border: none;
@@ -205,7 +205,7 @@ h1, h2, h3 {
   color : #2B3537;
 }
 h1, h2 {
-  font-family: 'Pixelify Sans', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-weight: 700;
   text-transform: uppercase;
   margin-bottom: 0.7rem; /* Reduced from 0.8rem - small adjustment */
@@ -213,7 +213,7 @@ h1, h2 {
 }
 
 li {
-  font-family: 'Jersey 10', cursive;
+  font-family: 'Montserrat', sans-serif;
 }
 
 h3 {
@@ -244,7 +244,7 @@ li {
 }
 
 .temp-score {
-  font-family: 'Pixelify Sans', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-size: 1.6rem; /* Reduced from 1.8rem - small adjustment */
   color: #fff;
   font-weight: 700;
@@ -353,7 +353,7 @@ li {
   padding: 2.5rem 3.5rem;
   border-radius: 1.5rem;
   font-size: 2rem;
-  font-family: 'Pixelify Sans', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   color: #fff;
   box-shadow: 0 0 32px 8px #ff9800cc, 0 0 80px 24px #ff980055;
   border: 2px solid #ff9800;
@@ -387,7 +387,7 @@ li {
   border: none;
   padding: 0;
   cursor: pointer;
-  font-family: 'Pixelify Sans', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-size: 1.2rem;
   text-transform: uppercase;
   image-rendering: pixelated;
@@ -446,7 +446,7 @@ canvas {
 }
 
 .score-animate {
-  font-family: 'Pixelify Sans', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-size: 2rem;
   color: #3aa12b;
   font-weight: 700;
@@ -580,7 +580,7 @@ canvas {
   background: #23282b;
   padding: 2rem 2.5rem;
   border-radius: 1.2rem;
-  font-family: 'Pixelify Sans', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   color: #fff;
   box-shadow: 0 0 24px 6px #ff9800cc, 0 0 40px 12px #ff980055;
   border: 2px solid #ff9800;
@@ -646,7 +646,7 @@ canvas {
   margin-top: 1.2rem;
   padding: 0.7rem 2.2rem;
   font-size: 1.2rem;
-  font-family: 'Pixelify Sans', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   background: linear-gradient(90deg, #ff9800 60%, #ffd740 100%);
   color: #23282b;
   border: none;
@@ -701,7 +701,7 @@ canvas {
   top: 1.5rem;
   right: 2rem;
   z-index: 11;
-  font-family: 'Pixelify Sans', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-size: 2.6rem;
   color: #ffd740;
   font-weight: 700;
@@ -770,7 +770,7 @@ canvas {
   font-size: 1.8rem;
   font-weight: bold;
   color: #23282b;
-  font-family: 'Jersey 10', cursive;
+  font-family: 'Montserrat', sans-serif;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
@@ -779,7 +779,7 @@ canvas {
   bottom: -35px;
   font-size: 1.7rem;
   color: #23282b;
-  font-family: 'Pixelify Sans', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-weight: 600;
 }
 
@@ -812,14 +812,14 @@ canvas {
 .stat-label {
   font-size: 1.2rem;
   color: #23282b;
-  font-family: 'Pixelify Sans', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-weight: 500;
 }
 
 .stat-value {
   font-size: 1.2rem;
   color: #23282b;
-  font-family: 'Jersey 10', cursive;
+  font-family: 'Montserrat', sans-serif;
   font-weight: bold;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
 }
@@ -1011,7 +1011,7 @@ canvas {
     padding: 0.2rem 0.2rem; /* Reduced from 0.3rem 0.2rem */
   }
   .title h1, .title h2 {
-    font-size: 0.9rem; /* Reduced from 1rem */
+    font-size: 2rem; /* Reduced from 1rem */
   }
   .score {
     left: 0.2rem;
@@ -1043,7 +1043,7 @@ canvas {
   .playButton {
     width: 6em; /* Reduced from 7em */
     height: 1.8em; /* Reduced from 2em */
-    font-size: 0.9rem; /* Reduced from 1rem */
+    font-size: 1.5rem; /* Reduced from 1rem */
     min-width: 48px; /* Reduced from 56px */
     min-height: 32px; /* Reduced from 40px */
     border-radius: 1rem; /* Reduced from 1.2em */
@@ -1166,14 +1166,14 @@ canvas {
   margin-bottom: 1.8rem; /* Reduced from 2rem - small adjustment */
 }
 .round-label {
-  font-family: 'Pixelify Sans', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-size: 1.6rem; /* Reduced from 1.7rem - small adjustment */
   font-weight: 700;
   color: #23282b;
   margin-bottom: 0.35rem; /* Reduced from 0.4rem - small adjustment */
 }
 .question-label {
-  font-family: 'Pixelify Sans', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-size: 2rem; /* Reduced from 2.1rem - small adjustment */
   font-weight: 700;
   color: #23282b;
@@ -1244,7 +1244,7 @@ canvas {
   text-align: center;
 }
 .quiz-info-desc {
-  font-family: 'Jersey 10', cursive;
+  font-family: 'Montserrat', sans-serif;
   font-size: 0.95rem; /* Reduced from 1rem - small adjustment */
   color: #23282b;
   margin-bottom: 1.1rem; /* Reduced from 1.2rem - small adjustment */
@@ -1259,7 +1259,7 @@ canvas {
   border: none;
   background: #e0e3e4;
   font-size: 0.95rem; /* Reduced from 1rem - small adjustment */
-  font-family: 'Jersey 10', cursive;
+  font-family: 'Montserrat', sans-serif;
   color: #23282b;
   outline: none;
   box-sizing: border-box;
@@ -1355,7 +1355,7 @@ canvas {
   background: #e0e0e0;
   border-radius: 0.6rem; /* Reduced from 0.7rem */
   padding: 0.7rem 1rem; /* Reduced from 0.8rem 1.2rem */
-  font-family: 'Jersey 10', cursive;
+  font-family: 'Montserrat', sans-serif;
   font-size: 1.2rem; /* Reduced from 1.35rem */
   color: #23282b;
   cursor: pointer;
@@ -1413,27 +1413,29 @@ canvas {
   background: #e0e0e0;
   border-radius: 0.6rem; /* Reduced from 0.7rem */
   padding: 1rem 1rem; /* Reduced from 1.1rem 1.2rem */
-  font-family: 'Jersey 10', cursive;
+  font-family: 'Montserrat', sans-serif;
   font-size: 1.2rem; /* Reduced from 1.35rem */
   color: #23282b;
   cursor: pointer;
   border: 2px solid transparent;
-  transition: background 0.2s, border 0.2s, color 0.2s, box-shadow 0.2s;
+  transition: background 0.2s, border 0.2s, color 0.2s, box-shadow 0.2s, transform 0.2s;
   margin-bottom: 0;
   user-select: none;
   box-shadow: 0 2px 8px #0001;
   text-align: left;
 }
 .quiz-choice-btn:hover, .quiz-choice-btn.selected {
-  background: #d2d2ff;
-  border-color: #388e3c;
+  background: #ffeb3b;
+  border-color: #ff9800;
   color: #23282b;
-  box-shadow: 0 4px 16px #388e3c22;
+  box-shadow: 0 4px 16px #ff980022;
+  transform: translateY(-2px);
 }
 .quiz-choice-btn:active {
-  background: #b3e5fc;
-  border-color: #388e3c;
+  background: #ffc107;
+  border-color: #ff9800;
   color: #23282b;
+  transform: translateY(0px);
 }
 .quiz-choice-btn.correct {
   background: #4caf50;
