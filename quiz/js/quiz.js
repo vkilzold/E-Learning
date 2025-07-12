@@ -115,6 +115,80 @@ async function testUserPerformanceTable() {
   }
 }
 
+// Test user_answers table access
+async function testUserAnswersTable() {
+  console.log('Testing user_answers table access...');
+  
+  try {
+    // Test 1: Try to select from the table
+    const { data: selectData, error: selectError } = await supabase
+      .from('user_answers')
+      .select('*')
+      .limit(1);
+    
+    if (selectError) {
+      console.error('❌ Cannot select from user_answers table:', selectError);
+      console.log('This indicates RLS policies are blocking access');
+    } else {
+      console.log('✅ Can select from user_answers table');
+      console.log('Sample data:', selectData);
+    }
+    
+    // Test 2: Try to insert a test record
+    const { data: { session } } = await supabase.auth.getSession();
+    const studentId = session?.user?.id || null;
+    
+    const testRecord = {
+      student_id: studentId,
+      sub_question_id: 1,
+      main_question_id: 1,
+      is_correct: true,
+      time_taken_seconds: 30,
+      difficulty: 'easy'
+    };
+    
+    const { data: insertData, error: insertError } = await supabase
+      .from('user_answers')
+      .insert(testRecord)
+      .select();
+    
+    if (insertError) {
+      console.error('❌ Cannot insert into user_answers table:', insertError);
+      console.log('This confirms RLS policies are blocking inserts');
+      console.log('Error details:', insertError);
+      
+      // Check if it's an RLS policy error
+      if (insertError.message && insertError.message.includes('policy')) {
+        console.log('🔒 This is a Row Level Security (RLS) policy error');
+        console.log('You need to either:');
+        console.log('1. Disable RLS on the user_answers table');
+        console.log('2. Create permissive RLS policies');
+        console.log('3. Use a different table without RLS');
+      }
+    } else {
+      console.log('✅ Successfully inserted test record into user_answers table');
+      console.log('Inserted data:', insertData);
+      
+      // Clean up the test record
+      if (insertData && insertData[0] && insertData[0].id) {
+        const { error: deleteError } = await supabase
+          .from('user_answers')
+          .delete()
+          .eq('id', insertData[0].id);
+        
+        if (deleteError) {
+          console.log('Warning: Could not delete test record:', deleteError);
+        } else {
+          console.log('✅ Test record cleaned up');
+        }
+      }
+    }
+    
+  } catch (err) {
+    console.error('Exception testing user_answers table:', err);
+  }
+}
+
 // Test database structure
 async function testDatabaseStructure() {
   console.log('Testing database structure...');
@@ -218,6 +292,7 @@ async function testDatabaseStructure() {
 // Run structure test and student_answers test
 testDatabaseStructure();
 testUserPerformanceTable();
+testUserAnswersTable();
 
 // Store current question data
 let currentQuestion = null;
@@ -1294,30 +1369,56 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   async function fetchQuestions() {
-    // Fetch all main_questions
-    const { data: mains, error: mainErr } = await supabase
-      .from('main_questions')
-      .select('*')
-      .order('id', { ascending: true });
-    if (mainErr) {
-      alert('Error fetching main questions: ' + mainErr.message);
+    console.log('Fetching questions from database...');
+    
+    try {
+      // Fetch all main_questions
+      const { data: mains, error: mainErr } = await supabase
+        .from('main_questions')
+        .select('*')
+        .order('id', { ascending: true });
+      
+      if (mainErr) {
+        console.error('❌ Error fetching main questions:', mainErr);
+        alert('Error fetching main questions: ' + mainErr.message);
+        return [];
+      }
+      
+      console.log(`✅ Successfully fetched ${mains?.length || 0} main questions`);
+      
+      if (!mains || mains.length === 0) {
+        console.log('No main questions found in database');
+        return [];
+      }
+      
+      // For each main_question, fetch its sub_questions
+      for (const mq of mains) {
+        console.log(`Fetching sub-questions for main question ${mq.id}...`);
+        
+        const { data: subs, error: subErr } = await supabase
+          .from('sub_questions')
+          .select('*')
+          .eq('main_question_id', mq.id)
+          .order('step_number', { ascending: true });
+        
+        if (subErr) {
+          console.error(`❌ Error fetching sub-questions for main question ${mq.id}:`, subErr);
+          alert('Error fetching sub-questions: ' + subErr.message);
+          mq.sub_questions = [];
+        } else {
+          mq.sub_questions = subs || [];
+          console.log(`✅ Found ${mq.sub_questions.length} sub-questions for main question ${mq.id}`);
+        }
+      }
+      
+      console.log('✅ All questions fetched successfully');
+      return mains;
+      
+    } catch (err) {
+      console.error('❌ Exception in fetchQuestions:', err);
+      alert('Failed to fetch questions: ' + err.message);
       return [];
     }
-    // For each main_question, fetch its sub_questions
-    for (const mq of mains) {
-      const { data: subs, error: subErr } = await supabase
-        .from('sub_questions')
-        .select('*')
-        .eq('main_question_id', mq.id)
-        .order('step_number', { ascending: true });
-      if (subErr) {
-        alert('Error fetching sub-questions: ' + subErr.message);
-        mq.sub_questions = [];
-      } else {
-        mq.sub_questions = subs;
-      }
-    }
-    return mains;
   }
 
   function renderCurrentQuestion() {
@@ -1591,9 +1692,57 @@ document.addEventListener('DOMContentLoaded', function() {
         time_taken_seconds: timeTakenSeconds,
         difficulty: mq.difficulty
       };
-      await supabase.from('user_answers').insert(answerRecord);
+      
+      console.log('Attempting to insert answer record:', answerRecord);
+      
+      const { data: insertData, error: insertError } = await supabase
+        .from('user_answers')
+        .insert(answerRecord)
+        .select();
+      
+      if (insertError) {
+        console.error('❌ Error inserting into user_answers table:', insertError);
+        console.log('Error details:', insertError);
+        
+        // Check if it's an RLS policy error
+        if (insertError.message && insertError.message.includes('policy')) {
+          console.log('🔒 This is a Row Level Security (RLS) policy error');
+          console.log('Answer data will be stored in localStorage as fallback');
+          
+          // Store in localStorage as fallback
+          const existingAnswers = JSON.parse(localStorage.getItem('userAnswersData') || '[]');
+          existingAnswers.push({
+            ...answerRecord,
+            timestamp: new Date().toISOString(),
+            stored_locally: true
+          });
+          localStorage.setItem('userAnswersData', JSON.stringify(existingAnswers));
+          console.log('✅ Answer data stored in localStorage as fallback');
+        }
+      } else {
+        console.log('✅ Successfully inserted answer into user_answers table:', insertData);
+      }
     } catch (err) {
       console.error('Failed to insert answer into user_answers:', err);
+      
+      // Store in localStorage as fallback
+      const { data: { session } } = await supabase.auth.getSession();
+      const studentId = session?.user?.id || null;
+      const answerRecord = {
+        student_id: studentId,
+        sub_question_id: sq.id,
+        main_question_id: mq.id,
+        is_correct: isCorrect,
+        time_taken_seconds: timeTakenSeconds,
+        difficulty: mq.difficulty,
+        timestamp: new Date().toISOString(),
+        stored_locally: true
+      };
+      
+      const existingAnswers = JSON.parse(localStorage.getItem('userAnswersData') || '[]');
+      existingAnswers.push(answerRecord);
+      localStorage.setItem('userAnswersData', JSON.stringify(existingAnswers));
+      console.log('✅ Answer data stored in localStorage as fallback due to error');
     }
     // Reset timer for next sub-question
     subQuestionStartTimestamp = Date.now();
@@ -1643,9 +1792,57 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 1000);
   });
 
+  // Function to sync localStorage data back to database
+  async function syncLocalStorageData() {
+    try {
+      // Sync user answers data
+      const localAnswers = JSON.parse(localStorage.getItem('userAnswersData') || '[]');
+      if (localAnswers.length > 0) {
+        console.log(`Attempting to sync ${localAnswers.length} answers from localStorage...`);
+        
+        for (const answer of localAnswers) {
+          if (answer.stored_locally) {
+            const { data: { session } } = await supabase.auth.getSession();
+            const studentId = session?.user?.id || null;
+            
+            const answerRecord = {
+              student_id: studentId,
+              sub_question_id: answer.sub_question_id,
+              main_question_id: answer.main_question_id,
+              is_correct: answer.is_correct,
+              time_taken_seconds: answer.time_taken_seconds,
+              difficulty: answer.difficulty
+            };
+            
+            const { error: syncError } = await supabase
+              .from('user_answers')
+              .insert(answerRecord);
+            
+            if (!syncError) {
+              console.log('✅ Successfully synced answer from localStorage');
+            } else {
+              console.log('❌ Failed to sync answer from localStorage:', syncError);
+              break; // Stop syncing if we encounter an error
+            }
+          }
+        }
+        
+        // Clear localStorage after successful sync
+        localStorage.removeItem('userAnswersData');
+        console.log('✅ localStorage data synced and cleared');
+      }
+    } catch (err) {
+      console.error('Error syncing localStorage data:', err);
+    }
+  }
+
   // Initial fetch and render
   (async () => {
     showLoadingPopupFn(true);
+    
+    // Try to sync any localStorage data first
+    await syncLocalStorageData();
+    
     mainQuestions = await fetchQuestions();
     currentMainIdx = 0;
     currentSubIdx = 0;
