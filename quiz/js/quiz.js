@@ -1429,26 +1429,54 @@ document.addEventListener('DOMContentLoaded', function() {
     roundLabel.textContent = `Round ${currentMainIdx + 1}`;
     questionLabel.innerHTML = `<span class='question-number'>Main Q${currentMainIdx + 1}</span> | Topic: ${mq.topic || ''} | Difficulty: <span style='color:${(mq.difficulty||'').toLowerCase()==='easy' ? '#388e3c' : '#B0323A'};'>${mq.difficulty||''}</span>`;
     // Main question as context (optional)
-    let mainQHtml = mq.main_question ? `<div class='main-question-context'><b>Main Question:</b> ${mq.main_question}</div>` : '';
-    // Remove sub-question from quiz-question-text (left column)
-    questionText.innerHTML = mainQHtml;
-    // --- Insert sub-question above choices in quiz-right ---
-    const quizRight = document.querySelector('.quiz-right');
-    if (quizRight) {
-      // Remove any previous sub-question
-      let prevSubQ = quizRight.querySelector('.sub-question-text');
-      if (prevSubQ) prevSubQ.remove();
-      // Create new sub-question div
+    let mainQHtml = mq.main_question ? `<div class='main-question-context'>${mq.main_question}</div>` : '';
+    // Render main question, sub-question, and hint in quiz-left
+    const quizLeft = document.querySelector('.quiz-left');
+    if (quizLeft) {
+      quizLeft.innerHTML = '';
+      // Main question
+      if (mainQHtml) quizLeft.innerHTML += mainQHtml;
+      // Sub-question
       const subQDiv = document.createElement('div');
       subQDiv.className = 'sub-question-text';
       subQDiv.innerHTML = sq.question;
-      // Insert above quiz-info-label
-      const infoLabel = quizRight.querySelector('.quiz-info-label');
-      if (infoLabel) {
-        quizRight.insertBefore(subQDiv, infoLabel);
-      } else {
-        quizRight.prepend(subQDiv);
+      quizLeft.appendChild(subQDiv);
+      // Hint button
+      const hintBtn = document.createElement('div');
+      hintBtn.className = 'quiz-help-icon';
+      hintBtn.title = 'Hint';
+      hintBtn.innerHTML = '?<span class="quiz-hint-label" style="display:none;">Hint</span>';
+      quizLeft.appendChild(hintBtn);
+      // Add modal and label logic
+      const helpModal = document.getElementById('quiz-help-modal');
+      const closeHelp = document.getElementById('close-help-modal');
+      const quizHintLabel = hintBtn.querySelector('.quiz-hint-label');
+      if (hintBtn && helpModal && closeHelp && quizHintLabel) {
+        hintBtn.addEventListener('click', () => {
+          helpModal.style.display = 'flex';
+        });
+        closeHelp.addEventListener('click', () => {
+          helpModal.style.display = 'none';
+        });
+        helpModal.addEventListener('click', (e) => {
+          if (e.target === helpModal) helpModal.style.display = 'none';
+        });
+        hintBtn.addEventListener('mouseenter', () => {
+          quizHintLabel.style.display = 'inline-block';
+        });
+        hintBtn.addEventListener('mouseleave', () => {
+          quizHintLabel.style.display = 'none';
+        });
       }
+    }
+    // Only render choices and submit in quiz-right
+    const quizRight = document.querySelector('.quiz-right');
+    if (quizRight) {
+      // Remove any sub-question or hint
+      let prevSubQ = quizRight.querySelector('.sub-question-text');
+      if (prevSubQ) prevSubQ.remove();
+      let prevHint = quizRight.querySelector('.quiz-help-icon');
+      if (prevHint) prevHint.remove();
     }
     // Choices as buttons
     let choices = Array.isArray(sq.choices) ? sq.choices : (typeof sq.choices === 'string' ? JSON.parse(sq.choices) : []);
@@ -1769,27 +1797,24 @@ document.addEventListener('DOMContentLoaded', function() {
         btn.classList.add('correct');
       }
     });
-    // Wait 1 second, then show loading popup and go to next sub-question/main-question
-    setTimeout(() => {
-      showLoadingPopupFn(true);
-      setTimeout(() => {
-        showLoadingPopupFn(false);
-        // Next sub-question or next main question
-        if (currentSubIdx + 1 < mq.sub_questions.length) {
-          currentSubIdx++;
-        } else {
-          currentSubIdx = 0;
-          currentMainIdx++;
-        }
-        if (currentMainIdx < mainQuestions.length && mainQuestions[currentMainIdx].sub_questions.length > 0) {
-          renderCurrentQuestion();
-          submitLocked = false;
-          submitBtn.disabled = false;
-        } else {
-          showEndMessage();
-        }
-      }, 1200);
-    }, 1000);
+    // Set feedback modal status and explanation
+    const feedbackStatus = document.getElementById('quiz-feedback-status');
+    const feedbackExplanation = document.querySelector('.quiz-feedback-explanation');
+    if (feedbackStatus && feedbackExplanation) {
+      if (isCorrect) {
+        feedbackStatus.textContent = 'CORRECT';
+        feedbackStatus.className = 'quiz-feedback-status';
+        feedbackExplanation.textContent = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam euismod.';
+      } else {
+        feedbackStatus.textContent = 'INCORRECT';
+        feedbackStatus.className = 'quiz-feedback-status incorrect';
+        feedbackExplanation.textContent = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam euismod.';
+      }
+    }
+    // Show feedback modal
+    const feedbackModal = document.getElementById('quiz-feedback-modal');
+    if (feedbackModal) feedbackModal.style.display = 'flex';
+    // Do NOT load the next question here
   });
 
   // Function to sync localStorage data back to database
@@ -1854,4 +1879,28 @@ document.addEventListener('DOMContentLoaded', function() {
       questionText.innerHTML = 'No questions available.';
     }
   })();
+
+  // Find feedback modal and next button
+  const feedbackModal = document.getElementById('quiz-feedback-modal');
+  const feedbackNextBtn = document.getElementById('quiz-feedback-next-btn');
+
+  if (feedbackNextBtn) {
+    feedbackNextBtn.addEventListener('click', function() {
+      if (feedbackModal) feedbackModal.style.display = 'none';
+      // Next sub-question or next main question
+      if (currentSubIdx + 1 < mainQuestions[currentMainIdx].sub_questions.length) {
+        currentSubIdx++;
+      } else {
+        currentSubIdx = 0;
+        currentMainIdx++;
+      }
+      if (currentMainIdx < mainQuestions.length && mainQuestions[currentMainIdx].sub_questions.length > 0) {
+        renderCurrentQuestion();
+        submitLocked = false;
+        submitBtn.disabled = false;
+      } else {
+        showEndMessage();
+      }
+    });
+  }
 }); 

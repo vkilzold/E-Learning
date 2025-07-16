@@ -63,10 +63,9 @@
         <!-- Main Content -->
         <div class="quiz-main-area">
           <div class="quiz-left">
-            <div class="quiz-question-text">
-
+            <div class="quiz-question-text" style="display: flex; flex-direction: column; align-items: flex-start; justify-content: center; min-height: 220px; width: 100%;">
+              <!-- main question context will be rendered here -->
             </div>
-            <div class="quiz-help-icon">?</div>
           </div>
           <div class="quiz-right">
             <div class="quiz-info-label">Choose the correct answer:</div>
@@ -85,5 +84,19 @@
   <script type="module" src="js/quiz.js"></script>
   <audio id="correct-sound" src="assets/sounds/correct.mp3" preload="auto"></audio>
   <audio id="wrong-sound" src="assets/sounds/wrong.mp3" preload="auto"></audio>
+  <div id="quiz-help-modal" class="quiz-help-modal" style="display: none;">
+    <div class="quiz-help-modal-content">
+      <h2>Hint</h2>
+      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque euismod, urna eu tincidunt consectetur, nisi nisl aliquam nunc, eget aliquam massa nisl quis neque.</p>
+      <button id="close-help-modal" class="close-help-modal">Close</button>
+    </div>
+  </div>
+  <div id="quiz-feedback-modal" class="quiz-feedback-modal" style="display: none;">
+    <div class="quiz-feedback-modal-content">
+      <div id="quiz-feedback-status" class="quiz-feedback-status">CORRECT</div>
+      <div class="quiz-feedback-explanation">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque euismod, urna eu tincidunt consectetur, nisi nisl aliquam nunc, eget aliquam massa nisl quis neque.</div>
+      <button id="quiz-feedback-next-btn" class="quiz-feedback-next-btn">Next Question</button>
+    </div>
+  </div>
   </body>
 </html>
