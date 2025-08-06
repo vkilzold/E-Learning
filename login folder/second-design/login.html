@@ -5,38 +5,48 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Login</title>
   <link rel="stylesheet" href="login.css" />
+  <link rel="stylesheet" href="https://fonts.cdnfonts.com/css/public-pixel" />
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bungee&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Russo+One&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
 </head>
 <body>
+  <div class="branding">E-LEARNING!</div>
   <div class="container">
     <aside class="image-section">
-      <img src="/login folder/image/d67ec1eda0a924ab5244331097cf308d.jpg" alt="Illustration" />
     </aside>
+    
     <main class="login-section">
       <div class="form-container">
         <h2>Welcome</h2>
-        <form>
-          <input type="text" placeholder="Email or Phone" required />
-          <input type="password" placeholder="Password" required />
-          <a href="#">Forgot password?</a>
-          <div class="buttons">
-            <button type="button" class="login-btn" onclick="window.location.href='/classcode/classcode.html'">Login</button>
-            <button type="button" class="signup-btn">Sign up</button>
-             <button type="button" class="google-btn">
-      <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google icon" style="height: 20px; vertical-align: middle;" />
-    </button>
+        <form id="loginForm" autocomplete="on">
+          <input type="email" id="email" name="email" placeholder="Email or Phone" autocomplete="email" required />
+          <input type="password" id="password" name="password" placeholder="Password" autocomplete="current-password" required />
+          <div class="forgot-remember">
+            <a href="#">Forgot password?</a>
+          </div>
+          <button type="button" class="login-btn">Sign in</button>
+          <div class="signup-link-row">
+            <span>Don't have an account?</span>
+            <a href="#" id="navigateToSignupLink">Sign up</a>
           </div>
         </form>
+
+
+        <div><p id="message" style="color: red;"></p></div>
+        
         <div class="footer-links">
-          <a href="#">Copyright Policy</a>
-          <a href="#">Privacy Policy</a>
-          <a href="#">Send Feedback</a>
-          <a href="#">User Agreement</a>
-          <a href="#">Cookie Policy</a>
-          <a href="#">Community Guidelines</a>
+          <a href="copyright-policy.html">Copyright Policy</a>
+          <a href="privacy-policy.html">Privacy Policy</a>
+          <a href="user-agreement.html">User Agreement</a>
+          <a href="community-guidelines.html">Community Guidelines</a>
         </div>
         <p class="copyright">E-Learning © 2025</p>
       </div>
     </main>
   </div>
+  <script type="module" src="login.js"></script>
 </body>
 </html>
