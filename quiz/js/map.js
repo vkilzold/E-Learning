@@ -105,4 +105,46 @@ style.innerHTML = `
   box-shadow: 0 0 0 4px #90caf9;
 }
 `;
+document.head.appendChild(style);
+
+// Map interactivity for the current HTML structure
+document.addEventListener('DOMContentLoaded', function() {
+  const circles = document.querySelectorAll('.circle');
+  
+  circles.forEach((circle, index) => {
+    circle.addEventListener('click', function() {
+      // Add visual feedback
+      circles.forEach(c => c.classList.remove('active'));
+      this.classList.add('active');
+      
+      // Redirect to progress page
+      window.location.href = 'progress.html';
+    });
+    
+    circle.addEventListener('mouseenter', function() {
+      this.style.transform = 'scale(1.1)';
+      this.style.boxShadow = '0 0 20px rgba(255, 255, 255, 0.5)';
+    });
+    
+    circle.addEventListener('mouseleave', function() {
+      this.style.transform = 'scale(1)';
+      this.style.boxShadow = 'none';
+    });
+  });
+});
+
+// Add CSS for active state
+const style = document.createElement('style');
+style.innerHTML = `
+.circle.active {
+  transform: scale(1.2) !important;
+  box-shadow: 0 0 30px rgba(255, 255, 255, 0.8) !important;
+  transition: all 0.3s ease;
+}
+
+.circle {
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+`;
 document.head.appendChild(style); 
