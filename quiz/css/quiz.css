@@ -108,6 +108,7 @@ canvas#gameCanvas {
 .end-quiz-icon {
   font-size: 1.6rem; /* Reduced from 1.8rem - small adjustment */
   cursor: pointer;
+  -webkit-user-select: none;
   user-select: none;
   transition: transform 0.2s;
   color: #ffd740;
@@ -616,6 +617,7 @@ canvas {
 .end-quiz-icon {
   font-size: 2.1rem;
   cursor: pointer;
+  -webkit-user-select: none;
   user-select: none;
   transition: transform 0.2s;
 }
@@ -809,6 +811,7 @@ canvas {
   background: rgba(255, 255, 255, 0.1);
   padding: 1.5rem;
   border-radius: 1rem;
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   border: 2px solid rgba(255, 255, 255, 0.2);
   padding-bottom: 0.2rem;
@@ -1262,6 +1265,7 @@ canvas {
   transition: background 0.18s, color 0.18s, box-shadow 0.18s, transform 0.12s;
   margin-top: 0.7rem;
   margin-bottom: 0.5rem;
+  -webkit-user-select: none;
   user-select: none;
   position: relative;
   align-self: flex-start;
@@ -1426,6 +1430,7 @@ canvas {
   transition: background 0.2s, border 0.2s, color 0.2s;
   position: relative;
   margin-bottom: 0;
+  -webkit-user-select: none;
   user-select: none;
 }
 .quiz-choice-label:hover, .quiz-choice-label:has(input:focus) {
@@ -1433,8 +1438,8 @@ canvas {
   border-color: #388e3c;
 }
 .quiz-choice-label input[type="radio"] {
-  appearance: none;
   -webkit-appearance: none;
+  appearance: none;
   width: 20px; /* Reduced from 22px */
   height: 20px; /* Reduced from 22px */
   border: 2px solid #388e3c;
@@ -1482,6 +1487,7 @@ canvas {
   font-size: 1.2rem;
   font-weight: 700;
   margin-bottom: 0;
+  -webkit-user-select: none;
   user-select: none;
   box-shadow: 0 2px 8px #0001;
   text-align: left;
