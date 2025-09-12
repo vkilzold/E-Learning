@@ -434,7 +434,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             await progressManager.updateProgressFromUserAnswers();
             updateProgressDisplay();
             // Redirect to student dashboard after successful reset
-            window.location.href = '../student dashboard/dashboard.html';
+            window.location.href = '../student%20dashboard/dashboard.html'
           }
         }
       } catch (err) {
