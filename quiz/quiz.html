@@ -84,6 +84,7 @@
   <script type="module" src="js/quiz.js"></script>
   <audio id="correct-sound" src="assets/sounds/correct.mp3" preload="auto"></audio>
   <audio id="wrong-sound" src="assets/sounds/wrong.mp3" preload="auto"></audio>
+  
   <div id="quiz-help-modal" class="quiz-help-modal" style="display: none;">
     <div class="quiz-help-modal-content">
       <h2>Hint</h2>
@@ -91,6 +92,7 @@
       <button id="close-help-modal" class="close-help-modal">Close</button>
     </div>
   </div>
+  
   <div id="quiz-feedback-modal" class="quiz-feedback-modal" style="display: none;">
     <div class="quiz-feedback-modal-content">
       <div id="quiz-feedback-status" class="quiz-feedback-status">CORRECT</div>
@@ -98,17 +100,13 @@
       <button id="quiz-feedback-next-btn" class="quiz-feedback-next-btn">Next Question</button>
     </div>
   </div>
-  <div id="scenario-transition-modal" class="quiz-modal hidden">
-    <div class="quiz-modal-content">
-      <div class="modal-header">
-        <span class="close-btn" id="close-scenario-modal">&times;</span>
-        <h2 id="scenario-transition-title"></h2>
-      </div>
-      <div class="modal-body">
-        <p id="scenario-transition-text"></p>
-        <button class="modal-next-btn" id="scenario-next-btn">Continue</button>
-      </div>
+
+  <div id="difficulty-modal" class="quiz-feedback-modal" style="display: none;">
+    <div class="quiz-feedback-modal-content">
+        <h2 id="difficulty-modal-title" class="quiz-feedback-status">Level Up!</h2>
+        <p id="difficulty-modal-text" class="quiz-feedback-explanation">You've mastered the Easy scenarios. Get ready for the Medium challenge!</p>
+        <button id="difficulty-modal-ok-btn" class="quiz-feedback-next-btn">OK</button>
     </div>
-  </div>
+</div>
   </body>
 </html>

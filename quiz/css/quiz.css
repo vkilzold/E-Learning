@@ -1887,3 +1887,18 @@ canvas {
   box-sizing: border-box;
   margin: auto;
 }
+
+.modal-content {
+  width: 340px;
+  height: 340px;
+  min-width: 340px;
+  min-height: 340px;
+  max-width: 340px;
+  max-height: 340px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  margin: auto;
+}

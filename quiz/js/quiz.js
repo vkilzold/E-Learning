@@ -28,11 +28,13 @@ document.addEventListener('DOMContentLoaded', function() {
     let subQuestionResults = []; // This array now correctly tracks results per main question
 
     // --- New Mastery Logic Variables ---
-    const correctAnswersNeeded = 10;
-    let correctAnswersCount = 0;
+    const easyAnswersNeeded = 10;
+    const mediumAnswersNeeded = 7;
+    const hardAnswersNeeded = 5;
     let currentDifficulty = 'Easy';
     let usedQuestionIds = [];
-
+    
+    // UI Elements
     const quizHeader = document.querySelector('.quiz-header');
     const roundLabel = quizHeader.querySelector('.round-label');
     const questionLabel = quizHeader.querySelector('.question-label');
@@ -42,14 +44,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const progressNodes = document.querySelectorAll('.progress-node');
     const loadingPopup = document.getElementById('loadingPopup');
     const quizMainArea = document.querySelector('.quiz-main-area');
+    const quizIntro = document.getElementById('quiz-intro');
 
-    // Get the new modal and its elements
-    const scenarioTransitionModal = document.getElementById('scenario-transition-modal');
-    const closeScenarioModal = document.getElementById('close-scenario-modal');
-    const scenarioTransitionTitle = document.getElementById('scenario-transition-title');
-    const scenarioTransitionText = document.getElementById('scenario-transition-text');
-    const scenarioNextBtn = document.getElementById('scenario-next-btn');
-
+    // Get the new modals and their elements
+    const difficultyModal = document.getElementById('difficulty-modal');
+    const difficultyModalTitle = document.getElementById('difficulty-modal-title');
+    const difficultyModalText = document.getElementById('difficulty-modal-text');
+    const difficultyModalOkBtn = document.getElementById('difficulty-modal-ok-btn');
 
     // Add score display at the top if not present
     let scoreDisplay = document.querySelector('.quiz-score-display');
@@ -75,7 +76,15 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function updateScoreDisplay() {
-        scoreDisplay.textContent = `Score: ${score} / 10`;
+        let maxScore;
+        if (currentDifficulty === 'Easy') {
+            maxScore = easyAnswersNeeded;
+        } else if (currentDifficulty === 'Medium') {
+            maxScore = mediumAnswersNeeded;
+        } else {
+            maxScore = hardAnswersNeeded;
+        }
+        scoreDisplay.textContent = `Score: ${score} / ${maxScore}`;
     }
 
     async function fetchQuestions(difficulty) {
@@ -159,7 +168,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Header
         roundLabel.textContent = `Round ${currentMainIdx + 1}`;
-        questionLabel.innerHTML = `<span class='question-number'>Main Q${currentMainIdx + 1}</span> | Topic: ${mq.topic || ''} | Difficulty: <span style='color:${(mq.difficulty||'').toLowerCase()==='easy' ? '#388e3c' : (mq.difficulty||'').toLowerCase()==='medium' ? '#ff9800' : '#B0323A'};'>${mq.difficulty||''}</span> | Correct Streak: ${correctAnswersCount}`;
+        questionLabel.innerHTML = `<span class='question-number'>Main Q${currentMainIdx + 1}</span> | Topic: ${mq.topic || ''} | Difficulty: <span style='color:${(mq.difficulty||'').toLowerCase()==='easy' ? '#388e3c' : (mq.difficulty||'').toLowerCase()==='medium' ? '#ff9800' : '#B0323A'};'>${mq.difficulty||''}</span> | Correct Streak: ${score}`;
         
         // Main question as context (optional)
         let mainQHtml = mq.main_question ? `<div class='main-question-context'>${mq.main_question}</div>` : '';
@@ -388,7 +397,7 @@ document.addEventListener('DOMContentLoaded', function() {
         } catch (err) {
             console.error('Failed to insert answer into user_answers:', err);
             const existingAnswers = JSON.parse(localStorage.getItem('userAnswersData') || '[]');
-            const { data: { session } } = await supabase.auth.getSession();
+            const { data: { session } = {} } = await supabase.auth.getSession();
             existingAnswers.push({
                 student_id: session?.user?.id || null,
                 sub_question_id: sq.id,
@@ -497,7 +506,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.log(`Attempting to sync ${localAnswers.length} answers from localStorage...`);
                 for (const answer of localAnswers) {
                     if (answer.stored_locally) {
-                        const { data: { session } } = await supabase.auth.getSession();
+                        const { data: { session } = {} } = await supabase.auth.getSession();
                         const answerRecord = { ...answer, student_id: session?.user?.id || null };
                         delete answerRecord.stored_locally;
                         delete answerRecord.timestamp;
@@ -561,24 +570,22 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 updateScoreDisplay();
 
-                if (score >= 10) {
-                    console.log(`Mastery achieved for ${currentDifficulty} difficulty! Moving to the next level.`);
-                    
-                    let nextDifficulty = '';
-                    if (currentDifficulty === 'Easy') {
-                        nextDifficulty = 'Medium';
-                    } else if (currentDifficulty === 'Medium') {
-                        nextDifficulty = 'Hard';
-                    }
-                    
-                    if (nextDifficulty) {
-                        scenarioTransitionTitle.textContent = `Scenario Complete!`;
-                        scenarioTransitionText.textContent = `You've mastered the ${currentDifficulty} questions. Get ready for the ${nextDifficulty} challenge!`;
-                        if (scenarioTransitionModal) scenarioTransitionModal.style.display = 'flex';
-                    } else {
-                        console.log('Congratulations! You have completed all difficulties.');
-                        showEndMessage();
-                    }
+                const easyGoal = 10;
+                const mediumGoal = 7;
+                const hardGoal = 5;
+
+                if (currentDifficulty === 'Easy' && score >= easyGoal) {
+                    difficultyModalTitle.textContent = `Level Up!`;
+                    difficultyModalText.textContent = `You've mastered the Easy scenarios. Get ready for the Medium challenge!`;
+                    if (difficultyModal) difficultyModal.style.display = 'flex';
+                } else if (currentDifficulty === 'Medium' && score >= mediumGoal) {
+                    difficultyModalTitle.textContent = `Level Up!`;
+                    difficultyModalText.textContent = `You've mastered the Medium scenarios. Get ready for the Hard challenge!`;
+                    if (difficultyModal) difficultyModal.style.display = 'flex';
+                } else if (currentDifficulty === 'Hard' && score >= hardGoal) {
+                    difficultyModalTitle.textContent = `Congratulations!`;
+                    difficultyModalText.textContent = `You have completed all difficulties. Your quiz journey is now complete.`;
+                    if (difficultyModal) difficultyModal.style.display = 'flex';
                 } else {
                     roundCorrect = true;
                     subQuestionResults = []; 
@@ -600,9 +607,9 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    if (scenarioNextBtn) {
-        scenarioNextBtn.addEventListener('click', function() {
-            if (scenarioTransitionModal) scenarioTransitionModal.style.display = 'none';
+    if (difficultyModalOkBtn) {
+        difficultyModalOkBtn.addEventListener('click', function() {
+            if (difficultyModal) difficultyModal.style.display = 'none';
             
             let nextDifficulty = '';
             if (currentDifficulty === 'Easy') {
@@ -611,21 +618,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 nextDifficulty = 'Hard';
             }
             
-            currentDifficulty = nextDifficulty;
-            score = 0;
-            roundCorrect = true;
-            correctAnswersCount = 0;
-            currentMainIdx = 0;
-            currentSubIdx = 0;
-            subQuestionResults = [];
-            usedQuestionIds = [];
-            fetchAndRenderQuestions();
+            if (nextDifficulty) {
+                currentDifficulty = nextDifficulty;
+                score = 0;
+                roundCorrect = true;
+                currentMainIdx = 0;
+                currentSubIdx = 0;
+                subQuestionResults = [];
+                usedQuestionIds = [];
+                fetchAndRenderQuestions();
+            } else {
+                showEndMessage();
+            }
         });
-    }
-
-    if (closeScenarioModal) {
-      closeScenarioModal.addEventListener('click', () => {
-        if (scenarioTransitionModal) scenarioTransitionModal.style.display = 'none';
-      });
     }
 });
