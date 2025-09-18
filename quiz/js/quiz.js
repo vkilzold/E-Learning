@@ -24,6 +24,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentMainIdx = 0;
     let currentSubIdx = 0;
     let score = 0;
+    let roundCorrect = true; // New: Tracks if all sub-questions in the current round are correct
     let subQuestionResults = []; // This array now correctly tracks results per main question
 
     // --- New Mastery Logic Variables ---
@@ -59,10 +60,22 @@ document.addEventListener('DOMContentLoaded', function() {
         quizHeader.appendChild(scoreDisplay);
     }
 
+    // New: Timer variables
+    let questionTimer = null;
+    const QUESTION_TIME = 60;
+    let timeLeft = QUESTION_TIME;
+
+    // Add clock display to the header
+    let clockDisplay = document.querySelector('.quiz-clock-display');
+    if (!clockDisplay) {
+        clockDisplay = document.createElement('div');
+        clockDisplay.className = 'quiz-clock-display';
+        clockDisplay.style.cssText = 'position:absolute;top:1.5rem;left:2rem;font-size:1.3rem;font-family:Pixelify Sans,sans-serif;font-weight:700;color:#23282b;background:#e0e0e0;padding:0.5rem 1.2rem;border-radius:0.7rem;z-index:20;box-shadow:0 2px 8px #e0e0e055;';
+        quizHeader.appendChild(clockDisplay);
+    }
+
     function updateScoreDisplay() {
-        let totalSubQuestions = 0;
-        mainQuestions.forEach(mq => { if (mq.sub_questions) totalSubQuestions += mq.sub_questions.length; });
-        scoreDisplay.textContent = `Score: ${score} / ${totalSubQuestions}`;
+        scoreDisplay.textContent = `Score: ${score} / 10`;
     }
 
     async function fetchQuestions(difficulty) {
@@ -124,9 +137,25 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function renderCurrentQuestion() {
-        if (!mainQuestions.length) return;
+        if (!mainQuestions.length || currentMainIdx >= mainQuestions.length) {
+            console.log("No more questions to render. Ending quiz.");
+            showEndMessage();
+            return;
+        }
+
         const mq = mainQuestions[currentMainIdx];
         const sq = mq.sub_questions[currentSubIdx];
+
+        if (!sq) {
+            console.log("No sub-question found. Something is wrong with the question data.");
+            // Skip to the next main question if sub-questions are missing
+            currentMainIdx++;
+            currentSubIdx = 0;
+            subQuestionResults = [];
+            roundCorrect = true;
+            renderCurrentQuestion();
+            return;
+        }
         
         // Header
         roundLabel.textContent = `Round ${currentMainIdx + 1}`;
@@ -209,17 +238,19 @@ document.addEventListener('DOMContentLoaded', function() {
         // --- Dynamic Progress Bar ---
         const progressBar = document.querySelector('.progress-bar');
         
-        // Fix: Reset the progress bar HTML for the new round
-        progressBar.innerHTML = '';
+        // Reset the progress bar HTML for the new round
+        if (currentSubIdx === 0) {
+            progressBar.innerHTML = '';
 
-        for (let i = 0; i < mq.sub_questions.length; i++) {
-            const node = document.createElement('div');
-            node.className = 'progress-node';
-            progressBar.appendChild(node);
-            if (i < mq.sub_questions.length - 1) {
-                const line = document.createElement('div');
-                line.className = 'progress-line';
-                progressBar.appendChild(line);
+            for (let i = 0; i < mq.sub_questions.length; i++) {
+                const node = document.createElement('div');
+                node.className = 'progress-node';
+                progressBar.appendChild(node);
+                if (i < mq.sub_questions.length - 1) {
+                    const line = document.createElement('div');
+                    line.className = 'progress-line';
+                    progressBar.appendChild(line);
+                }
             }
         }
         
@@ -241,6 +272,9 @@ document.addEventListener('DOMContentLoaded', function() {
         // Re-enable submit button and unlock submit for the next question
         submitLocked = false;
         submitBtn.disabled = false;
+
+        // Start the question timer
+        startQuestionTimer();
     }
 
     function showLoadingPopupFn(show) {
@@ -248,167 +282,70 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function showEndMessage() {
-        stopQuizClock(); // Stop the quiz clock
+        if (questionTimer) {
+            clearInterval(questionTimer);
+        }
         window.location.href = 'progress.html';
     }
 
-    // --- Add running clock for new quiz layout ---
-    let quizStartTimestamp = null;
-    let quizTimerInterval = null;
-    let elapsedSeconds = 0;
-    let subQuestionStartTimestamp = null;
-    
-    // Add a clock display to the header
-    let clockDisplay = document.querySelector('.quiz-clock-display');
-    if (!clockDisplay) {
-        clockDisplay = document.createElement('div');
-        clockDisplay.className = 'quiz-clock-display';
-        clockDisplay.style.cssText = 'position:absolute;top:1.5rem;left:2rem;font-size:1.3rem;font-family:Pixelify Sans,sans-serif;font-weight:700;color:#23282b;background:#e0e0e0;padding:0.5rem 1.2rem;border-radius:0.7rem;z-index:20;box-shadow:0 2px 8px #e0e0e055;';
-        quizHeader.appendChild(clockDisplay);
-    }
-    
     function updateClockDisplay() {
-        const mins = Math.floor(elapsedSeconds / 60);
-        const secs = elapsedSeconds % 60;
-        clockDisplay.textContent = `Time: ${mins}:${secs.toString().padStart(2, '0')}`;
+        clockDisplay.textContent = `Time Left: ${timeLeft}s`;
     }
     
-    function startQuizClock() {
-        quizStartTimestamp = Date.now();
-        elapsedSeconds = 0;
-        updateClockDisplay();
-        quizTimerInterval = setInterval(() => {
-            elapsedSeconds = Math.floor((Date.now() - quizStartTimestamp) / 1000);
-            updateClockDisplay();
-        }, 1000);
-        subQuestionStartTimestamp = Date.now(); // Start timer for first sub-question
-    }
-    
-    function stopQuizClock() {
-        if (quizTimerInterval) {
-            clearInterval(quizTimerInterval);
-            quizTimerInterval = null;
+    function startQuestionTimer() {
+        // Clear any existing timer to prevent multiple timers running at once
+        if (questionTimer) {
+            clearInterval(questionTimer);
         }
+        timeLeft = QUESTION_TIME;
         updateClockDisplay();
+        questionTimer = setInterval(() => {
+            timeLeft--;
+            updateClockDisplay();
+            if (timeLeft <= 0) {
+                clearInterval(questionTimer);
+                // Handle timeout directly
+                handleTimeout();
+            }
+        }, 1000);
     }
 
-    // --- Insert answer into user_answers on submit ---
-    let submitLocked = false;
-    submitBtn.addEventListener('click', async function(e) {
-        e.preventDefault();
-        if (submitLocked) return;
+    function handleTimeout() {
         submitLocked = true;
         submitBtn.disabled = true;
-        if (!mainQuestions.length) {
-            submitLocked = false;
-            submitBtn.disabled = false;
-            return;
-        }
+
         const mq = mainQuestions[currentMainIdx];
         const sq = mq.sub_questions[currentSubIdx];
+
+        // Mark as incorrect
+        const isCorrect = false;
+        const timeTakenSeconds = QUESTION_TIME;
+
+        processAnswer(sq, mq, isCorrect, timeTakenSeconds);
+        showFeedbackModal(isCorrect);
+    }
+
+    // New: Centralized function to process answer and update UI
+    async function processAnswer(sq, mq, isCorrect, timeTakenSeconds) {
         
-        // Get selected button
-        const quizRight = document.querySelector('.quiz-right');
-        const selectedBtn = quizRight.querySelector('.quiz-choice-btn.selected');
-        if (!selectedBtn) {
-            alert('Please select an answer!');
-            submitLocked = false;
-            submitBtn.disabled = false;
-            return;
+        // Update roundCorrect flag
+        if (!isCorrect) {
+            roundCorrect = false;
         }
-        
-        let choices = Array.isArray(sq.choices) ? sq.choices : (typeof sq.choices === 'string' ? JSON.parse(sq.choices) : []);
-        const answerIndex = selectedBtn.getAttribute('data-choice').charCodeAt(0) - 65;
-        const isCorrect = choices[answerIndex] === sq.correct_answer;
-        
+
         // Play sound effect for correct or wrong answer
         const correctSound = document.getElementById('correct-sound');
         const wrongSound = document.getElementById('wrong-sound');
         
-        // Function to play sound with better error handling
         function playSound(audioElement, soundType) {
             if (audioElement) {
                 try {
                     audioElement.currentTime = 0;
-                    audioElement.play().then(() => {
-                        console.log(`${soundType} sound played successfully`);
-                    }).catch(error => {
-                        console.warn(`Could not play ${soundType} sound:`, error.message);
-                        playFallbackSound(isCorrect);
-                    });
+                    audioElement.play().catch(error => console.warn(`Could not play ${soundType} sound:`, error.message));
                 } catch (error) {
                     console.warn(`Error playing ${soundType} sound:`, error.message);
-                    playFallbackSound(isCorrect);
                 }
-            } else {
-                console.warn(`${soundType} sound element not found`);
-                playFallbackSound(isCorrect);
             }
-        }
-        
-        // Better sound effects using Web Audio API
-        function playFallbackSound(isCorrect) {
-            try {
-                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                
-                if (isCorrect) {
-                    playCorrectSound(audioContext);
-                } else {
-                    playWrongSound(audioContext);
-                }
-                
-                console.log(`Played ${isCorrect ? 'correct' : 'wrong'} sound effect`);
-            } catch (error) {
-                console.warn('Could not play sound effect:', error.message);
-            }
-        }
-        
-        // Correct answer sound - happy ascending chime
-        function playCorrectSound(audioContext) {
-            const frequencies = [523, 659, 784, 1047]; // C, E, G, C (ascending)
-            const duration = 0.15;
-            
-            frequencies.forEach((freq, index) => {
-                const oscillator = audioContext.createOscillator();
-                const gainNode = audioContext.createGain();
-                
-                oscillator.connect(gainNode);
-                gainNode.connect(audioContext.destination);
-                
-                oscillator.frequency.setValueAtTime(freq, audioContext.currentTime);
-                oscillator.type = 'sine';
-                
-                const startTime = audioContext.currentTime + (index * 0.1);
-                gainNode.gain.setValueAtTime(0.2, startTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + duration);
-                
-                oscillator.start(startTime);
-                oscillator.stop(startTime + duration);
-            });
-        }
-        
-        // Wrong answer sound - descending chime (same style as correct)
-        function playWrongSound(audioContext) {
-            const frequencies = [400, 350, 300, 250]; // Lower frequencies for "wrong" feeling
-            const duration = 0.2; // Slightly longer duration
-            
-            frequencies.forEach((freq, index) => {
-                const oscillator = audioContext.createOscillator();
-                const gainNode = audioContext.createGain();
-                
-                oscillator.connect(gainNode);
-                gainNode.connect(audioContext.destination);
-                
-                oscillator.frequency.setValueAtTime(freq, audioContext.currentTime);
-                oscillator.type = 'sine';
-                
-                const startTime = audioContext.currentTime + (index * 0.15); // Slower timing
-                gainNode.gain.setValueAtTime(0.15, startTime); // Lower volume
-                gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + duration);
-                
-                oscillator.start(startTime);
-                oscillator.stop(startTime + duration);
-            });
         }
         
         if (isCorrect) {
@@ -417,11 +354,6 @@ document.addEventListener('DOMContentLoaded', function() {
             playSound(wrongSound, 'wrong');
         }
         
-        // Time taken for this sub-question
-        let timeTakenSeconds = 0;
-        if (subQuestionStartTimestamp) {
-            timeTakenSeconds = Math.floor((Date.now() - subQuestionStartTimestamp) / 1000);
-        }
         
         // Insert into user_answers
         try {
@@ -438,41 +370,27 @@ document.addEventListener('DOMContentLoaded', function() {
             
             console.log('Attempting to insert answer record:', answerRecord);
             
-            const { data: insertData, error: insertError } = await supabase
+            const { error: insertError } = await supabase
                 .from('user_answers')
-                .insert(answerRecord)
-                .select();
+                .insert(answerRecord);
             
             if (insertError) {
                 console.error('❌ Error inserting into user_answers table:', insertError);
-                console.log('Error details:', insertError);
-                
-                // Check if it's an RLS policy error
                 if (insertError.message && insertError.message.includes('policy')) {
-                    console.log('🔒 This is a Row Level Security (RLS) policy error');
-                    console.log('Answer data will be stored in localStorage as fallback');
-                    
-                    // Store in localStorage as fallback
+                    console.log('🔒 This is a Row Level Security (RLS) policy error. Storing in localStorage as fallback.');
                     const existingAnswers = JSON.parse(localStorage.getItem('userAnswersData') || '[]');
-                    existingAnswers.push({
-                        ...answerRecord,
-                        timestamp: new Date().toISOString(),
-                        stored_locally: true
-                    });
+                    existingAnswers.push({ ...answerRecord, timestamp: new Date().toISOString(), stored_locally: true });
                     localStorage.setItem('userAnswersData', JSON.stringify(existingAnswers));
-                    console.log('✅ Answer data stored in localStorage as fallback');
                 }
             } else {
-                console.log('✅ Successfully inserted answer into user_answers table:', insertData);
+                console.log('✅ Successfully inserted answer into user_answers table.');
             }
         } catch (err) {
             console.error('Failed to insert answer into user_answers:', err);
-            
-            // Store in localStorage as fallback
+            const existingAnswers = JSON.parse(localStorage.getItem('userAnswersData') || '[]');
             const { data: { session } } = await supabase.auth.getSession();
-            const studentId = session?.user?.id || null;
-            const answerRecord = {
-                student_id: studentId,
+            existingAnswers.push({
+                student_id: session?.user?.id || null,
                 sub_question_id: sq.id,
                 main_question_id: mq.id,
                 is_correct: isCorrect,
@@ -480,101 +398,118 @@ document.addEventListener('DOMContentLoaded', function() {
                 difficulty: mq.difficulty,
                 timestamp: new Date().toISOString(),
                 stored_locally: true
-            };
-            
-            const existingAnswers = JSON.parse(localStorage.getItem('userAnswersData') || '[]');
-            existingAnswers.push(answerRecord);
+            });
             localStorage.setItem('userAnswersData', JSON.stringify(existingAnswers));
             console.log('✅ Answer data stored in localStorage as fallback due to error');
         }
         
-        // Reset timer for next sub-question
-        subQuestionStartTimestamp = Date.now();
-        
-        // --- Update dynamic progress bar after answer ---
+        // Update UI
         const progressBar = document.querySelector('.progress-bar');
         const progressNodes = progressBar.querySelectorAll('.progress-node');
         progressNodes[currentSubIdx]?.classList.remove('active');
         subQuestionResults[currentSubIdx] = isCorrect;
         if (isCorrect) {
             progressNodes[currentSubIdx]?.classList.add('checked');
-            score++;
-            correctAnswersCount++; // New: Increment correct answers count
         } else {
             progressNodes[currentSubIdx]?.classList.add('wrong');
-            correctAnswersCount = 0; // New: Reset count on a wrong answer
         }
-        updateScoreDisplay();
-        
-        // Immediate feedback: highlight selected choice
+
+        const quizRight = document.querySelector('.quiz-right');
         const btns = quizRight.querySelectorAll('.quiz-choice-btn');
-        btns.forEach((btn, i) => {
-            btn.classList.remove('correct', 'wrong');
-            btn.disabled = true; // Disable all buttons after submit
-            if (i === answerIndex) {
-                btn.classList.add(isCorrect ? 'correct' : 'wrong');
-            } else if (isCorrect && choices[i] === sq.correct_answer) {
-                btn.classList.add('correct');
-            }
-        });
-        
-        // Set feedback modal status and explanation
+        btns.forEach(btn => btn.disabled = true);
+    }
+    
+    // New: Centralized function to show feedback modal
+    function showFeedbackModal(isCorrect) {
         const feedbackStatus = document.getElementById('quiz-feedback-status');
         const feedbackExplanation = document.querySelector('.quiz-feedback-explanation');
         if (feedbackStatus && feedbackExplanation) {
             if (isCorrect) {
                 feedbackStatus.textContent = 'CORRECT';
                 feedbackStatus.className = 'quiz-feedback-status';
-                feedbackExplanation.textContent = 'You are on a roll! Keep it up!'; // Customize for correct answer
+                feedbackExplanation.textContent = 'You are on a roll! Keep it up!';
             } else {
                 feedbackStatus.textContent = 'INCORRECT';
                 feedbackStatus.className = 'quiz-feedback-status incorrect';
-                feedbackExplanation.textContent = 'Don’t worry, you can try again. We’ll re-focus on this topic to help you master it.'; // Customize for incorrect answer
+                feedbackExplanation.textContent = 'Don’t worry, you can try again. We’ll re-focus on this topic to help you master it.';
             }
         }
-        
-        // Show feedback modal
         const feedbackModal = document.getElementById('quiz-feedback-modal');
         if (feedbackModal) feedbackModal.style.display = 'flex';
-        // Do NOT load the next question here
+    }
+
+
+    // --- Insert answer into user_answers on submit ---
+    let submitLocked = false;
+    submitBtn.addEventListener('click', async function(e) {
+        e.preventDefault();
+        if (submitLocked) return;
+        submitLocked = true;
+        submitBtn.disabled = true;
+
+        clearInterval(questionTimer);
+
+        if (!mainQuestions.length) {
+            submitLocked = false;
+            submitBtn.disabled = false;
+            return;
+        }
+
+        const mq = mainQuestions[currentMainIdx];
+        const sq = mq.sub_questions[currentSubIdx];
+        
+        const quizRight = document.querySelector('.quiz-right');
+        const selectedBtn = quizRight.querySelector('.quiz-choice-btn.selected');
+
+        if (!selectedBtn) {
+            alert('Please select an answer!');
+            submitLocked = false;
+            submitBtn.disabled = false;
+            startQuestionTimer(); // Restart timer
+            return;
+        }
+        
+        let choices = Array.isArray(sq.choices) ? sq.choices : (typeof sq.choices === 'string' ? JSON.parse(sq.choices) : []);
+        const answerIndex = selectedBtn.getAttribute('data-choice').charCodeAt(0) - 65;
+        const isCorrect = choices[answerIndex] === sq.correct_answer;
+        let timeTakenSeconds = QUESTION_TIME - timeLeft;
+        
+        // Highlight selected choice and correct answer
+        const btns = quizRight.querySelectorAll('.quiz-choice-btn');
+        btns.forEach((btn, i) => {
+            btn.classList.remove('correct', 'wrong');
+            if (i === answerIndex) {
+                btn.classList.add(isCorrect ? 'correct' : 'wrong');
+            } else if (choices[i] === sq.correct_answer) {
+                btn.classList.add('correct');
+            }
+        });
+
+        processAnswer(sq, mq, isCorrect, timeTakenSeconds);
+        showFeedbackModal(isCorrect);
     });
 
     // Function to sync localStorage data back to database
     async function syncLocalStorageData() {
         try {
-            // Sync user answers data
             const localAnswers = JSON.parse(localStorage.getItem('userAnswersData') || '[]');
             if (localAnswers.length > 0) {
                 console.log(`Attempting to sync ${localAnswers.length} answers from localStorage...`);
-                
                 for (const answer of localAnswers) {
                     if (answer.stored_locally) {
                         const { data: { session } } = await supabase.auth.getSession();
-                        const studentId = session?.user?.id || null;
-                        
-                        const answerRecord = {
-                            student_id: studentId,
-                            sub_question_id: answer.sub_question_id,
-                            main_question_id: answer.main_question_id,
-                            is_correct: answer.is_correct,
-                            time_taken_seconds: answer.time_taken_seconds,
-                            difficulty: answer.difficulty
-                        };
-                        
-                        const { error: syncError } = await supabase
-                            .from('user_answers')
-                            .insert(answerRecord);
-                        
+                        const answerRecord = { ...answer, student_id: session?.user?.id || null };
+                        delete answerRecord.stored_locally;
+                        delete answerRecord.timestamp;
+                        const { error: syncError } = await supabase.from('user_answers').insert(answerRecord);
                         if (!syncError) {
                             console.log('✅ Successfully synced answer from localStorage');
                         } else {
                             console.log('❌ Failed to sync answer from localStorage:', syncError);
-                            break; // Stop syncing if we encounter an error
+                            break;
                         }
                     }
                 }
-                
-                // Clear localStorage after successful sync
                 localStorage.removeItem('userAnswersData');
                 console.log('✅ localStorage data synced and cleared');
             }
@@ -589,10 +524,11 @@ document.addEventListener('DOMContentLoaded', function() {
         mainQuestions = await fetchQuestions(currentDifficulty);
         showLoadingPopupFn(false);
         if (mainQuestions.length > 0 && mainQuestions[0].sub_questions.length > 0) {
-            // New: Reset the progress bar HTML for the new difficulty
             const progressBar = document.querySelector('.progress-bar');
             if (progressBar) progressBar.innerHTML = '';
-
+            
+            subQuestionResults = [];
+            roundCorrect = true;
             renderCurrentQuestion();
         } else {
             questionText.innerHTML = `No ${currentDifficulty} questions available. Quiz finished!`;
@@ -604,10 +540,8 @@ document.addEventListener('DOMContentLoaded', function() {
     (async () => {
         await syncLocalStorageData();
         fetchAndRenderQuestions();
-        startQuizClock(); // Start the quiz clock
     })();
 
-    // Find feedback modal and next button
     const feedbackModal = document.getElementById('quiz-feedback-modal');
     const feedbackNextBtn = document.getElementById('quiz-feedback-next-btn');
 
@@ -615,47 +549,50 @@ document.addEventListener('DOMContentLoaded', function() {
         feedbackNextBtn.addEventListener('click', function() {
             if (feedbackModal) feedbackModal.style.display = 'none';
             
-            // New logic to handle difficulty progression
-            if (correctAnswersCount >= correctAnswersNeeded) {
-                console.log(`Mastery achieved for ${currentDifficulty} difficulty! Moving to the next level.`);
-                
-                let nextDifficulty = '';
-                if (currentDifficulty === 'Easy') {
-                    nextDifficulty = 'Medium';
-                } else if (currentDifficulty === 'Medium') {
-                    nextDifficulty = 'Hard';
-                }
-                
-                if (nextDifficulty) {
-                    scenarioTransitionTitle.textContent = `Scenario Complete!`;
-                    scenarioTransitionText.textContent = `You've mastered the ${currentDifficulty} questions. Get ready for the ${nextDifficulty} challenge!`;
-                    if (scenarioTransitionModal) scenarioTransitionModal.style.display = 'flex';
-                } else {
-                    console.log('Congratulations! You have completed all difficulties.');
-                    showEndMessage();
-                }
+            const mq = mainQuestions[currentMainIdx];
+            
+            if (currentSubIdx + 1 < mq.sub_questions.length) {
+                currentSubIdx++;
+                renderCurrentQuestion();
             } else {
-                // If mastery is not achieved, move to the next sub-question
-                if (currentSubIdx + 1 < mainQuestions[currentMainIdx].sub_questions.length) {
-                    currentSubIdx++;
-                } else {
-                    // Fix: Reset the subQuestionResults array when moving to a new main question
-                    subQuestionResults = []; 
+                // This is the last sub-question of the round
+                if (roundCorrect) {
+                    score++;
+                }
+                updateScoreDisplay();
+
+                if (score >= 10) {
+                    console.log(`Mastery achieved for ${currentDifficulty} difficulty! Moving to the next level.`);
                     
-                    // If all sub-questions for the current main question are answered, move to the next main question
-                    // and add the current main question ID to the used questions list.
+                    let nextDifficulty = '';
+                    if (currentDifficulty === 'Easy') {
+                        nextDifficulty = 'Medium';
+                    } else if (currentDifficulty === 'Medium') {
+                        nextDifficulty = 'Hard';
+                    }
+                    
+                    if (nextDifficulty) {
+                        scenarioTransitionTitle.textContent = `Scenario Complete!`;
+                        scenarioTransitionText.textContent = `You've mastered the ${currentDifficulty} questions. Get ready for the ${nextDifficulty} challenge!`;
+                        if (scenarioTransitionModal) scenarioTransitionModal.style.display = 'flex';
+                    } else {
+                        console.log('Congratulations! You have completed all difficulties.');
+                        showEndMessage();
+                    }
+                } else {
+                    roundCorrect = true;
+                    subQuestionResults = []; 
                     usedQuestionIds.push(mainQuestions[currentMainIdx].id);
                     currentSubIdx = 0;
                     currentMainIdx++;
-                }
 
-                // If all main questions in the current set are exhausted, refetch questions for the current difficulty.
-                if (currentMainIdx >= mainQuestions.length) {
-                    console.log('All questions in the current set have been answered. Fetching more questions...');
-                    currentMainIdx = 0;
-                    fetchAndRenderQuestions();
-                } else {
-                    renderCurrentQuestion();
+                    if (currentMainIdx >= mainQuestions.length) {
+                        console.log('All questions in the current set have been answered. Fetching more questions...');
+                        currentMainIdx = 0;
+                        fetchAndRenderQuestions();
+                    } else {
+                        renderCurrentQuestion();
+                    }
                 }
             }
             submitLocked = false;
@@ -663,7 +600,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // New event listener for the scenario transition modal's "Continue" button
     if (scenarioNextBtn) {
         scenarioNextBtn.addEventListener('click', function() {
             if (scenarioTransitionModal) scenarioTransitionModal.style.display = 'none';
@@ -676,7 +612,8 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             currentDifficulty = nextDifficulty;
-            // Reset all counters for the new difficulty
+            score = 0;
+            roundCorrect = true;
             correctAnswersCount = 0;
             currentMainIdx = 0;
             currentSubIdx = 0;
@@ -686,7 +623,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Optional: Close the new modal by clicking the 'x' button
     if (closeScenarioModal) {
       closeScenarioModal.addEventListener('click', () => {
         if (scenarioTransitionModal) scenarioTransitionModal.style.display = 'none';
