@@ -5,196 +5,121 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>E-Learning Platform</title>
   <link rel="stylesheet" href="style.css">
-  <script src="index.js"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Playfair+Display:wght@400;700&display=swap">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap">
 </head>
-<body>
-<!-- ----------------------------------------------Header---------------------------------------------- -->
- <header class="header">
-  <div class="brand">
-    <div class="logo">E-Learning</div>
-  </div>
-  <nav class="center-nav">
-    <ul class="nav-links">
-      <li><a href="#home">Home</a></li>
-      <li><a href="#services">Services</a></li>
-      <li><a href="#contact">Contacts</a></li>
-    </ul>
-  </nav>
-</header>
-
-
-  <!-------------------------------------------- Home Section --------------------------------------------------->
-  <section class="home" id="home">
-    <div class="home-blur-bg"></div>
-    <div class="home-content">
-      <h1>IMPROVE YOUR SKILLS</h1>
-      <p>Enhance your growth by evaluating your personal math skills</p>
-        <button onclick="window.location.href='/login folder/second-design/login.html'">JOIN US</button>
-    </div>
-        <div class="hero-image"></div> 
-        <div class="hero-ima"></div>
-  </section>
-
- <!-- -------------------------------------------Journey Section-------------------------- -->
-<section class="journey" id="journey">
-  <div class="scroll-wrapper">
-    <button class="scroll-btn left" onclick="scrollLeft()">‹</button>
-
-    <div class="scroll-container">
-      <div class="cards">
-        <div class="card">
-          <h3>Geometry</h3>
-          <p></p>
+<body class="cosmetics-layout">
+  <div class="main-bg">
+    <header class="cosmetics-header">
+      <div class="header-top">
+        <div class="header-icons">
+          <!-- Removed menu and search icons -->
         </div>
-        <div class="card">
-          <h3>Basic Algebra</h3>
-          <p></p>
-        </div>
-        <div class="card">
-          <h3>Fraction and Percentage</h3>
-          <p></p>
-        </div>
-        <div class="card">
-          <h3>Basic Operating</h3>
-          <p></p>
-        </div>
-        <div class="card">
-          <h3>Number Theory</h3>
-          <p></p>
-        </div>
-      </div>
-    </div>
-
-    <button class="scroll-btn right" onclick="scrollRight()">›</button>
-  </div>
-</section>
-
-
-<!-- ----------------------------------------------services---------------------------------------------- --> 
-  
- <section class="services" id="services">
-  <h2 class="section-title">Gamified Learning Features</h2>
-  <div class="services-container">
-
-    <div class="service-box">
-      <h3>🎮 Game-Based Quizzes</h3>
-      <p>Answer interactive quizzes in a fun, timed format that rewards accuracy and speed.</p>
-    </div>
-
-    <div class="service-box">
-      <h3>🏆 Leaderboards</h3>
-      <p>Climb the ranks and compete with classmates to stay on top of the leaderboard.</p>
-    </div>
-
-    <div class="service-box">
-      <h3>🥇 Badges & Rewards</h3>
-      <p>Earn badges and unlock rewards as you progress through each topic and challenge.</p>
-    </div>
-
-    <div class="service-box">
-      <h3>🧩 Unlockable Levels</h3>
-      <p>Advance through levels by mastering skills, and unlock new content as you go.</p>
-    </div>
-
-  </div>
-</section>
-
-<!-- ----------------------------------------------Contact---------------------------------------------- --> 
-   <section class="contact" id="contact">
-  <div class="teams-content">
-    <h3>Need assistance?</h3>
-    <p>Get in touch with us. Our team is continuously working to improve this website, and your inquiries truly help us grow and improve.</p>
-    <form>
-      <input type="email" placeholder="Email" required />
-      <textarea placeholder="Your Message" rows="5" required></textarea>
-      <button type="submit">Send</button>
-    </form>
-  </div>
-  <!-- Container only for the left section -->
-  <div class="container">
-    <div class="left">
-      <h2>Contact Us</h2>
-      <p>We would love to hear from you! Whether you have questions about our coconut maturity detection system, need technical support, or want to collaborate, feel free to reach out.</p>
-
-      <div class="contact-icons">
-        <div class="column">
-          <h3>Email</h3>
-          <a href="https://mail.google.com/mail/?view=cm&to=geosia009@gmail.com" target="_blank" rel="noopener"> 
-            <img src="https://img.icons8.com/ios-filled/50/000000/gmail-new.png" alt="Gmail Icon" />
-          </a>
-        </div>
-        <div class="column">
-          <h3>Facebook</h3>
-            <a href="https://www.facebook.com/letsfallinloveforthenightt" target="_blank" rel="noopener">
-            <img src="https://img.icons8.com/ios-filled/50/000000/facebook--v1.png" alt="Facebook Icon" />
-          </a>
-        </div>
-        <div class="column">
-          <h3>Phone</h3>
-          <a href="tel:+639616003520">
-            <img src="https://img.icons8.com/ios-filled/50/000000/phone.png" alt="Phone Icon" />
+        <div class="header-actions">
+          <a href="/login folder/second-design/login.html" class="profile-link" title="Sign In">
+            <i class="far fa-user"></i>
           </a>
         </div>
       </div>
-    </div>
-  </div>
-</section>
-
-<!-- ----------------------------------------------team---------------------------------------------- --> 
-
-<section id="team" class="our-team-section">
-  <h2>Team Members</h2>
-  <p class="team-subtext">Meet the dedicated individuals behind this project.</p>
-
-  <div class="team-members">
-
-    <div class="member-card">
-      <div class="image-container">
-        <img src="/index folder/image/501198667_1812818739639421_5459372709279831521_n.jpg" alt="Andrei - Frontend Developer" />
-      </div>
-      <h3>Andrei Pira</h3>
-      <p>Frontend Developer</p>
-      <div class="social-icons">
-        <a href="https://facebook.com" target="_blank"><i class="fab fa-facebook-f"></i></a>
-        <a href="https://linkedin.com" target="_blank"><i class="fab fa-linkedin-in"></i></a>
-        <a href="https://instagram.com" target="_blank"><i class="fab fa-instagram"></i></a>
-      </div>
-    </div>
-
-    <div class="member-card">
-      <div class="image-container">
-        <img src="/index folder/image/1x1.jpg" alt="Prince - Gamification Specialist" />
-      </div>
-      <h3>Prince Masilac</h3>
-      <p>Gamification Specialist</p>
-       <div class="social-icons">
-        <a href="https://facebook.com" target="_blank"><i class="fab fa-facebook-f"></i></a>
-        <a href="https://linkedin.com" target="_blank"><i class="fab fa-linkedin-in"></i></a>
-        <a href="https://instagram.com" target="_blank"><i class="fab fa-instagram"></i></a>
-      </div>
-    </div>
-
-    <div class="member-card">
-      <div class="image-container">
-        <img src="/index folder/image/502068829_704484725892567_903052110700465505_n.jpg" alt="Geo - Backend Developer" />
-      </div>
-      <h3>George Sia</h3>
-      <p>Backend Developer</p>
-       <div class="social-icons">
-        <a href="https://facebook.com" target="_blank"><i class="fab fa-facebook-f"></i></a>
-        <a href="https://linkedin.com" target="_blank"><i class="fab fa-linkedin-in"></i></a>
-        <a href="https://instagram.com" target="_blank"><i class="fab fa-instagram"></i></a>
-      </div>
-    </div>
-  </div>
-</section>
-
-      
-    <div class="bottom">
-      <p>Copyright © 2024 E-Learning. All rights reserved.</p>
+      <div class="title-section">
+        <div class="brand-area">
+            <h1 class="brand-title">InQUIZition</h1>
+            <div class="brand-subtitle">
+                <span>Enhance your growth by evaluating your personal math skills</span>
+            </div>
+            <div class="join-button">
+                <button onclick="window.location.href='/login folder/second-design/login.html'">JOIN US</button>
+            </div>
         </div>
+    
+        <div class="right-image">
+            <img src="image/right-image.jpg" alt="cosmetic bubble" class="brand-deco brand-deco-2">
+        </div>
+    </div>
+    
+    </header>
+      <section class="about-section">
+        <div class="about-content">
+          <h2>About InQUIZition</h2>
+          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+          <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+          <div class="features-grid">
+            <div class="feature-item">
+              <h3>Interactive Learning</h3>
+              <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+            </div>
+            <div class="feature-item">
+              <h3>Progress Tracking</h3>
+              <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+            </div>
+            <div class="feature-item">
+              <h3>Gamified Experience</h3>
+              <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+            </div>
+            <div class="feature-item">
+              <h3>AI Implementation</h3>
+              <p>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+      <div class="contact">
+        <div class="teams-content">
+          <h3>Need assistance?</h3>
+          <p>Get in touch with us. Our team is continuously working to improve this website, and your inquiries truly help us grow and improve.</p>
+          <form>
+            <input type="email" placeholder="Email" required />
+            <textarea placeholder="Your Message" rows="5" required></textarea>
+            <button type="submit">Send</button>
+          </form>
+        </div>
+      </div>
+      <section id="team" class="our-team-section">
+        <h2>DEVELOPERS</h2>
+        <p class="team-subtext">Meet the dedicated individuals behind this project.</p>
+        <div class="team-members">
+          <div class="member-card">
+            <div class="image-container">
+              <img src="/index folder/image/501198667_1812818739639421_5459372709279831521_n.jpg" alt="Andrei - Frontend Developer" />
+            </div>
+            <h3>Andrei Pira</h3>
+            <p>Frontend Developer</p>
+            <div class="social-icons">
+                <a href="https://facebook.com" target="_blank" rel="noopener" title="Visit Facebook"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://linkedin.com" target="_blank" rel="noopener" title="Visit LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                <a href="https://instagram.com" target="_blank" rel="noopener" title="Visit Instagram"><i class="fab fa-instagram"></i></a>
+            </div>
+          </div>
+          <div class="member-card">
+            <div class="image-container">
+              <img src="/index folder/image/1x1.jpg" alt="Prince - Gamification Specialist" />
+            </div>
+            <h3>Prince Masilac</h3>
+            <p>Gamification Specialist</p>
+            <div class="social-icons">
+                <a href="https://facebook.com" target="_blank" rel="noopener" title="Visit Facebook"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://linkedin.com" target="_blank" rel="noopener" title="Visit LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                <a href="https://instagram.com" target="_blank" rel="noopener" title="Visit Instagram"><i class="fab fa-instagram"></i></a>
+            </div>
+          </div>
+          <div class="member-card">
+            <div class="image-container">
+              <img src="/index folder/image/502068829_704484725892567_903052110700465505_n.jpg" alt="Geo - Backend Developer" />
+            </div>
+            <h3>George Sia</h3>
+            <p>Backend Developer</p>
+            <div class="social-icons">
+                <a href="https://facebook.com" target="_blank" rel="noopener" title="Visit Facebook"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://linkedin.com" target="_blank" rel="noopener" title="Visit LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                <a href="https://instagram.com" target="_blank" rel="noopener" title="Visit Instagram"><i class="fab fa-instagram"></i></a>
+            </div>
+          </div>
+        </div>
+      </section>
+      <div class="bottom">
+        <p>Copyright © 2024 E-Learning. All rights reserved.</p>
+      </div>
+    </footer>
+  </div>
 </body>
 </html>
