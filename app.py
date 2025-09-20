@@ -1,16 +1,9 @@
-# ----------------------
-# STEP 1: Import necessary libraries
-# ----------------------
 import os
 from flask import Flask, render_template, request, jsonify, session
 from flask_cors import CORS
 from supabase import create_client, Client, ClientOptions
 
-# ----------------------
-# STEP 2: Initialize the Flask app and set up configuration
-# ----------------------
-# We've added the 'template_folder' argument to tell Flask to look for templates
-# starting from the root directory of the project.
+
 app = Flask(__name__, template_folder='.')
 
 # A secret key is needed for session management.
