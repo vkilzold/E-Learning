@@ -29,7 +29,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: var(--darkest-bluegreen);
+  background: #ebebeb;
   color: var(--light-brown);
 }
 
@@ -1705,43 +1705,41 @@ canvas {
 }
 
 .quiz-help-modal {
-  background: #ebebeb; /* darkest bluegreen with opacity */
+  background:#ebebeb;
 }
+
 .quiz-help-modal-content {
   background: #ebebeb;
-  color: #ebebeb;
   border-radius: 1.3rem;
   padding: 2.5rem 2.2rem 2.2rem 2.2rem;
-  max-width: 400px;
+  max-width: 600px;
   min-height: 320px;
   max-height: 75vh;
-  box-shadow: 0 8px 32px #ebebeb, 0 2px 8px #ebebeb;
-  border: 2px solid #ebebeb;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 1.5rem;
   font-family: 'Montserrat', Arial, sans-serif;
-  margin: auto;
+  margin: 5em auto;
+  color: initial;
+  /* Removed the centering properties */
 }
+
 .quiz-help-modal-content h2 {
   margin: 0 0 0.5rem 0;
-  font-size: 1.5rem;
+  font-size: 2.5rem;
   font-family: 'Montserrat', Arial, sans-serif;
   color: var(--light-brown);
   letter-spacing: 0.5px;
 }
+
 .quiz-help-modal-content p {
-  font-size: 1.08rem;
-  text-align: center;
-  margin: 0 0 1rem 0;
-  color: var(--light-brown); /* brown */
+  font-size: 1.4rem;
+  text-align: left; /* Changed to left-align text to prevent centering */
+  margin: 1rem 0 1rem 0;
+  color: var(--light-brown);
   font-family: 'Montserrat', Arial, sans-serif;
 }
+
 .close-help-modal {
-  background: #388e3c;
-  color: #E6D6C1;
+  background:#ebebeb;
+  color: #ebebeb;
   border: none;
   border-radius: 0.6rem;
   padding: 0.7rem 2.2rem;
@@ -1754,6 +1752,7 @@ canvas {
   margin-top: 0.5rem;
   letter-spacing: 0.5px;
 }
+
 .close-help-modal:hover {
   background: #2B505C;
   color: #E6D6C1;
@@ -1828,7 +1827,7 @@ canvas {
 
 .main-question-context {
   max-width: 340px;
-  font-size: 1.18rem;
+  font-size: 1.4rem;
   color: var(--light-brown);
   background: none;
   border-radius: 0.5rem;
@@ -1874,6 +1873,21 @@ canvas {
 }
 
 .quiz-feedback-modal-content {
+  width: 340px;
+  height: 340px;
+  min-width: 340px;
+  min-height: 340px;
+  max-width: 340px;
+  max-height: 340px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  margin: auto;
+}
+
+.modal-content {
   width: 340px;
   height: 340px;
   min-width: 340px;
