@@ -39,7 +39,7 @@ def index():
     Renders the main index page.
     """
     # Now Flask will look for index.html directly in the 'templates' folder.
-    return render_template('index.html')
+    return render_template('index.html') #should be index.html but is quiz for testing
 
 @app.route('/dashboard')
 def dashboard():
@@ -52,7 +52,7 @@ def dashboard():
     if not student_id:
         # If no student ID is found, handle this as a guest user or redirect to login.
         # This now assumes you have a login.html in the 'templates' folder.
-        return render_template('login.html', message='Please log in to view your dashboard.')
+        return render_template('dashboard.html', message='Please log in to view your dashboard.')
 
     try:
         # Query the 'user_profiles' table for the student's data.
@@ -80,9 +80,6 @@ def set_session_id():
 
 @app.route('/quiz')
 def quiz():
-    """
-    Renders the quiz page.
-    """
     # This now assumes you have a quiz.html in the 'templates' folder.
     return render_template('quiz.html')
 
@@ -94,6 +91,17 @@ def signup():
     # This assumes you have a signup.html in the 'templates' folder.
     return render_template('signup.html')
 
+@app.route('/login')
+def login():
+    return render_template('login.html')
+
+@app.route('/title')
+def title():
+    return render_template('title.html')
+
+@app.route('/progress')
+def progress():
+    return render_template('progress.html')
 
 @app.route('/predict', methods=['POST'])
 def predict():

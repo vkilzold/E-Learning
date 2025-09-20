@@ -34,7 +34,7 @@
             </div>
             <div class="play-button">
               <button class = "playButton" id="playButton">
-                <img src="assets/buttons/playBtn.png" alt="Play" class="button-bg" />
+                <img src="../static/images/buttons/playBtn.png" alt="Play" class="button-bg" />
                 <span></span></button>
             </div>
           </div>
@@ -81,9 +81,9 @@
       </div>
     </div>
   </div>
-  <script type="module" src="../static/js/quiz.js"></script>
-  <audio id="correct-sound" src="../static/sounds/correct.mp3" preload="auto"></audio>
-  <audio id="wrong-sound" src="../static/sounds/wrong.mp3" preload="auto"></audio>
+  <script type="module" src="{{ url_for('static', filename='js/quiz.js') }}"></script>
+  <audio id="correct-sound" src="{{ url_for('static', filename='sounds/correct.mp3') }}" preload="auto"></audio>
+<audio id="wrong-sound" src="{{ url_for('static', filename='sounds/wrong.mp3') }}" preload="auto"></audio>
   
   <div id="quiz-help-modal" class="quiz-help-modal" >
     <div class="quiz-help-modal-content">

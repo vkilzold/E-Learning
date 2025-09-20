@@ -1,5 +1,5 @@
 // --- Supabase Client Initialization ---
-import { supabase } from '../../utils/supabaseClient.js';
+import { supabase } from '../utils/supabaseClient.js';
 
 // ------------------------------------ Password eye Function ------------------------------------
 function togglePassword(fieldId) {

@@ -1,5 +1,5 @@
 // ---------------------- Supabase Setup ----------------------
-import { supabase } from "../../utils/supabaseClient.js";
+import { supabase } from "../utils/supabaseClient.js";
 
 // ---------------------- Progress Management ----------------------
 class ProgressManager {
@@ -350,7 +350,7 @@ function hideLoadingPopup() {
 
 function startQuiz() {
   // Simply redirect to quiz page
-  window.location.href = 'quiz.html';
+  window.location.href = '/quiz';
 }
 
 // ---------------------- Initialize ----------------------

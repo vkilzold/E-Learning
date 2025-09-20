@@ -1,5 +1,5 @@
 // --- Supabase Client Initialization ---
-import { supabase } from '../../utils/supabaseClient.js';
+import { supabase } from '../utils/supabaseClient.js';
 
 // These elements are used for interacting with the login form, displaying messages,
 // and navigating to other pages.
@@ -139,7 +139,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Redirect all users to the student dashboard
             setTimeout(() => {
-                window.location.href = '\\/dashboard.html';
+                window.location.href = '/dashboard';
             }, 1500);
         });
     } else {
@@ -149,7 +149,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Event listener for the "Sign up" button (to navigate to signup.html)
     if (navigateToSignupBtn) {
         navigateToSignupBtn.addEventListener('click', () => {
-            window.location.href = '..templates/signup.html';
+            window.location.href = '/signup';
         });
     } else {
         console.warn("Warning: navigateToSignupBtn element not found in the DOM.");
@@ -162,7 +162,7 @@ document.addEventListener('DOMContentLoaded', () => {
         navigateToSignupLink.addEventListener('click', (e) => {
             console.log("Sign up link clicked, navigating to signup.html");
             e.preventDefault();
-            window.location.href = 'signup.html';
+            window.location.href = '/signup';
         });
     } else {
         console.error("Error: navigateToSignupLink element not found in the DOM.");
