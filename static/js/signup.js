@@ -111,7 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
       message.style.color = 'green';
 
       setTimeout(() => {
-        window.location.href = 'login.html';
+        window.location.href = '..templates/login.html';
       }, 1800);
     });
   }

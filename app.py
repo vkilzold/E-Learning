@@ -1,10 +1,16 @@
+# ----------------------
+# STEP 1: Import necessary libraries
+# ----------------------
 import os
 from flask import Flask, render_template, request, jsonify, session
 from flask_cors import CORS
 from supabase import create_client, Client, ClientOptions
 
-
-app = Flask(__name__, template_folder='.')
+# ----------------------
+# STEP 2: Initialize the Flask app and set up configuration
+# ----------------------
+# The app will now automatically look for 'templates' and 'static' folders.
+app = Flask(__name__)
 
 # A secret key is needed for session management.
 # In a real app, you would set this in a secure environment variable.
@@ -32,8 +38,8 @@ def index():
     """
     Renders the main index page.
     """
-    # Updated path to reflect the folder structure.
-    return render_template('index-folder/index.html')
+    # Now Flask will look for index.html directly in the 'templates' folder.
+    return render_template('index.html')
 
 @app.route('/dashboard')
 def dashboard():
@@ -45,8 +51,8 @@ def dashboard():
 
     if not student_id:
         # If no student ID is found, handle this as a guest user or redirect to login.
-        # Updated path to reflect the folder structure.
-        return render_template('login-folder/login.html', message='Please log in to view your dashboard.')
+        # This now assumes you have a login.html in the 'templates' folder.
+        return render_template('login.html', message='Please log in to view your dashboard.')
 
     try:
         # Query the 'user_profiles' table for the student's data.
@@ -57,8 +63,8 @@ def dashboard():
         print(f"Error fetching data from Supabase: {e}")
         student_full_name = "Error fetching name"
     
-    # Updated path to reflect the folder structure.
-    return render_template('student-dashboard/dashboard.html', student_id=student_id, student_name=student_full_name)
+    # This now assumes you have a dashboard.html in the 'templates' folder.
+    return render_template('dashboard.html', student_id=student_id, student_name=student_full_name)
 
 @app.route('/set-session-id', methods=['POST'])
 def set_session_id():
@@ -77,8 +83,17 @@ def quiz():
     """
     Renders the quiz page.
     """
-    # Updated path to reflect the folder structure.
-    return render_template('quiz/quiz.html')
+    # This now assumes you have a quiz.html in the 'templates' folder.
+    return render_template('quiz.html')
+
+@app.route('/signup')
+def signup():
+    """
+    Renders the sign-up page.
+    """
+    # This assumes you have a signup.html in the 'templates' folder.
+    return render_template('signup.html')
+
 
 @app.route('/predict', methods=['POST'])
 def predict():

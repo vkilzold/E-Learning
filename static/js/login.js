@@ -139,7 +139,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Redirect all users to the student dashboard
             setTimeout(() => {
-                window.location.href = '\\student dashboard/dashboard.html';
+                window.location.href = '\\/dashboard.html';
             }, 1500);
         });
     } else {
@@ -149,7 +149,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Event listener for the "Sign up" button (to navigate to signup.html)
     if (navigateToSignupBtn) {
         navigateToSignupBtn.addEventListener('click', () => {
-            window.location.href = 'signup.html';
+            window.location.href = '..templates/signup.html';
         });
     } else {
         console.warn("Warning: navigateToSignupBtn element not found in the DOM.");
