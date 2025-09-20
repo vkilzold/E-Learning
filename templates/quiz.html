@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="css/quiz.css" />
+  <link rel="stylesheet" href="../static/css/quiz.css" />
   <link href="https://fonts.googleapis.com/css2?family=Jersey+10&family=Pixelify+Sans:wght@400;700&display=swap" rel="stylesheet">
   <title>InQUIZition</title>
 </head>
@@ -11,10 +11,10 @@
   <div class="quiz-section">
     <div class="container">
       <!-- Hide old content for now -->
-      <div id="old-quiz-content" style="display:none;">
+      <div id="old-quiz-content" >
         <div class="score">
           <p class ="temp-score" id = "temp-score">0</p>
-          <span id="streak-fire" class="streak-fire" style="display:none;">🔥</span>
+          <span id="streak-fire" class="streak-fire" >🔥</span>
           <div id="score-animation"></div>
         </div>
         <div class="content-area">
@@ -38,7 +38,7 @@
                 <span></span></button>
             </div>
           </div>
-          <div id="end-message" class="end-message" style="display:none;"></div>
+          <div id="end-message" class="end-message" ></div>
         </div>
         <canvas id="gameCanvas"></canvas>
       </div> <!-- end of #old-quiz-content -->
@@ -81,11 +81,11 @@
       </div>
     </div>
   </div>
-  <script type="module" src="js/quiz.js"></script>
-  <audio id="correct-sound" src="assets/sounds/correct.mp3" preload="auto"></audio>
-  <audio id="wrong-sound" src="assets/sounds/wrong.mp3" preload="auto"></audio>
+  <script type="module" src="../static/js/quiz.js"></script>
+  <audio id="correct-sound" src="../static/sounds/correct.mp3" preload="auto"></audio>
+  <audio id="wrong-sound" src="../static/sounds/wrong.mp3" preload="auto"></audio>
   
-  <div id="quiz-help-modal" class="quiz-help-modal" style="display: none;">
+  <div id="quiz-help-modal" class="quiz-help-modal" >
     <div class="quiz-help-modal-content">
       <h2>Hint</h2>
       <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque euismod, urna eu tincidunt consectetur, nisi nisl aliquam nunc, eget aliquam massa nisl quis neque.</p>
@@ -93,7 +93,7 @@
     </div>
   </div>
   
-  <div id="quiz-feedback-modal" class="quiz-feedback-modal" style="display: none;">
+  <div id="quiz-feedback-modal" class="quiz-feedback-modal" >
     <div class="quiz-feedback-modal-content">
       <div id="quiz-feedback-status" class="quiz-feedback-status">CORRECT</div>
       <div class="quiz-feedback-explanation">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque euismod, urna eu tincidunt consectetur, nisi nisl aliquam nunc, eget aliquam massa nisl quis neque.</div>
@@ -101,7 +101,7 @@
     </div>
   </div>
 
-  <div id="difficulty-modal" class="quiz-feedback-modal" style="display: none;">
+  <div id="difficulty-modal" class="quiz-feedback-modal" >
     <div class="quiz-feedback-modal-content">
         <h2 id="difficulty-modal-title" class="quiz-feedback-status">Level Up!</h2>
         <p id="difficulty-modal-text" class="quiz-feedback-explanation">You've mastered the Easy scenarios. Get ready for the Medium challenge!</p>
