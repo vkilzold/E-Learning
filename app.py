@@ -4,7 +4,7 @@
 import os
 from flask import Flask, render_template, request, jsonify, session
 from flask_cors import CORS
-from supabase import create_client, Client, ClientOptions
+from supabase import create_client, Client
 
 # ----------------------
 # STEP 2: Initialize the Flask app and set up configuration
