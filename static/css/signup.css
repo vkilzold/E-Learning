@@ -7,7 +7,6 @@
 
 body {
   height: 100vh;
-  width: 100vw;
   background: #8AA8AB;
   display: flex;
   justify-content: center;
@@ -260,11 +259,19 @@ form input {
     max-width: 360px;
     min-height: unset;
     display: block;
+    margin: 0 auto;
+    width: 70vw;
+    max-width: 360px;
+    min-height: unset;
+    display: block;
   }
 }
 
 @media (max-width: 600px) {
   .container {
+    align-items: center;
+    justify-items: center;
+    justify-content: center;
     align-items: center;
     justify-items: center;
     justify-content: center;

@@ -290,6 +290,17 @@ form a {
 @media (max-width: 600px) {
   body {
     display: flex;
+    margin: 0 auto;
+    width: 100%;
+    max-width: 100%;
+    min-height: unset;
+    display: block;
+  }
+}
+
+@media (max-width: 600px) {
+  body {
+    display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
@@ -316,11 +327,17 @@ form a {
     padding: 4px 0;
     height: auto;
     min-height: unset;
+    min-height: unset;
   }
   .image-section {
     display: none;
+    display: none;
   }
   .login-section {
+    padding: 10px 4px;
+  }
+  .form-container {
+    max-width: 98vw;
     padding: 10px 4px;
   }
   .form-container {

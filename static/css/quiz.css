@@ -15,6 +15,10 @@
   font-size: 13px;
 }
 
+html {
+  font-size: 133.33%;
+}
+
 html, body {
   padding: 0;
   margin: 0;
@@ -395,8 +399,14 @@ li {
   100% { transform: rotate(360deg); }
 }
 
+/* Hide element (dating style="display:none;") */
 .hidden {
-  display: none;
+  display: none !important;
+}
+
+/* Dating style='color:#388e3c;' for Easy difficulty */
+.difficulty-easy {
+  color: #388e3c;
 }
 
 .playButton {
