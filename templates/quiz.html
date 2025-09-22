@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="../static/css/quiz.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Jersey+10&family=Pixelify+Sans:wght@400;700&display=swap" rel="stylesheet">
+  <title>InQUIZition</title>
+</head>
+<body>
+  <div class="quiz-section">
+    <div class="container">
+      <!-- Hide old content for now -->
+      <div id="old-quiz-content" >
+        <div class="score">
+          <p class ="temp-score" id = "temp-score">0</p>
+          <span id="streak-fire" class="streak-fire" >🔥</span>
+          <div id="score-animation"></div>
+        </div>
+        <div class="content-area">
+          <div class="quiz-main-content" id="quiz-main-content">
+            <div class="title">
+              <h1>Round 1</h1>
+              <h2>Question 1</h2>
+              <div class="quiz-content">
+                <h3 id="question">Loading question...</h3>
+                <ul class="choices">
+                  <li class="choice" data-choice="A" id="firstChoice"></li>
+                  <li class="choice" data-choice="B" id="secondChoice"></li>
+                  <li class="choice" data-choice="C" id="thirdChoice"></li>
+                  <li class="choice" data-choice="D" id="fourthChoice"></li>
+                </ul>
+              </div>
+            </div>
+            <div class="play-button">
+              <button class = "playButton" id="playButton">
+                <img src="../static/images/buttons/playBtn.png" alt="Play" class="button-bg" />
+                <span></span></button>
+            </div>
+          </div>
+          <div id="end-message" class="end-message" ></div>
+        </div>
+        <canvas id="gameCanvas"></canvas>
+      </div> <!-- end of #old-quiz-content -->
+      <div id="loadingPopup" class="loading-popup hidden">
+        <div class="popup-content">
+          <div class="popup-spinner"></div>
+          <p>Loading next question...</p>
+        </div>
+      </div>
+      <!-- New layout starts here -->
+      <div class="quiz-new-layout">
+        <!-- Progress Bar -->
+        <div class="progress-bar"></div>
+        <!-- Header -->
+        <div class="quiz-header">
+          <div class="round-label">Round 1</div>
+          <div class="question-label">
+            <span class="question-number">Question 1</span>
+            &nbsp;|&nbsp; Topic: Fractions &nbsp;|&nbsp; Difficulty: <span class="difficulty-easy">Easy</span>
+          </div>
+        </div>
+        <!-- Main Content -->
+        <div class="quiz-main-area">
+          <div class="quiz-left">
+            <div class="quiz-question-text" style="display: flex; flex-direction: column; align-items: flex-start; justify-content: center; min-height: 220px; width: 100%;">
+              <!-- main question context will be rendered here -->
+            </div>
+          </div>
+          <div class="quiz-right">
+            <div class="quiz-info-label">Choose the correct answer:</div>
+            <div class="quiz-choices-buttons">
+              <button class="quiz-choice-btn" data-choice="A">A) 2</button>
+              <button class="quiz-choice-btn" data-choice="B">B) 3</button>
+              <button class="quiz-choice-btn" data-choice="C">C) 4</button>
+              <button class="quiz-choice-btn" data-choice="D">D) 5</button>
+            </div>
+            <button class="quiz-submit-btn">SUBMIT</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="{{ url_for('static', filename='js/quiz.js') }}"></script>
+  <audio id="correct-sound" src="{{ url_for('static', filename='sounds/correct.mp3') }}" preload="auto"></audio>
+<audio id="wrong-sound" src="{{ url_for('static', filename='sounds/wrong.mp3') }}" preload="auto"></audio>
+  
+  <div id="quiz-help-modal" class="quiz-help-modal" >
+    <div class="quiz-help-modal-content">
+      <h2>Hint</h2>
+      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque euismod, urna eu tincidunt consectetur, nisi nisl aliquam nunc, eget aliquam massa nisl quis neque.</p>
+      <button id="close-help-modal" class="close-help-modal">Close</button>
+    </div>
+  </div>
+  
+  <div id="quiz-feedback-modal" class="quiz-feedback-modal" >
+    <div class="quiz-feedback-modal-content">
+      <div id="quiz-feedback-status" class="quiz-feedback-status">CORRECT</div>
+      <div class="quiz-feedback-explanation">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque euismod, urna eu tincidunt consectetur, nisi nisl aliquam nunc, eget aliquam massa nisl quis neque.</div>
+      <button id="quiz-feedback-next-btn" class="quiz-feedback-next-btn">Next Question</button>
+    </div>
+  </div>
+
+  <div id="difficulty-modal" class="quiz-feedback-modal" >
+    <div class="quiz-feedback-modal-content">
+        <h2 id="difficulty-modal-title" class="quiz-feedback-status">Level Up!</h2>
+        <p id="difficulty-modal-text" class="quiz-feedback-explanation">You've mastered the Easy scenarios. Get ready for the Medium challenge!</p>
+        <button id="difficulty-modal-ok-btn" class="quiz-feedback-next-btn">OK</button>
+    </div>
+</div>
+  </body>
+</html>
