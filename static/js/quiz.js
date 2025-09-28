@@ -1,4 +1,4 @@
-// ---------------------- Supabase Setup ----------------------
+﻿// ---------------------- Supabase Setup ----------------------
 import { supabase } from "../utils/supabaseClient.js";
 
 // Generate or retrieve user ID for tracking
@@ -32,6 +32,92 @@ document.addEventListener('DOMContentLoaded', function() {
     const hardAnswersNeeded = 5;
     let currentDifficulty = 'Easy';
     let usedQuestionIds = [];
+
+    // --- User Progress Tracking Variables ---
+    let difficultyProgressData = {
+        totalMainQuestions: 0,        // Total main questions attempted in current difficulty
+        correctMainQuestions: 0,      // Correct main questions in current difficulty
+        hintUsageCount: 0,           // Number of times hint was used in current difficulty
+        mistakeCount: 0,             // Number of incorrect main question attempts in current difficulty
+        mainQuestionAttempts: []     // Track each main question attempt for ability calculation
+    };
+
+    // Function to reset progress tracking for new difficulty
+    function resetDifficultyProgress() {
+        difficultyProgressData = {
+            totalMainQuestions: 0,
+            correctMainQuestions: 0,
+            hintUsageCount: 0,
+            mistakeCount: 0,
+            mainQuestionAttempts: []
+        };
+    }
+
+    // Function to calculate ability score based on performance
+    function calculateAbilityScore() {
+        const attempts = difficultyProgressData.mainQuestionAttempts;
+        if (attempts.length === 0) return 0;
+
+        // Count perfect rounds (all sub-questions correct in a main question)
+        const perfectRounds = attempts.filter(attempt => attempt.isPerfect).length;
+        const totalAttempts = attempts.length;
+        const correctPercentage = (perfectRounds / totalAttempts);
+
+        // Apply the rule-based scoring
+        if (correctPercentage < 0.5) { // Less than 3/5 (60%)
+            return -1;
+        } else if (correctPercentage > 0.8) { // Perfect performance
+            return 1;
+        } else { // Between 60% and 100%
+            return 0;
+        }
+    }
+
+    // Function to insert user progress data into database
+    async function insertUserProgress(difficulty) {
+        try {
+            const { data: { session } } = await supabase.auth.getSession();
+            const studentId = session?.user?.id || null;
+
+            if (!studentId) {
+                console.log('User not logged in, skipping progress insertion.');
+                return;
+            }
+
+            // Calculate metrics
+            const accuracy = difficultyProgressData.totalMainQuestions > 0 
+                ? (difficultyProgressData.correctMainQuestions / difficultyProgressData.totalMainQuestions) * 100 
+                : 0;
+            
+            const abilityScore = calculateAbilityScore();
+
+            const progressRecord = {
+                student_id: studentId,
+                accuracy: accuracy,
+                hint_usage: difficultyProgressData.hintUsageCount,
+                mistake: difficultyProgressData.mistakeCount,
+                ability: abilityScore,
+                difficulty: difficulty.toLowerCase(),
+                last_updated: new Date().toISOString()
+            };
+
+            console.log(`Inserting progress data for ${difficulty}:`, progressRecord);
+
+            // Insert new record for each difficulty completion
+            const { error: insertError } = await supabase
+                .from('user_progress')
+                .insert(progressRecord);
+
+            if (insertError) {
+                console.error('❌ Error inserting user progress:', insertError);
+            } else {
+                console.log('✅ Successfully inserted user progress data.');
+            }
+
+        } catch (err) {
+            console.error('Exception in insertUserProgress:', err);
+        }
+    }
 
     // UI Elements
     const quizHeader = document.querySelector('.quiz-header');
@@ -556,6 +642,8 @@ document.addEventListener('DOMContentLoaded', function() {
             currentDifficulty = 'Easy';
             score = 0;
             usedQuestionIds = [];
+            // Initialize progress tracking
+            resetDifficultyProgress();
             fetchAndRenderQuestions();
         });
     }
@@ -568,6 +656,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // **NEW FUNCTION: Records hint usage to the `hints_second` table**
     async function recordHintUsage(subQuestionId) {
         try {
+            // Track hint usage in progress data
+            difficultyProgressData.hintUsageCount++;
+            
             const { data: { session } } = await supabase.auth.getSession();
             const studentId = session?.user?.id || null;
 
@@ -608,6 +699,24 @@ document.addEventListener('DOMContentLoaded', function() {
                 currentSubIdx++;
                 renderCurrentQuestion();
             } else {
+                // If this is the last sub-question, track main question completion
+                difficultyProgressData.totalMainQuestions++;
+                
+                // Track if this main question was completed correctly
+                const isPerfect = subQuestionResults.every(result => result === true);
+                if (isPerfect && roundCorrect) {
+                    difficultyProgressData.correctMainQuestions++;
+                } else {
+                    difficultyProgressData.mistakeCount++;
+                }
+                
+                // Add to main question attempts for ability calculation
+                difficultyProgressData.mainQuestionAttempts.push({
+                    questionId: mq.id,
+                    isPerfect: isPerfect && roundCorrect,
+                    subResults: [...subQuestionResults]
+                });
+                
                 // If this is the last sub-question, check for a level-up
                 if (roundCorrect) {
                     score++;
@@ -623,14 +732,20 @@ document.addEventListener('DOMContentLoaded', function() {
                     difficultyModalTitle.textContent = `Level Up!`;
                     difficultyModalText.textContent = `You've mastered the Easy scenarios. Get ready for the Medium challenge!`;
                     showDifficultyModal = true;
+                    // Insert progress data for Easy difficulty
+                    insertUserProgress('Easy');
                 } else if (currentDifficulty === 'Medium' && score >= mediumGoal) {
                     difficultyModalTitle.textContent = `Level Up!`;
                     difficultyModalText.textContent = `You've mastered the Medium scenarios. Get ready for the Hard challenge!`;
                     showDifficultyModal = true;
+                    // Insert progress data for Medium difficulty
+                    insertUserProgress('Medium');
                 } else if (currentDifficulty === 'Hard' && score >= hardGoal) {
                     difficultyModalTitle.textContent = `Congratulations!`;
                     difficultyModalText.textContent = `You have completed all difficulties. Your quiz journey is now complete.`;
                     showDifficultyModal = true;
+                    // Insert progress data for Hard difficulty
+                    insertUserProgress('Hard');
                 }
 
                 if (showDifficultyModal) {
@@ -677,6 +792,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 currentSubIdx = 0;
                 subQuestionResults = [];
                 usedQuestionIds = [];
+                // Reset progress tracking for new difficulty
+                resetDifficultyProgress();
                 fetchAndRenderQuestions();
             } else {
                 showEndMessage();
