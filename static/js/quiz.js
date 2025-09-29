@@ -89,12 +89,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 ? (difficultyProgressData.correctMainQuestions / difficultyProgressData.totalMainQuestions) * 100 
                 : 0;
             
+            // Calculate hint usage as percentage (0-1)
+            const hintUsagePercentage = difficultyProgressData.totalMainQuestions > 0 
+                ? difficultyProgressData.hintUsageCount / difficultyProgressData.totalMainQuestions 
+                : 0;
+            
             const abilityScore = calculateAbilityScore();
 
             const progressRecord = {
                 student_id: studentId,
                 accuracy: accuracy,
-                hint_usage: difficultyProgressData.hintUsageCount,
+                hint_usage: hintUsagePercentage,  // Now storing as percentage (0-1)
                 mistake: difficultyProgressData.mistakeCount,
                 ability: abilityScore,
                 difficulty: difficulty.toLowerCase(),
@@ -112,12 +117,55 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.error('❌ Error inserting user progress:', insertError);
             } else {
                 console.log('✅ Successfully inserted user progress data.');
+                
+                // Call ML prediction endpoint to update scaffold level
+                await predictAndUpdateScaffoldLevel(studentId, accuracy, hintUsagePercentage, difficultyProgressData.mistakeCount, abilityScore, difficulty.toLowerCase());
             }
 
         } catch (err) {
             console.error('Exception in insertUserProgress:', err);
         }
     }
+
+    // Function to call ML prediction and update scaffold level
+    async function predictAndUpdateScaffoldLevel(studentId, accuracy, hintUsagePercentage, mistakeCount, ability, difficulty) {
+        try {
+            console.log('🤖 Calling ML prediction for scaffold level...');
+            
+            const predictionData = {
+                student_id: studentId,
+                accuracy: accuracy,
+                hint_usage: hintUsagePercentage,  // Now passing percentage (0-1)
+                mistake_count: mistakeCount,
+                ability: ability,
+                difficulty: difficulty
+            };
+
+            console.log('Prediction data:', predictionData);
+
+            const response = await fetch('/predict-scaffold-level', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(predictionData)
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                console.log(`✅ Scaffold level updated to: ${result.scaffold_level}`);
+                // Optionally show a notification to the user
+                // You can add a UI notification here if desired
+            } else {
+                console.error('❌ Failed to update scaffold level:', result.error);
+            }
+
+        } catch (err) {
+            console.error('❌ Error calling ML prediction:', err);
+        }
+    }
+
 
     // UI Elements
     const quizHeader = document.querySelector('.quiz-header');
