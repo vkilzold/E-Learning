@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         if (userError || !user) {
             alert('❌ Failed to fetch user. Please log in again.');
-            window.location.href = '../login folder/second-design/login.html';
+            window.location.href = '/login';
             return;
         }
         currentUser = user;
@@ -107,7 +107,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     } catch (err) {
         console.error("Initialization error:", err);
         alert("An unexpected error occurred during page load. Please try again.");
-        window.location.href = '../login folder/second-design/login.html';
+        window.location.href = '/login';
         return;
     }
 
@@ -128,7 +128,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         confirmLogoutBtn.addEventListener('click', async () => {
             const { error } = await supabase.auth.signOut();
             if (!error) {
-                window.location.href = '/login folder/second-design/login.html';
+                window.location.href = '/login';
             } else {
                 alert('Logout failed. Try again.');
                 console.error("Logout error:", error);
