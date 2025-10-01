@@ -1,33 +1,156 @@
-# ----------------------
-# STEP 1: Import necessary libraries
-# ----------------------
 import os
+import dill
+import numpy as np
 from flask import Flask, render_template, request, jsonify, session
 from flask_cors import CORS
 from supabase import create_client, Client, ClientOptions
+from xanfis.models.classic_anfis import AnfisClassifier
+from model import train_and_save_model
 
-# ----------------------
-# STEP 2: Initialize the Flask app and set up configuration
-# ----------------------
-# The app will now automatically look for 'templates' and 'static' folders.
 app = Flask(__name__)
 
-# A secret key is needed for session management.
-# In a real app, you would set this in a secure environment variable.
-# For now, we'll use a hardcoded key so it runs out-of-the-box.
+
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "a-very-secret-key-that-should-be-in-env")
 
-# Enable Cross-Origin Resource Sharing (CORS) for all routes.
-# This is useful for development when your front-end and back-end are separate.
+
 CORS(app)
 
-# Supabase configuration.
-# NOTE: Replace with your actual Supabase URL and key.
+
 SUPABASE_URL = os.environ.get("SUPABASE_URL", "https://uwbkcarkmgawqhzcyrkc.supabase.co")
 SUPABASE_KEY = os.environ.get("SUPABASE_KEY", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV3YmtjYXJrbWdhd3FoemN5cmtjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkwNDI0NDAsImV4cCI6MjA2NDYxODQ0MH0.BozcjvIAFN94yzI3KPOAdJrR6BZRsKZgnAVbqYw3b_I")
 
 # Create the Supabase client instance.
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+
+
+def _is_nonempty_file(path: str) -> bool:
+    return os.path.exists(path) and os.path.getsize(path) > 0
+
+
+def _safe_load_pickle(path: str):
+    with open(path, 'rb') as f:
+        return dill.load(f)
+
+
+def _reconstruct_model_from_bundle(bundle: dict) -> AnfisClassifier:
+    init_params = bundle.get('init_params', {})
+    state = bundle.get('state', {})
+    model = AnfisClassifier(**init_params)
+    # set picklable attributes back
+    for key, value in state.items():
+        setattr(model, key, value)
+    return model
+
+
+def load_ml_models():
+    """Load the ML model and preprocessing objects. If missing/empty/corrupted, train once and then load."""
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    model_dir = os.path.join(base_dir, 'model_files')
+    model_path = os.path.join(model_dir, 'anfis_model.pkl')
+    scaler_path = os.path.join(model_dir, 'scaler.pkl')
+    encoder_path = os.path.join(model_dir, 'encoder.pkl')
+
+    def train_if_needed(reason: str):
+        print(f"ℹ️ {reason} Training model once...")
+        train_and_save_model()
+
+    try:
+        # Ensure model files exist and are non-empty; otherwise train
+        if not (_is_nonempty_file(model_path) and _is_nonempty_file(scaler_path) and _is_nonempty_file(encoder_path)):
+            missing = []
+            for p in (model_path, scaler_path, encoder_path):
+                if not _is_nonempty_file(p):
+                    missing.append(os.path.basename(p))
+            train_if_needed(f"Model artifacts missing or empty: {', '.join(missing)}.")
+
+        # Try loading; if any pickle is corrupted, retrain once and retry
+        try:
+            bundle = _safe_load_pickle(model_path)
+            model = _reconstruct_model_from_bundle(bundle)
+            scaler = _safe_load_pickle(scaler_path)
+            encoder = _safe_load_pickle(encoder_path)
+        except Exception as e:
+            print(f"⚠️ Artifact load failed ({e}). Retraining once...")
+            train_if_needed("Corrupted artifacts detected.")
+            bundle = _safe_load_pickle(model_path)
+            model = _reconstruct_model_from_bundle(bundle)
+            scaler = _safe_load_pickle(scaler_path)
+            encoder = _safe_load_pickle(encoder_path)
+        
+        print("✅ ML models loaded successfully!")
+        return model, scaler, encoder
+    except Exception as e:
+        print(f"❌ Error loading ML models: {e}")
+        return None, None, None
+
+# Load models at startup
+ml_model, ml_scaler, ml_encoder = load_ml_models()
+
+def map_scaffold_level_to_number(scaffold_level_str):
+    """
+    Map string scaffold level to number for database storage
+    
+    Args:
+        scaffold_level_str: str - predicted scaffold level from ML model
+    
+    Returns:
+        int - corresponding number for database storage
+    """
+    mapping = {
+        'Low': 1,
+        'Medium': 2,
+        'High': 3
+    }
+    return mapping.get(scaffold_level_str, 2)  # Default to Medium (2) if not found
+
+
+def predict_scaffold_level(accuracy, hint_usage, mistake_count, ability, difficulty):
+    """
+    Predict scaffold level using the ML model
+    
+    Args:
+        accuracy: float - accuracy percentage (0-100)
+        hint_usage: float - hint usage count or rate; we will treat it consistently with training
+        mistake_count: int - number of mistakes
+        ability: float - ability score (-1, 0, or 1)
+        difficulty: str - difficulty level ('easy', 'medium', 'hard')
+    
+    Returns:
+        int - predicted scaffold level number for database storage
+    """
+    if ml_model is None or ml_scaler is None or ml_encoder is None:
+        print("❌ ML models not loaded, returning default scaffold level")
+        return 2  # Default to Medium (2)
+    
+    try:
+        # Normalize difficulty to match training encoder categories: ["Easy", "Medium", "Hard"]
+        difficulty_title = str(difficulty).strip().title()  # -> Easy/Medium/Hard
+
+        # Prepare input arrays following the training pipeline order
+        # Numerical features order during training: [accuracy, hint_usage, mistake, ability]
+        numerical_features = np.array([[float(accuracy), float(hint_usage), float(mistake_count), float(ability)]])
+        numerical_scaled = ml_scaler.transform(numerical_features)
+
+        # Categorical features: [[difficulty]]
+        categorical_features = np.array([[difficulty_title]])
+        categorical_encoded = ml_encoder.transform(categorical_features).astype(float)
+
+        # Combine exactly as in training: numerical_scaled + categorical_encoded
+        X_preprocessed = np.column_stack((numerical_scaled, categorical_encoded))
+        
+        # Predict
+        prediction = ml_model.predict(X_preprocessed)
+        scaffold_level_str = prediction[0]
+        
+        # Convert string prediction to number
+        scaffold_level_number = map_scaffold_level_to_number(scaffold_level_str)
+        
+        print(f"✅ Predicted Scaffold Level: {scaffold_level_str} -> {scaffold_level_number}")
+        return scaffold_level_number
+        
+    except Exception as e:
+        print(f"❌ Error in prediction: {e}")
+        return 2  # Default to Medium (2)
 
 # ----------------------
 # STEP 3: Define your web application routes
@@ -122,9 +245,60 @@ def predict():
     except Exception as e:
         return jsonify({'error': str(e)}), 400
 
-# ----------------------
-# STEP 4: Run the app
-# ----------------------
+@app.route('/predict-scaffold-level', methods=['POST'])
+def predict_scaffold_level_endpoint():
+    """
+    API endpoint to predict scaffold level and update user profile
+    """
+    try:
+        data = request.get_json(force=True)
+        student_id = data.get('student_id')
+        accuracy = data.get('accuracy', 0)
+        hint_usage = data.get('hint_usage', 0)  
+        mistake_count = data.get('mistake_count', 0)
+        ability = data.get('ability', 0)
+        difficulty = data.get('difficulty', 'easy')
+        
+        if not student_id:
+            return jsonify({'error': 'Student ID is required'}), 400
+        
+        # Predict scaffold level
+        scaffold_level = predict_scaffold_level(accuracy, hint_usage, mistake_count, ability, difficulty)
+        
+        # Update user_profiles table with the predicted scaffold level
+        try:
+            update_response = supabase.table('user_profiles').update({
+                'scaffold_level': scaffold_level
+            }).eq('id', student_id).execute()
+            
+            # Supabase may return empty data when no rows are returned in certain configs.
+            # Consider it success if no error is raised; optionally re-fetch to verify.
+            if update_response.error if hasattr(update_response, 'error') else False:
+                print(f"❌ Failed to update scaffold level for student {student_id}")
+                return jsonify({
+                    'success': False,
+                    'error': 'Failed to update scaffold level'
+                }), 500
+            else:
+                print(f"✅ Updated scaffold level for student {student_id}: {scaffold_level}")
+                return jsonify({
+                    'success': True,
+                    'scaffold_level': scaffold_level,
+                    'message': 'Scaffold level updated successfully'
+                }), 200
+                
+        except Exception as e:
+            print(f"❌ Error updating scaffold level: {e}")
+            return jsonify({
+                'success': False,
+                'error': f'Database update failed: {str(e)}'
+            }), 500
+        
+    except Exception as e:
+        print(f"❌ Error in predict_scaffold_level_endpoint: {e}")
+        return jsonify({'error': str(e)}), 400
+
+
 if __name__ == '__main__':
     # Run the Flask app in debug mode.
     app.run(debug=True)
