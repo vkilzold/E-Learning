@@ -17,10 +17,14 @@ CORS(app)
 
 
 SUPABASE_URL = os.environ.get("SUPABASE_URL", "https://uwbkcarkmgawqhzcyrkc.supabase.co")
-SUPABASE_KEY = os.environ.get("SUPABASE_KEY", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV3YmtjYXJrbWdhd3FoemN5cmtjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkwNDI0NDAsImV4cCI6MjA2NDYxODQ0MH0.BozcjvIAFN94yzI3KPOAdJrR6BZRsKZgnAVbqYw3b_I")
+# Use service role key for server-side operations (bypasses RLS)
+SUPABASE_SERVICE_KEY = os.environ.get("SUPABASE_SERVICE_KEY", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV3YmtjYXJrbWdhd3FoemN5cmtjIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0OTA0MjQ0MCwiZXhwIjoyMDY0NjE4NDQwfQ.-UqR2yuq9-wu58CuRXgEjQ_Lcuvp_q8hKERhdh3Ubiw")
+# Keep anon key for client-side operations if needed
+SUPABASE_ANON_KEY = os.environ.get("SUPABASE_KEY", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV3YmtjYXJrbWdhd3FoemN5cmtjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkwNDI0NDAsImV4cCI6MjA2NDYxODQ0MH0.BozcjvIAFN94yzI3KPOAdJrR6BZRsKZgnAVbqYw3b_I")
 
-# Create the Supabase client instance.
-supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+# Create the Supabase client instance with service role for server operations
+print("✅ Using Supabase service role key for server operations")
+supabase: Client = create_client(SUPABASE_URL, SUPABASE_SERVICE_KEY)
 
 
 def _is_nonempty_file(path: str) -> bool:
@@ -86,22 +90,25 @@ def load_ml_models():
 # Load models at startup
 ml_model, ml_scaler, ml_encoder = load_ml_models()
 
-def map_scaffold_level_to_number(scaffold_level_str):
+def map_scaffold_level_to_number(scaffold_level_output):
     """
-    Map string scaffold level to number for database storage
+    Map ML model output to database storage format
     
     Args:
-        scaffold_level_str: str - predicted scaffold level from ML model
+        scaffold_level_output: int or str - predicted scaffold level from ML model
     
     Returns:
-        int - corresponding number for database storage
+        int - corresponding number for database storage (0=Low, 1=Medium, 2=High)
     """
-    mapping = {
-        'Low': 1,
-        'Medium': 2,
-        'High': 3
-    }
-    return mapping.get(scaffold_level_str, 2)  # Default to Medium (2) if not found
+    # Convert to int and return directly (0, 1, 2 mapping)
+    try:
+        result = int(scaffold_level_output)
+        if result in [0, 1, 2]:
+            return result
+        else:
+            return 1  # Default to Medium (1) for invalid values
+    except (ValueError, TypeError):
+        return 1  # Default to Medium (1) if conversion fails
 
 
 def predict_scaffold_level(accuracy, hint_usage, mistake_count, ability, difficulty):
@@ -109,7 +116,7 @@ def predict_scaffold_level(accuracy, hint_usage, mistake_count, ability, difficu
     Predict scaffold level using the ML model
     
     Args:
-        accuracy: float - accuracy percentage (0-100)
+        accuracy: float - accuracy as decimal (0-1) with 4 decimal places
         hint_usage: float - hint usage count or rate; we will treat it consistently with training
         mistake_count: int - number of mistakes
         ability: float - ability score (-1, 0, or 1)
@@ -126,9 +133,12 @@ def predict_scaffold_level(accuracy, hint_usage, mistake_count, ability, difficu
         # Normalize difficulty to match training encoder categories: ["Easy", "Medium", "Hard"]
         difficulty_title = str(difficulty).strip().title()  # -> Easy/Medium/Hard
 
+        # Ensure accuracy is in decimal format (0-1) with 4 decimal places
+        accuracy_decimal = round(float(accuracy), 4)
+        
         # Prepare input arrays following the training pipeline order
         # Numerical features order during training: [accuracy, hint_usage, mistake, ability]
-        numerical_features = np.array([[float(accuracy), float(hint_usage), float(mistake_count), float(ability)]])
+        numerical_features = np.array([[accuracy_decimal, float(hint_usage), float(mistake_count), float(ability)]])
         numerical_scaled = ml_scaler.transform(numerical_features)
 
         # Categorical features: [[difficulty]]
@@ -140,12 +150,16 @@ def predict_scaffold_level(accuracy, hint_usage, mistake_count, ability, difficu
         
         # Predict
         prediction = ml_model.predict(X_preprocessed)
-        scaffold_level_str = prediction[0]
+        scaffold_level_raw = prediction[0]
         
-        # Convert string prediction to number
-        scaffold_level_number = map_scaffold_level_to_number(scaffold_level_str)
+        # Convert prediction to database number
+        scaffold_level_number = map_scaffold_level_to_number(scaffold_level_raw)
         
-        print(f"✅ Predicted Scaffold Level: {scaffold_level_str} -> {scaffold_level_number}")
+        # Determine the meaning for logging
+        meaning_map = {0: "Low", 1: "Medium", 2: "High"}
+        meaning = meaning_map.get(scaffold_level_number, "Unknown")
+        
+        print(f"✅ Predicted Scaffold Level: {scaffold_level_raw} -> {scaffold_level_number} ({meaning})")
         return scaffold_level_number
         
     except Exception as e:
@@ -261,6 +275,10 @@ def predict_scaffold_level_endpoint():
         
         if not student_id:
             return jsonify({'error': 'Student ID is required'}), 400
+        
+        # Format accuracy to 4 decimal places for consistency
+        accuracy = round(float(accuracy), 4)
+        print(f"📊 Received data - Accuracy: {accuracy}, Hint Usage: {hint_usage}, Mistakes: {mistake_count}, Ability: {ability}, Difficulty: {difficulty}")
         
         # Predict scaffold level
         scaffold_level = predict_scaffold_level(accuracy, hint_usage, mistake_count, ability, difficulty)

@@ -84,9 +84,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
-            // Calculate metrics
+            // Calculate metrics - accuracy as decimal (0-1) with 4 decimal places
             const accuracy = difficultyProgressData.totalMainQuestions > 0 
-                ? (difficultyProgressData.correctMainQuestions / difficultyProgressData.totalMainQuestions) * 100 
+                ? parseFloat(((difficultyProgressData.correctMainQuestions / difficultyProgressData.totalMainQuestions)).toFixed(4))
                 : 0;
             
             // Calculate hint usage as percentage (0-1)
