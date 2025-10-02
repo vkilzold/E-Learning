@@ -198,8 +198,8 @@ class ProgressManager {
     // Count correct answers based on database isCorrect column
     await this.updateCorrectAnswerCount();
 
-    // Update accuracy
-    this.userProgress.accuracy = (this.userProgress.correctAnswers / this.userProgress.questionsAnswered) * 100;
+    // Update accuracy as decimal (0-1) with 4 decimal places
+    this.userProgress.accuracy = parseFloat((this.userProgress.correctAnswers / this.userProgress.questionsAnswered).toFixed(4));
 
     // Update completion percentage (based on total correct answers out of 100 total questions)
     // This represents progress toward mastering all 100 questions
