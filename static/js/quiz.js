@@ -42,6 +42,46 @@ document.addEventListener('DOMContentLoaded', function() {
         mainQuestionAttempts: []     // Track each main question attempt for ability calculation
     };
 
+    // --- User Scaffold Level ---
+    let userScaffoldLevel = 0; // Default to Low (0) scaffold level
+
+    // Function to fetch user's current scaffold level
+    async function fetchUserScaffoldLevel() {
+        try {
+            const { data: { session } } = await supabase.auth.getSession();
+            const studentId = session?.user?.id || null;
+
+            if (!studentId) {
+                console.log('User not logged in, using default scaffold level (0)');
+                userScaffoldLevel = 0;
+                return;
+            }
+
+            // Always check the database first to get the user's actual scaffold level
+            const { data: userProfile, error } = await supabase
+                .from('user_profiles')
+                .select('scaffold_level')
+                .eq('id', studentId)
+                .single();
+
+            if (error) {
+                console.error('❌ Error fetching user scaffold level:', error);
+                userScaffoldLevel = 0; // Default to Low (0) if database error
+            } else if (userProfile && userProfile.scaffold_level !== null) {
+                // Use the actual scaffold level from the database
+                userScaffoldLevel = userProfile.scaffold_level;
+                console.log(`✅ User scaffold level from database: ${userScaffoldLevel}`);
+            } else {
+                // If no scaffold level is set in database, use default (0)
+                console.log('No scaffold level found in database, using default (0)');
+                userScaffoldLevel = 0;
+            }
+        } catch (err) {
+            console.error('Exception fetching user scaffold level:', err);
+            userScaffoldLevel = 0; // Default to Low (0) if any exception occurs
+        }
+    }
+
     // Function to reset progress tracking for new difficulty
     function resetDifficultyProgress() {
         difficultyProgressData = {
@@ -51,6 +91,39 @@ document.addEventListener('DOMContentLoaded', function() {
             mistakeCount: 0,
             mainQuestionAttempts: []
         };
+    }
+
+    // Function to get the appropriate hint based on user's scaffold level
+    function getHintByScaffoldLevel(hints) {
+        if (!hints) return 'No hint available for this question.';
+        
+        // Map scaffold level to hint type
+        // scaffold_level 0 = Low = first_hint (most basic)
+        // scaffold_level 1 = Medium = second_hint (moderate)
+        // scaffold_level 2 = High = third_hint (most advanced)
+        let selectedHint;
+        let hintType;
+        
+        switch (userScaffoldLevel) {
+            case 0:
+                selectedHint = hints.first_hint || 'No basic hint available.';
+                hintType = 'first_hint (Low scaffold)';
+                break;
+            case 1:
+                selectedHint = hints.second_hint || hints.first_hint || 'No moderate hint available.';
+                hintType = 'second_hint (Medium scaffold)';
+                break;
+            case 2:
+                selectedHint = hints.third_hint || hints.second_hint || hints.first_hint || 'No advanced hint available.';
+                hintType = 'third_hint (High scaffold)';
+                break;
+            default:
+                selectedHint = hints.first_hint || 'No hint available for this question.';
+                hintType = 'first_hint (default)';
+        }
+        
+        console.log(`🎯 Selected ${hintType} for scaffold level ${userScaffoldLevel}`);
+        return selectedHint;
     }
 
     // Function to calculate ability score based on performance
@@ -328,8 +401,10 @@ document.addEventListener('DOMContentLoaded', function() {
             const hintTextElement = helpModal?.querySelector('p');
 
             // Update the hint modal content
-            if (hintTextElement && sq.hints && sq.hints.first_hint) {
-                hintTextElement.textContent = sq.hints.first_hint;
+            if (hintTextElement && sq.hints) {
+                const appropriateHint = getHintByScaffoldLevel(sq.hints);
+                hintTextElement.textContent = appropriateHint;
+                console.log(`Showing hint for scaffold level ${userScaffoldLevel}: ${appropriateHint.substring(0, 50)}...`);
             } else if (hintTextElement) {
                 hintTextElement.textContent = 'No hint available for this question.';
             }
@@ -686,6 +761,10 @@ document.addEventListener('DOMContentLoaded', function() {
             quizIntro.classList.add('hidden');
             quizMainArea.classList.remove('hidden');
             await syncLocalStorageData();
+            
+            // Fetch user's current scaffold level before starting
+            await fetchUserScaffoldLevel();
+            
             // Correctly initialize difficulty on start
             currentDifficulty = 'Easy';
             score = 0;
@@ -822,7 +901,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // --- DIFFICULTY MODAL OK BUTTON LISTENER ---
     if (difficultyModalOkBtn) {
-        difficultyModalOkBtn.addEventListener('click', function() {
+        difficultyModalOkBtn.addEventListener('click', async function() {
             if (difficultyModal) difficultyModal.style.display = 'none';
 
             let nextDifficulty = '';
@@ -833,6 +912,9 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             if (nextDifficulty) {
+                // Fetch updated scaffold level before starting new difficulty
+                await fetchUserScaffoldLevel();
+                
                 currentDifficulty = nextDifficulty;
                 score = 0;
                 roundCorrect = true;
@@ -848,4 +930,37 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+    
+    // Test function to verify hint selection logic (for debugging)
+    function testHintSelection() {
+        console.log('🧪 Testing hint selection logic...');
+        
+        const testHints = {
+            first_hint: 'This is the basic hint',
+            second_hint: 'This is the moderate hint',
+            third_hint: 'This is the advanced hint'
+        };
+        
+        // Test with different scaffold levels
+        const originalLevel = userScaffoldLevel;
+        
+        console.log('Testing scaffold level 0 (Low - Default):');
+        userScaffoldLevel = 0;
+        console.log('Result:', getHintByScaffoldLevel(testHints));
+        
+        console.log('Testing scaffold level 1 (Medium):');
+        userScaffoldLevel = 1;
+        console.log('Result:', getHintByScaffoldLevel(testHints));
+        
+        console.log('Testing scaffold level 2 (High):');
+        userScaffoldLevel = 2;
+        console.log('Result:', getHintByScaffoldLevel(testHints));
+        
+        // Restore original level
+        userScaffoldLevel = originalLevel;
+        console.log('✅ Hint selection test completed');
+    }
+    
+    // Uncomment the line below to run the test
+    // testHintSelection();
 });
