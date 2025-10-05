@@ -27,10 +27,11 @@ document.addEventListener('DOMContentLoaded', function() {
     let subQuestionResults = [];
 
     // --- New Mastery Logic Variables ---
-    const easyAnswersNeeded = 10;
-    const mediumAnswersNeeded = 7;
-    const hardAnswersNeeded = 5;
+    const easyAnswersNeeded = 5;
+    const mediumAnswersNeeded = 4;
+    const hardAnswersNeeded = 3;
     let currentDifficulty = 'Easy';
+    let pendingNextDifficulty = '';
     let usedQuestionIds = [];
 
     // --- User Progress Tracking Variables ---
@@ -257,6 +258,38 @@ document.addEventListener('DOMContentLoaded', function() {
     const difficultyModalText = document.getElementById('difficulty-modal-text');
     const difficultyModalOkBtn = document.getElementById('difficulty-modal-ok-btn');
     const quizChoicesButtons = document.querySelector('.quiz-choices-buttons');
+
+    // Create Attempts-Limit Modal by cloning the existing difficulty modal for consistent styling
+    let attemptsLimitModal = document.getElementById('attempts-limit-modal');
+    let attemptsLimitModalTitle = document.getElementById('attempts-limit-modal-title');
+    let attemptsLimitModalText = document.getElementById('attempts-limit-modal-text');
+    let attemptsLimitModalOkBtn = document.getElementById('attempts-limit-modal-ok-btn');
+    if (!attemptsLimitModal && difficultyModal) {
+        const clone = difficultyModal.cloneNode(true);
+        clone.id = 'attempts-limit-modal';
+        // Update inner elements' IDs and copy references
+        const titleEl = clone.querySelector('#difficulty-modal-title');
+        if (titleEl) {
+            titleEl.id = 'attempts-limit-modal-title';
+            titleEl.textContent = 'Heads up!';
+        }
+        const textEl = clone.querySelector('#difficulty-modal-text');
+        if (textEl) {
+            textEl.id = 'attempts-limit-modal-text';
+            textEl.textContent = 'You\'ve answered 10 main questions but didn\'t reach the required score for this difficulty. Let\'s review your progress and try again later.';
+        }
+        const okBtnEl = clone.querySelector('#difficulty-modal-ok-btn');
+        if (okBtnEl) {
+            okBtnEl.id = 'attempts-limit-modal-ok-btn';
+            okBtnEl.textContent = 'View Progress';
+        }
+        clone.style.display = 'none';
+        document.body.appendChild(clone);
+        attemptsLimitModal = clone;
+        attemptsLimitModalTitle = document.getElementById('attempts-limit-modal-title');
+        attemptsLimitModalText = document.getElementById('attempts-limit-modal-text');
+        attemptsLimitModalOkBtn = document.getElementById('attempts-limit-modal-ok-btn');
+    }
 
 
     // Add score display at the top if not present
@@ -504,7 +537,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (questionTimer) {
             clearInterval(questionTimer);
         }
-        window.location.href = 'progress.html';
+        window.location.href = '/progress';
     }
 
     function updateClockDisplay() {
@@ -813,7 +846,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // --- RESTRUCTURED FEEDBACK NEXT BUTTON LISTENER ---
     if (feedbackNextBtn) {
-        feedbackNextBtn.addEventListener('click', function() {
+        feedbackNextBtn.addEventListener('click', async function() {
             if (feedbackModal) feedbackModal.style.display = 'none';
             if (helpModal) helpModal.style.display = 'none';
 
@@ -850,34 +883,78 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 updateScoreDisplay();
 
-                const easyGoal = 10;
-                const mediumGoal = 7;
-                const hardGoal = 5;
+                const easyGoal = 5;
+                const mediumGoal = 4;
+                const hardGoal = 3;
 
                 let showDifficultyModal = false;
+                let passedThisDifficulty = false;
                 if (currentDifficulty === 'Easy' && score >= easyGoal) {
-                    difficultyModalTitle.textContent = `Level Up!`;
-                    difficultyModalText.textContent = `You've mastered the Easy scenarios. Get ready for the Medium challenge!`;
-                    showDifficultyModal = true;
                     // Insert progress data for Easy difficulty
-                    insertUserProgress('Easy');
+                    await insertUserProgress('Easy');
+                    passedThisDifficulty = true;
+                    showDifficultyModal = true;
                 } else if (currentDifficulty === 'Medium' && score >= mediumGoal) {
-                    difficultyModalTitle.textContent = `Level Up!`;
-                    difficultyModalText.textContent = `You've mastered the Medium scenarios. Get ready for the Hard challenge!`;
-                    showDifficultyModal = true;
                     // Insert progress data for Medium difficulty
-                    insertUserProgress('Medium');
-                } else if (currentDifficulty === 'Hard' && score >= hardGoal) {
-                    difficultyModalTitle.textContent = `Congratulations!`;
-                    difficultyModalText.textContent = `You have completed all difficulties. Your quiz journey is now complete.`;
+                    await insertUserProgress('Medium');
+                    passedThisDifficulty = true;
                     showDifficultyModal = true;
+                } else if (currentDifficulty === 'Hard' && score >= hardGoal) {
                     // Insert progress data for Hard difficulty
-                    insertUserProgress('Hard');
+                    await insertUserProgress('Hard');
+                    passedThisDifficulty = true;
+                    showDifficultyModal = true;
                 }
 
                 if (showDifficultyModal) {
+                    // Wait for model update then fetch scaffold level to decide next step
+                    await new Promise(resolve => setTimeout(resolve, 2500));
+                    await fetchUserScaffoldLevel();
+
+                    // Rule-based difficulty adjustment using scaffold level
+                    // scaffold_level: 0=Low, 1=Medium, 2=High
+                    if (currentDifficulty === 'Easy') {
+                        if (userScaffoldLevel === 2) {
+                            pendingNextDifficulty = 'Easy';
+                            difficultyModalTitle.textContent = `Keep Practicing`;
+                            difficultyModalText.textContent = `We'll keep you on Easy for now to strengthen fundamentals.`;
+                        } else {
+                            pendingNextDifficulty = 'Medium';
+                            difficultyModalTitle.textContent = `Level Up!`;
+                            difficultyModalText.textContent = `Great job! Let's move on to Medium challenges.`;
+                        }
+                    } else if (currentDifficulty === 'Medium') {
+                        if (userScaffoldLevel === 2) {
+                            pendingNextDifficulty = 'Easy';
+                            difficultyModalTitle.textContent = `Adjusting Difficulty`;
+                            difficultyModalText.textContent = `We'll step back to Easy to reinforce concepts.`;
+                        } else {
+                            pendingNextDifficulty = 'Hard';
+                            difficultyModalTitle.textContent = `Level Up!`;
+                            difficultyModalText.textContent = `You're doing well! Let's advance to Hard.`;
+                        }
+                    } else if (currentDifficulty === 'Hard') {
+                        if (userScaffoldLevel === 2) {
+                            pendingNextDifficulty = 'Medium';
+                            difficultyModalTitle.textContent = `Adjusting Difficulty`;
+                            difficultyModalText.textContent = `We'll step back to Medium to consolidate skills.`;
+                        } else {
+                            pendingNextDifficulty = 'Hard';
+                            difficultyModalTitle.textContent = `Keep Going!`;
+                            difficultyModalText.textContent = `You're staying on Hard — continue practicing to master these challenges.`;
+                        }
+                    }
+
                     if (difficultyModal) difficultyModal.style.display = 'flex';
                 } else {
+                    // If user has attempted 10 main questions and hasn't reached the goal, show attempts-limit modal
+                    const currentGoal = currentDifficulty === 'Easy' ? easyGoal : (currentDifficulty === 'Medium' ? mediumGoal : hardGoal);
+                    if (difficultyProgressData.totalMainQuestions >= 10 && score < currentGoal) {
+                        // Insert progress on failure to trigger ML prediction
+                        await insertUserProgress(currentDifficulty);
+                        if (attemptsLimitModal) attemptsLimitModal.style.display = 'flex';
+                        return; // Stop progressing further
+                    }
                     // If no level-up, proceed to the next main question
                     roundCorrect = true;
                     subQuestionResults = [];
@@ -904,11 +981,13 @@ document.addEventListener('DOMContentLoaded', function() {
         difficultyModalOkBtn.addEventListener('click', async function() {
             if (difficultyModal) difficultyModal.style.display = 'none';
 
-            let nextDifficulty = '';
-            if (currentDifficulty === 'Easy') {
-                nextDifficulty = 'Medium';
-            } else if (currentDifficulty === 'Medium') {
-                nextDifficulty = 'Hard';
+            let nextDifficulty = pendingNextDifficulty;
+            if (!nextDifficulty) {
+                if (currentDifficulty === 'Easy') {
+                    nextDifficulty = 'Medium';
+                } else if (currentDifficulty === 'Medium') {
+                    nextDifficulty = 'Hard';
+                }
             }
 
             if (nextDifficulty) {
@@ -927,6 +1006,21 @@ document.addEventListener('DOMContentLoaded', function() {
                 fetchAndRenderQuestions();
             } else {
                 showEndMessage();
+            }
+        });
+    }
+
+    // --- ATTEMPTS-LIMIT MODAL OK BUTTON LISTENER ---
+    if (attemptsLimitModal && attemptsLimitModalOkBtn) {
+        attemptsLimitModalOkBtn.addEventListener('click', function() {
+            attemptsLimitModal.style.display = 'none';
+            window.location.href = '/progress';
+        });
+        // Allow clicking outside to close and go to progress as well
+        attemptsLimitModal.addEventListener('click', function(e) {
+            if (e.target === attemptsLimitModal) {
+                attemptsLimitModal.style.display = 'none';
+                window.location.href = '/progress';
             }
         });
     }
