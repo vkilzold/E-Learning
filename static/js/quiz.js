@@ -158,14 +158,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
-            // Calculate metrics - accuracy as decimal (0-1) with 4 decimal places
+            // Calculate metrics - accuracy as decimal (0-1) with 3 decimal places
             const accuracy = difficultyProgressData.totalMainQuestions > 0 
-                ? parseFloat(((difficultyProgressData.correctMainQuestions / difficultyProgressData.totalMainQuestions)).toFixed(4))
+                ? parseFloat(((difficultyProgressData.correctMainQuestions / difficultyProgressData.totalMainQuestions)).toFixed(3))
                 : 0;
             
-            // Calculate hint usage as percentage (0-1)
+            // Calculate hint usage as percentage (0-1), capped at 1.00 with 3 decimal places
             const hintUsagePercentage = difficultyProgressData.totalMainQuestions > 0 
-                ? difficultyProgressData.hintUsageCount / difficultyProgressData.totalMainQuestions 
+                ? Math.min(1.00, parseFloat((difficultyProgressData.hintUsageCount / difficultyProgressData.totalMainQuestions).toFixed(3)))
                 : 0;
             
             const abilityScore = calculateAbilityScore();
@@ -177,6 +177,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 mistake: difficultyProgressData.mistakeCount,
                 ability: abilityScore,
                 difficulty: difficulty.toLowerCase(),
+                correct_answers: difficultyProgressData.correctMainQuestions,
                 last_updated: new Date().toISOString()
             };
 
@@ -911,33 +912,55 @@ document.addEventListener('DOMContentLoaded', function() {
                     await new Promise(resolve => setTimeout(resolve, 2500));
                     await fetchUserScaffoldLevel();
 
-                    // Rule-based difficulty adjustment using scaffold level
+                    // Calculate current accuracy for difficulty adjustment decision
+                    const currentAccuracy = difficultyProgressData.totalMainQuestions > 0 
+                        ? (difficultyProgressData.correctMainQuestions / difficultyProgressData.totalMainQuestions) * 100
+                        : 0;
+                    
+                    // Check if user meets both scaffold level and accuracy requirements for difficulty adjustment
+                    const canAdjustDifficulty = (userScaffoldLevel === 0 || userScaffoldLevel === 1) && currentAccuracy >= 75;
+                    
+                    console.log(`📊 Difficulty Adjustment Check - Scaffold Level: ${userScaffoldLevel}, Accuracy: ${currentAccuracy.toFixed(1)}%, Can Adjust: ${canAdjustDifficulty}`);
+
+                    // Rule-based difficulty adjustment using scaffold level AND 75% accuracy requirement
                     // scaffold_level: 0=Low, 1=Medium, 2=High
                     if (currentDifficulty === 'Easy') {
-                        if (userScaffoldLevel === 2) {
+                        if (userScaffoldLevel === 2 || !canAdjustDifficulty) {
                             pendingNextDifficulty = 'Easy';
                             difficultyModalTitle.textContent = `Keep Practicing`;
-                            difficultyModalText.textContent = `We'll keep you on Easy for now to strengthen fundamentals.`;
+                            if (userScaffoldLevel === 2) {
+                                difficultyModalText.textContent = `We'll keep you on Easy for now to strengthen fundamentals.`;
+                            } else {
+                                difficultyModalText.textContent = `Keep practicing to reach 75% accuracy before advancing. Current: ${currentAccuracy.toFixed(1)}%`;
+                            }
                         } else {
                             pendingNextDifficulty = 'Medium';
                             difficultyModalTitle.textContent = `Level Up!`;
-                            difficultyModalText.textContent = `Great job! Let's move on to Medium challenges.`;
+                            difficultyModalText.textContent = `Great job! You've reached 75% accuracy and are ready for Medium challenges.`;
                         }
                     } else if (currentDifficulty === 'Medium') {
-                        if (userScaffoldLevel === 2) {
+                        if (userScaffoldLevel === 2 || !canAdjustDifficulty) {
                             pendingNextDifficulty = 'Easy';
                             difficultyModalTitle.textContent = `Adjusting Difficulty`;
-                            difficultyModalText.textContent = `We'll step back to Easy to reinforce concepts.`;
+                            if (userScaffoldLevel === 2) {
+                                difficultyModalText.textContent = `We'll step back to Easy to reinforce concepts.`;
+                            } else {
+                                difficultyModalText.textContent = `Let's step back to Easy to improve accuracy. Current: ${currentAccuracy.toFixed(1)}%`;
+                            }
                         } else {
                             pendingNextDifficulty = 'Hard';
                             difficultyModalTitle.textContent = `Level Up!`;
-                            difficultyModalText.textContent = `You're doing well! Let's advance to Hard.`;
+                            difficultyModalText.textContent = `You're doing well! You've reached 75% accuracy and are ready for Hard challenges.`;
                         }
                     } else if (currentDifficulty === 'Hard') {
-                        if (userScaffoldLevel === 2) {
+                        if (userScaffoldLevel === 2 || !canAdjustDifficulty) {
                             pendingNextDifficulty = 'Medium';
                             difficultyModalTitle.textContent = `Adjusting Difficulty`;
-                            difficultyModalText.textContent = `We'll step back to Medium to consolidate skills.`;
+                            if (userScaffoldLevel === 2) {
+                                difficultyModalText.textContent = `We'll step back to Medium to consolidate skills.`;
+                            } else {
+                                difficultyModalText.textContent = `Let's step back to Medium to improve accuracy. Current: ${currentAccuracy.toFixed(1)}%`;
+                            }
                         } else {
                             pendingNextDifficulty = 'Hard';
                             difficultyModalTitle.textContent = `Keep Going!`;
