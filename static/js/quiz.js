@@ -18,6 +18,12 @@ console.log('Testing basic connection...');
 
 // ================================================== New Quiz Logic for New Layout ==================================================
 document.addEventListener('DOMContentLoaded', function() {
+    // Force-hide any modals on load
+    const modalsToHide = [
+        document.getElementById('quiz-help-modal'),
+        document.getElementById('prestart-difficulty-modal')
+    ];
+    modalsToHide.forEach(m => { if (m) m.style.display = 'none'; });
     // --- New: Fetch main_questions and sub_questions from Supabase ---
     let mainQuestions = [];
     let currentMainIdx = 0;
@@ -331,14 +337,25 @@ document.addEventListener('DOMContentLoaded', function() {
     async function fetchQuestions(difficulty) {
         console.log(`Fetching ${difficulty} questions from database...`);
         try {
-            // Fetch all main_questions for the given difficulty, excluding those already used
-            const { data: mains, error: mainErr } = await supabase
+            // Build case-insensitive difficulty variants including synonyms
+            const base = (difficulty || '').toLowerCase();
+            const variantsMap = {
+                easy: ['Easy','easy','EASY'],
+                medium: ['Medium','medium','MEDIUM','Average','average','AVERAGE'],
+                hard: ['Hard','hard','HARD','Difficult','difficult','DIFFICULT']
+            };
+            const diffVariants = variantsMap[base] || [difficulty, base, base.toUpperCase(), base.charAt(0).toUpperCase() + base.slice(1)];
+            let query = supabase
                 .from('main_questions')
                 .select('*')
-                .eq('difficulty', difficulty)
-                .not('id', 'in', `(${usedQuestionIds.join(',')})`)
+                .in('difficulty', diffVariants)
                 .order('id', { ascending: true })
                 .limit(100);
+            // Exclude usedQuestionIds only when there are any
+            if (Array.isArray(usedQuestionIds) && usedQuestionIds.length > 0) {
+                query = query.not('id', 'in', `(${usedQuestionIds.join(',')})`);
+            }
+            const { data: mains, error: mainErr } = await query;
 
             if (mainErr) {
                 console.error('❌ Error fetching main questions:', mainErr);
@@ -386,8 +403,21 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function renderCurrentQuestion() {
         if (!mainQuestions.length || currentMainIdx >= mainQuestions.length) {
-            console.log("No more questions to render. Ending quiz.");
-            showEndMessage();
+            console.log("No more questions to render for this difficulty.");
+            // Try fetching a fresh set once before giving up
+            (async () => {
+                const fresh = await fetchQuestions(currentDifficulty);
+                if (Array.isArray(fresh) && fresh.length > 0 && fresh[0].sub_questions && fresh[0].sub_questions.length > 0) {
+                    mainQuestions = fresh;
+                    currentMainIdx = 0;
+                    currentSubIdx = 0;
+                    subQuestionResults = [];
+                    roundCorrect = true;
+                    renderCurrentQuestion();
+                } else {
+                    showEndMessage();
+                }
+            })();
             return;
         }
 
@@ -686,8 +716,38 @@ document.addEventListener('DOMContentLoaded', function() {
                 feedbackExplanation.textContent = 'Don’t worry, you can try again. We’ll re-focus on this topic to help you master it.';
             }
         }
-        const feedbackModal = document.getElementById('quiz-feedback-modal');
-        if (feedbackModal) feedbackModal.style.display = 'flex';
+            const feedbackModalEl = document.getElementById('quiz-feedback-modal');
+            if (feedbackModalEl) {
+                // Ensure visible and on top
+                feedbackModalEl.classList.remove('hidden');
+                feedbackModalEl.style.display = 'flex';
+                feedbackModalEl.style.zIndex = '10000';
+                // Prevent background interaction while open
+                feedbackModalEl.style.pointerEvents = 'auto';
+                // Lock background scroll
+                document.body.style.overflow = 'hidden';
+
+                // Enable Next button and focus it
+                if (feedbackNextBtn) {
+                    feedbackNextBtn.disabled = false;
+                    feedbackNextBtn.style.pointerEvents = 'auto';
+                    try { feedbackNextBtn.focus(); } catch (_) {}
+                }
+
+                // Attach overlay click handler to allow clicking outside the modal to act like Next
+                if (!feedbackModalOverlayHandler) {
+                    feedbackModalOverlayHandler = function(e) {
+                        if (e.target === feedbackModalEl) {
+                            if (feedbackNextBtn) {
+                                try { feedbackNextBtn.click(); } catch (_) {}
+                            }
+                        }
+                    };
+                    feedbackModalEl.addEventListener('click', feedbackModalOverlayHandler);
+                }
+            } else {
+                console.warn('Feedback modal element not found');
+            }
     }
 
 
@@ -739,6 +799,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         processAnswer(sq, mq, isCorrect, timeTakenSeconds);
         showFeedbackModal(isCorrect);
+        // Do NOT auto-advance; require the user to click the Next button on the feedback modal
     });
 
     // Function to sync localStorage data back to database
@@ -790,29 +851,101 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
     // --- Start Quiz Button Listener ---
-    if (startQuizBtn && quizIntro && quizMainArea) {
-        startQuizBtn.addEventListener('click', async function() {
-            quizIntro.classList.add('hidden');
-            quizMainArea.classList.remove('hidden');
-            await syncLocalStorageData();
-            
-            // Fetch user's current scaffold level before starting
-            await fetchUserScaffoldLevel();
-            
-            // Correctly initialize difficulty on start
-            currentDifficulty = 'Easy';
+    async function beginQuizFlow() {
+        // Guard against re-entry
+        if (beginQuizFlow.__running) return; beginQuizFlow.__running = true;
+        const preModal = document.getElementById('prestart-difficulty-modal');
+        const preTitle = document.getElementById('prestart-modal-title');
+        const preText = document.getElementById('prestart-modal-text');
+        const preOk = document.getElementById('prestart-modal-ok-btn');
+
+        // Safely toggle sections if present
+        if (quizIntro) quizIntro.classList.add('hidden');
+        if (quizMainArea) quizMainArea.classList.remove('hidden');
+        await syncLocalStorageData();
+        await fetchUserScaffoldLevel();
+
+        // Determine recommended difficulty: priority is localStorage from progress page, else compute from DB
+        let recommended = localStorage.getItem('startingDifficulty');
+        if (!(recommended === 'Easy' || recommended === 'Medium' || recommended === 'Hard')) {
+            try {
+                const { data: { session } } = await supabase.auth.getSession();
+                const studentId = session?.user?.id || null;
+                if (studentId) {
+                    const [{ data: latestProgress }, userProfile] = await Promise.all([
+                        supabase
+                            .from('user_progress')
+                            .select('accuracy, difficulty')
+                            .eq('student_id', studentId)
+                            .order('last_updated', { ascending: false })
+                            .limit(1)
+                            .maybeSingle(),
+                        supabase
+                            .from('user_profiles')
+                            .select('scaffold_level')
+                            .eq('id', studentId)
+                            .single()
+                    ]);
+                    const lastDiff = latestProgress?.difficulty || 'easy';
+                    const accDec = typeof latestProgress?.accuracy === 'number' ? latestProgress.accuracy : 0;
+                    const scaffold = typeof userProfile?.scaffold_level === 'number' ? userProfile.scaffold_level : 0;
+                    const rec = (() => {
+                        const accPct = accDec * 100;
+                        const canAdjust = (scaffold === 0 || scaffold === 1) && accPct >= 75;
+                        const cur = (lastDiff || 'easy').toLowerCase();
+                        if (cur === 'easy') return (scaffold === 2 || !canAdjust) ? 'Easy' : 'Medium';
+                        if (cur === 'medium') return (scaffold === 2 || !canAdjust) ? 'Easy' : 'Hard';
+                        return (scaffold === 2 || !canAdjust) ? 'Medium' : 'Hard';
+                    })();
+                    recommended = rec;
+                } else {
+                    recommended = 'Easy';
+                }
+            } catch (_) {
+                recommended = 'Easy';
+            }
+        }
+
+        if (preTitle && preText) {
+            preTitle.textContent = 'Get Ready';
+            preText.textContent = `We will start at ${recommended} difficulty based on your recent performance.`;
+        }
+        if (preModal && preOk) {
+            preModal.style.display = 'flex';
+            const onStart = async () => {
+                preOk.removeEventListener('click', onStart);
+                preModal.style.display = 'none';
+                currentDifficulty = (recommended === 'Easy' || recommended === 'Medium' || recommended === 'Hard') ? recommended : 'Easy';
+                localStorage.removeItem('startingDifficulty');
+                score = 0;
+                usedQuestionIds = [];
+                resetDifficultyProgress();
+                fetchAndRenderQuestions();
+            };
+            preOk.addEventListener('click', onStart);
+        } else {
+            currentDifficulty = (recommended === 'Easy' || recommended === 'Medium' || recommended === 'Hard') ? recommended : 'Easy';
+            localStorage.removeItem('startingDifficulty');
             score = 0;
             usedQuestionIds = [];
-            // Initialize progress tracking
             resetDifficultyProgress();
             fetchAndRenderQuestions();
-        });
+        }
     }
+
+    if (startQuizBtn && quizMainArea) {
+        startQuizBtn.addEventListener('click', beginQuizFlow);
+    }
+
+    // Auto-start unconditionally on load; flow determines difficulty from recommendation or DB
+    beginQuizFlow();
 
 
     const feedbackModal = document.getElementById('quiz-feedback-modal');
     const feedbackNextBtn = document.getElementById('quiz-feedback-next-btn');
     const helpModal = document.getElementById('quiz-help-modal');
+    // Overlay click handler reference so we can remove it when modal is closed
+    let feedbackModalOverlayHandler = null;
 
     // **NEW FUNCTION: Records hint usage to the `hints_second` table**
     async function recordHintUsage(subQuestionId) {
@@ -848,8 +981,18 @@ document.addEventListener('DOMContentLoaded', function() {
     // --- RESTRUCTURED FEEDBACK NEXT BUTTON LISTENER ---
     if (feedbackNextBtn) {
         feedbackNextBtn.addEventListener('click', async function() {
-            if (feedbackModal) feedbackModal.style.display = 'none';
+            // Hide modals and cleanup overlay handler if present
+            if (feedbackModal) {
+                feedbackModal.style.display = 'none';
+                // Remove overlay click handler if attached
+                if (feedbackModalOverlayHandler) {
+                    try { feedbackModal.removeEventListener('click', feedbackModalOverlayHandler); } catch (_) {}
+                    feedbackModalOverlayHandler = null;
+                }
+            }
             if (helpModal) helpModal.style.display = 'none';
+            // Restore body scrolling
+            document.body.style.overflow = '';
 
             const mq = mainQuestions[currentMainIdx];
 
@@ -1000,37 +1143,48 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // --- DIFFICULTY MODAL OK BUTTON LISTENER ---
-    if (difficultyModalOkBtn) {
-        difficultyModalOkBtn.addEventListener('click', async function() {
-            if (difficultyModal) difficultyModal.style.display = 'none';
+    // When user clicks OK on the difficulty modal we should apply the pending difficulty
+    // (if any), reset the progress for the new difficulty and fetch a new set of questions.
+    if (difficultyModal && difficultyModalOkBtn) {
+        const applyPendingDifficultyAndContinue = async () => {
+            try {
+                if (difficultyModal) difficultyModal.style.display = 'none';
 
-            let nextDifficulty = pendingNextDifficulty;
-            if (!nextDifficulty) {
-                if (currentDifficulty === 'Easy') {
-                    nextDifficulty = 'Medium';
-                } else if (currentDifficulty === 'Medium') {
-                    nextDifficulty = 'Hard';
+                // Apply pending difficulty if provided, otherwise keep current
+                if (pendingNextDifficulty && pendingNextDifficulty !== currentDifficulty) {
+                    currentDifficulty = pendingNextDifficulty;
                 }
-            }
 
-            if (nextDifficulty) {
-                // Fetch updated scaffold level before starting new difficulty
-                await fetchUserScaffoldLevel();
-                
-                currentDifficulty = nextDifficulty;
+                // Reset state for the new difficulty
+                pendingNextDifficulty = '';
                 score = 0;
-                roundCorrect = true;
-                currentMainIdx = 0;
-                currentSubIdx = 0;
-                subQuestionResults = [];
                 usedQuestionIds = [];
-                // Reset progress tracking for new difficulty
                 resetDifficultyProgress();
-                fetchAndRenderQuestions();
-            } else {
-                showEndMessage();
+                subQuestionResults = [];
+                roundCorrect = true;
+                currentSubIdx = 0;
+                currentMainIdx = 0;
+
+                // Fetch and render questions for the (possibly) new difficulty
+                await fetchAndRenderQuestions();
+            } catch (err) {
+                console.error('Error applying difficulty change:', err);
+            }
+        };
+
+        difficultyModalOkBtn.addEventListener('click', function() {
+            applyPendingDifficultyAndContinue();
+        });
+
+        // Allow clicking outside the modal to also proceed
+        difficultyModal.addEventListener('click', function(e) {
+            if (e.target === difficultyModal) {
+                applyPendingDifficultyAndContinue();
             }
         });
+    } else if (difficultyModal) {
+        // Ensure it's hidden by default if elements are missing
+        difficultyModal.style.display = 'none';
     }
 
     // --- ATTEMPTS-LIMIT MODAL OK BUTTON LISTENER ---

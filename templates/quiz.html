@@ -92,21 +92,35 @@
       <button id="close-help-modal" class="close-help-modal">Close</button>
     </div>
   </div>
-  
-  <div id="quiz-feedback-modal" class="quiz-feedback-modal" >
+
+  <!-- Feedback modal shown after answering each question -->
+  <div id="quiz-feedback-modal" class="quiz-feedback-modal" style="display:none;">
     <div class="quiz-feedback-modal-content">
       <div id="quiz-feedback-status" class="quiz-feedback-status">CORRECT</div>
-      <div class="quiz-feedback-explanation">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque euismod, urna eu tincidunt consectetur, nisi nisl aliquam nunc, eget aliquam massa nisl quis neque.</div>
+      <div class="quiz-feedback-explanation">Great job! Keep it up!</div>
       <button id="quiz-feedback-next-btn" class="quiz-feedback-next-btn">Next Question</button>
     </div>
   </div>
 
-  <div id="difficulty-modal" class="quiz-feedback-modal" >
+
+  <!-- Pre-start difficulty confirmation modal -->
+  <div id="prestart-difficulty-modal" class="quiz-feedback-modal" style="display:none;">
     <div class="quiz-feedback-modal-content">
-        <h2 id="difficulty-modal-title" class="quiz-feedback-status">Level Up!</h2>
-        <p id="difficulty-modal-text" class="quiz-feedback-explanation">You've mastered the Easy scenarios. Get ready for the Medium challenge!</p>
-        <button id="difficulty-modal-ok-btn" class="quiz-feedback-next-btn">OK</button>
+      <h2 id="prestart-modal-title" class="quiz-feedback-status">Get Ready</h2>
+      <p id="prestart-modal-text" class="quiz-feedback-explanation">We will start at the recommended difficulty.</p>
+      <button id="prestart-modal-ok-btn" class="quiz-feedback-next-btn">Start</button>
     </div>
-</div>
-  </body>
+  </div>
+
+  <!-- Difficulty adjustment modal (used after completing a difficulty set) -->
+  <div id="difficulty-modal" class="quiz-feedback-modal" style="display:none;">
+    <div class="quiz-feedback-modal-content">
+      <div id="difficulty-modal-title" class="quiz-feedback-status">Difficulty Adjustment</div>
+      <div id="difficulty-modal-text" class="quiz-feedback-explanation">Checking your performance...</div>
+      <button id="difficulty-modal-ok-btn" class="quiz-feedback-next-btn">Continue</button>
+    </div>
+  </div>
+
+  <!-- difficulty modal disabled; difficulty is computed from progress page and applied automatically -->
+  </body> 
 </html>

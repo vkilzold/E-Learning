@@ -279,40 +279,45 @@ class ProgressManager {
     localStorage.removeItem('quizProgress');
   }
 
-  // Update progress stats from the latest 5 student_answers for the current user
-  async updateProgressFromUserAnswers() {
-    // Get current user session
+  // Update progress stats from the latest user_progress row for the current user
+  async updateProgressFromUserProgress() {
     const { data: { session } } = await supabase.auth.getSession();
     const studentId = session?.user?.id || null;
     if (!studentId) {
       console.error('No logged-in user found for progress update.');
       return;
     }
-    // Fetch the latest 5 answers for this user
-    const { data: answers, error } = await supabase
-      .from('user_answers')
-      .select('*')
+    const { data: latestProgress, error } = await supabase
+      .from('user_progress')
+      .select('accuracy, correct_answers, mistake, difficulty')
       .eq('student_id', studentId)
-      .order('id', { ascending: false })
-      .limit(6);
+      .order('last_updated', { ascending: false })
+      .limit(1)
+      .maybeSingle();
     if (error) {
-      console.error('Error fetching user_answers for progress:', error);
+      console.error('Error fetching latest user_progress:', error);
       return;
     }
-    // Compute stats for the latest 5 answers
-    const questionsAnswered = answers.length;
-    const correctAnswers = answers.filter(a => a.is_correct === true).length;
-    const accuracy = questionsAnswered > 0 ? (correctAnswers / questionsAnswered) * 100 : 0;
-    // Optionally, update completionPercentage if you know total questions
-    const completionPercentage = (correctAnswers / 100) * 100; // Assuming 100 total questions
-    // Update state
+    if (!latestProgress) {
+      // No progress yet
+      this.userProgress.questionsAnswered = 0;
+      this.userProgress.correctAnswers = 0;
+      this.userProgress.accuracy = 0;
+      this.userProgress.completionPercentage = 0;
+      this.saveProgress();
+      return;
+    }
+    const accuracyDecimal = typeof latestProgress.accuracy === 'number' ? latestProgress.accuracy : 0;
+    const correctAnswers = typeof latestProgress.correct_answers === 'number' ? latestProgress.correct_answers : 0;
+    const mistakes = typeof latestProgress.mistake === 'number' ? latestProgress.mistake : 0;
+    const questionsAnswered = correctAnswers + mistakes;
+
     this.userProgress.questionsAnswered = questionsAnswered;
     this.userProgress.correctAnswers = correctAnswers;
-    this.userProgress.accuracy = accuracy;
-    this.userProgress.completionPercentage = completionPercentage;
-    // Optionally, update answeredQuestions set
-    this.userProgress.answeredQuestions = new Set(answers.map(a => a.main_question_id));
-    // Save to localStorage for consistency
+    // Convert decimal (0-1) to percentage (0-100)
+    this.userProgress.accuracy = Math.max(0, Math.min(100, Math.round(accuracyDecimal * 100)));
+    this.userProgress.completionPercentage = this.userProgress.accuracy;
+    this.userProgress.currentDifficulty = (latestProgress.difficulty || 'easy').toLowerCase();
     this.saveProgress();
   }
 }
@@ -348,9 +353,69 @@ function hideLoadingPopup() {
   document.getElementById('loadingPopup').classList.add('hidden');
 }
 
-function startQuiz() {
-  // Simply redirect to quiz page
-  window.location.href = '/quiz';
+// Compute recommended starting difficulty based on last difficulty, scaffold level, and accuracy
+function computeRecommendedDifficulty(lastDifficulty, scaffoldLevel, accuracyDecimal) {
+  const accPercent = accuracyDecimal * 100;
+  const canAdjust = (scaffoldLevel === 0 || scaffoldLevel === 1) && accPercent >= 75;
+  const current = (lastDifficulty || 'easy').toLowerCase();
+  if (current === 'easy') {
+    if (scaffoldLevel === 2 || !canAdjust) return 'Easy';
+    return 'Medium';
+  }
+  if (current === 'medium') {
+    if (scaffoldLevel === 2 || !canAdjust) return 'Easy';
+    return 'Hard';
+  }
+  // current === 'hard'
+  if (scaffoldLevel === 2 || !canAdjust) return 'Medium';
+  return 'Hard';
+}
+
+async function fetchUserScaffoldLevel() {
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    const studentId = session?.user?.id || null;
+    if (!studentId) return 0;
+    const { data: userProfile, error } = await supabase
+      .from('user_profiles')
+      .select('scaffold_level')
+      .eq('id', studentId)
+      .single();
+    if (error) return 0;
+    return typeof userProfile?.scaffold_level === 'number' ? userProfile.scaffold_level : 0;
+  } catch (_) {
+    return 0;
+  }
+}
+
+async function startQuiz() {
+  showLoadingPopup();
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    const studentId = session?.user?.id || null;
+    let startingDifficulty = 'Easy';
+    if (studentId) {
+      const [{ data: latestProgress }, scaffoldLevel] = await Promise.all([
+        supabase
+          .from('user_progress')
+          .select('accuracy, difficulty')
+          .eq('student_id', studentId)
+          .order('last_updated', { ascending: false })
+          .limit(1)
+          .maybeSingle(),
+        fetchUserScaffoldLevel()
+      ]);
+      const lastDifficulty = latestProgress?.difficulty || 'easy';
+      const lastAccuracyDecimal = typeof latestProgress?.accuracy === 'number' ? latestProgress.accuracy : 0;
+      startingDifficulty = computeRecommendedDifficulty(lastDifficulty, scaffoldLevel, lastAccuracyDecimal);
+    }
+  
+    // Persist recommended difficulty for the quiz page to read
+    localStorage.setItem('startingDifficulty', startingDifficulty);
+  } finally {
+    hideLoadingPopup();
+    window.location.href = '/quiz';
+  }
 }
 
 // ---------------------- Initialize ----------------------
@@ -360,8 +425,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   const prevMsg = document.getElementById('quiz-summary-message');
   if (prevMsg) prevMsg.remove();
 
-  // Always update from user_answers
-  await progressManager.updateProgressFromUserAnswers();
+  // Update stats from latest user_progress row
+  await progressManager.updateProgressFromUserProgress();
 
   // If there are quiz attempts, process and record them
   if (quizAttempts.length > 0) {
