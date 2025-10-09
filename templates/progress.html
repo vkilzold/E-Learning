@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="/static/css/quiz.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Jersey+10&family=Pixelify+Sans:wght@400;700&display=swap" rel="stylesheet">
+  <title>Progress - InQUIZition</title>
+</head>
+<body>
+  <div class="quiz-section">
+    <div class="container zoomed-container">
+      <div class="content-area">
+        <div class="quiz-main-content" id="progress-main-content">
+          <div class="title">
+            <h1>Your Progress</h1>
+            <h2>Keep Learning!</h2>
+            <div class="progress-content">
+              <div class="progress-circle">
+                <div class="progress-percentage" id="progress-percentage">0%</div>
+                <div class="progress-label">Completion</div>
+              </div>
+              <div class="progress-stats">
+                <div class="stat-item">
+                  <span class="stat-label">Questions Answered:</span>
+                  <span class="stat-value" id="questions-answered">0</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Correct Answers:</span>
+                  <span class="stat-value" id="correct-answers">0</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Accuracy:</span>
+                  <span class="stat-value" id="accuracy">0%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="play-button">
+            <button class="playButton" id="playButton">
+              <img src="/static/images/buttons/playBtn.png" alt="Play" class="button-bg" />
+            </button>
+          </div>
+        </div>
+        
+        <div id="loadingPopup" class="loading-popup hidden">
+          <div class="popup-content">
+            <div class="popup-spinner"></div>
+            <p>Loading quiz...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script type="module" src="static/js/progress.js"></script>
+</body>
+</html> 
