@@ -46,7 +46,8 @@ document.addEventListener('DOMContentLoaded', function() {
         correctMainQuestions: 0,      // Correct main questions in current difficulty
         hintUsageCount: 0,           // Number of times hint was used in current difficulty
         mistakeCount: 0,             // Number of incorrect main question attempts in current difficulty
-        mainQuestionAttempts: []     // Track each main question attempt for ability calculation
+        mainQuestionAttempts: [],    // Track each main question attempt for ability calculation
+        points: 0                    // Accumulated points for correct sub-questions in this difficulty
     };
 
     // --- User Scaffold Level ---
@@ -96,7 +97,8 @@ document.addEventListener('DOMContentLoaded', function() {
             correctMainQuestions: 0,
             hintUsageCount: 0,
             mistakeCount: 0,
-            mainQuestionAttempts: []
+            mainQuestionAttempts: [],
+            points: 0
         };
     }
 
@@ -184,6 +186,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 ability: abilityScore,
                 difficulty: difficulty.toLowerCase(),
                 correct_answers: difficultyProgressData.correctMainQuestions,
+                points: difficultyProgressData.points || 0,
                 last_updated: new Date().toISOString()
             };
 
@@ -636,6 +639,18 @@ document.addEventListener('DOMContentLoaded', function() {
             playSound(wrongSound, 'wrong');
         }
 
+        // Award points for a correct sub-question based on the main question difficulty
+        try {
+            const diffKey = (mq && mq.difficulty) ? String(mq.difficulty).toLowerCase() : 'easy';
+            const pointsMap = { easy: 5, medium: 10, hard: 15 };
+            if (isCorrect) {
+                const pts = pointsMap[diffKey] || 0;
+                difficultyProgressData.points = (difficultyProgressData.points || 0) + pts;
+                console.log(`✅ Awarded ${pts} points for correct sub-question (difficulty=${diffKey}). Total points: ${difficultyProgressData.points}`);
+            }
+        } catch (err) {
+            console.error('Error awarding points:', err);
+        }
 
         // Insert into user_answers
         try {

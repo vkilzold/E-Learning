@@ -93,6 +93,93 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Call the function with the current user id
         updateAcademicSummary(currentUser.id);
 
+        // Helper: simple HTML escape to avoid XSS when inserting usernames
+        function escapeHtml(str) {
+            if (str == null) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        // Render leaderboard array into the dashboard DOM
+        function renderLeaderboard(leaderboard) {
+            const container = document.querySelector('.leaderboard-section .scroll-box');
+            if (!container) return;
+            container.innerHTML = '';
+
+            if (!leaderboard || leaderboard.length === 0) {
+                container.innerHTML = '<div class="item">No leaderboard data available.</div>';
+                return;
+            }
+
+            leaderboard.forEach((u, idx) => {
+                const rank = idx + 1;
+                const name = escapeHtml(u.username || u.full_name || u.email || 'Unknown');
+                // Ensure points and pct are integers (no decimals)
+                const rawPoints = (typeof u.total_points !== 'undefined') ? u.total_points : (u.correct_count || 0);
+                const points = Number.isFinite(Number(rawPoints)) ? Math.round(Number(rawPoints)) : 0;
+                const rawPct = (typeof u.average_accuracy !== 'undefined') ? u.average_accuracy : (u.avg_pct || null);
+                const pct = (rawPct !== null && typeof rawPct !== 'undefined') ? Math.round(Number(rawPct)) : null;
+
+                const item = document.createElement('div');
+                item.className = 'item';
+                // Add special classes for top 3 ranks so CSS will style them (gold/silver/bronze)
+                if (rank === 1) item.classList.add('leaderboard-rank-1');
+                else if (rank === 2) item.classList.add('leaderboard-rank-2');
+                else if (rank === 3) item.classList.add('leaderboard-rank-3');
+
+                const nameSpan = document.createElement('span');
+                nameSpan.className = 'leaderboard-name';
+                nameSpan.innerHTML = `${rank}. ${name}`;
+
+                const pointsSpan = document.createElement('span');
+                pointsSpan.className = 'leaderboard-points';
+                // Only show points in the leaderboard (no percentage)
+                pointsSpan.textContent = `${points} pts`;
+
+                item.appendChild(nameSpan);
+                item.appendChild(pointsSpan);
+                container.appendChild(item);
+            });
+        }
+
+        // Load leaderboard directly from the leaderboard table (server-side aggregated)
+        async function loadLeaderboard() {
+            try {
+                // Fetch top 10 by total_points descending
+                const { data, error } = await supabase
+                    .from('leaderboard')
+                    .select('student_id, username, total_points, average_accuracy')
+                    .order('total_points', { ascending: false })
+                    .limit(10);
+
+                if (error) {
+                    console.error('Error fetching leaderboard table:', error);
+                    renderLeaderboard([]);
+                    return;
+                }
+
+                // Normalize rows if necessary and render
+                const leaderboard = (data || []).map(r => ({
+                    id: r.student_id,
+                    username: r.username,
+                    total_points: r.total_points,
+                    average_accuracy: r.average_accuracy
+                }));
+
+                renderLeaderboard(leaderboard);
+            } catch (err) {
+                console.error('Failed to load leaderboard:', err);
+                renderLeaderboard([]);
+            }
+        }
+
+        // Load and render leaderboard after loading profile/stats
+        loadLeaderboard(currentUser.id);
+
 // ------------------------------------ Update Dashboard Content ------------------------------------
         if (nameElement) nameElement.textContent = profile.full_name;
         if (emailElement) emailElement.textContent = profile.email;
