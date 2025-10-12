@@ -137,20 +137,93 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Function to calculate ability score based on performance
     function calculateAbilityScore() {
-        const attempts = difficultyProgressData.mainQuestionAttempts;
+        const attempts = (difficultyProgressData && difficultyProgressData.mainQuestionAttempts) || [];
         if (attempts.length === 0) return 0;
 
-        // Count perfect rounds (all sub-questions correct in a main question)
-        const perfectRounds = attempts.filter(attempt => attempt.isPerfect).length;
-        const totalAttempts = attempts.length;
-        const correctPercentage = (perfectRounds / totalAttempts);
+        // Prefer explicit metrics on difficultyProgressData if present
+        let accuracy = (typeof difficultyProgressData?.accuracy === 'number') ? difficultyProgressData.accuracy : null;
+        let hintUsage = (typeof difficultyProgressData?.hintUsage === 'number') ? difficultyProgressData.hintUsage : null;
+        let mistakes = (typeof difficultyProgressData?.mistakes === 'number') ? difficultyProgressData.mistakes : null;
 
-        // Apply the rule-based scoring
-        if (correctPercentage < 0.5) { // Less than 3/5 (60%)
-            return -1;
-        } else if (correctPercentage > 0.8) { // Perfect performance
+        // If any metric is missing, try to compute reasonable fallbacks from attempts
+        if (accuracy === null || hintUsage === null || mistakes === null) {
+            let totalSub = 0;
+            let correctSubs = 0;
+            let totalHintsCount = 0;
+            let attemptsWithHint = 0;
+            let mistakesSum = 0;
+            let perfectRounds = 0;
+
+            for (const a of attempts) {
+                // Sub-question level counts if available
+                const total = (typeof a.totalCount === 'number') ? a.totalCount
+                            : (typeof a.totalSubQuestions === 'number') ? a.totalSubQuestions
+                            : null;
+                const correct = (typeof a.correctCount === 'number') ? a.correctCount
+                            : (typeof a.correctSubQuestions === 'number') ? a.correctSubQuestions
+                            : null;
+
+                if (total != null) totalSub += total;
+                if (correct != null) correctSubs += (correct != null ? correct : 0);
+
+                // mistakes per attempt if available
+                if (typeof a.mistakes === 'number') {
+                    mistakesSum += a.mistakes;
+                } else if (total != null && correct != null) {
+                    mistakesSum += Math.max(0, total - correct);
+                } else {
+                    // fallback: if we know if the attempt was perfect or not
+                    if (a.isPerfect) {
+                        // zero mistakes for perfect
+                    } else {
+                        // count 1 mistake for a non-perfect attempt as a conservative fallback
+                        mistakesSum += 1;
+                    }
+                }
+
+                // hint usage: either numeric hintsUsed or boolean flags
+                if (typeof a.hintsUsed === 'number') {
+                    totalHintsCount += a.hintsUsed;
+                    if (a.hintsUsed > 0) attemptsWithHint++;
+                } else if (a.hintUsed || a.usedHint || a.hints) {
+                    attemptsWithHint++;
+                    totalHintsCount += 1;
+                }
+
+                if (a.isPerfect) perfectRounds++;
+            }
+
+            // Compute accuracy fallback: prefer sub-question accuracy, else use perfect-round ratio
+            if (accuracy === null) {
+                if (totalSub > 0) {
+                    accuracy = correctSubs / totalSub;
+                } else {
+                    accuracy = attempts.length > 0 ? (perfectRounds / attempts.length) : 0;
+                }
+            }
+
+            // Compute hintUsage fallback as fraction of attempts where a hint was used
+            if (hintUsage === null) {
+                hintUsage = attempts.length > 0 ? (attemptsWithHint / attempts.length) : 0;
+                // if we have totalHintsCount and totalSub, normalize to average hints per attempt (optional)
+                // but the rule expects a proportion, so fraction-of-attempts-with-hint is reasonable
+            }
+
+            // Compute mistakes fallback as total mistakes across attempts
+            if (mistakes === null) {
+                mistakes = mistakesSum;
+            }
+        }
+
+        // Apply the requested rule-set:
+        // if Accuracy >= 0.8 and HintUsage < 0.3 and Mistakes <= 2 → ability = 1
+        // else if Accuracy < 0.5 or HintUsage > 0.5 or Mistakes >= 5 → ability = -1
+        // else → ability = 0
+        if (accuracy >= 0.75 && hintUsage < 0.3 && mistakes <= 2) {
             return 1;
-        } else { // Between 60% and 100%
+        } else if (accuracy < 0.5 || hintUsage > 0.5 || mistakes >= 5) {
+            return -1;
+        } else {
             return 0;
         }
     }
