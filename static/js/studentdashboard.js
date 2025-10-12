@@ -180,6 +180,314 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Load and render leaderboard after loading profile/stats
         loadLeaderboard(currentUser.id);
 
+        // ----------------- Badges: fetch and render -----------------
+        const BADGE_DEFS = {
+            fast_learner: { label: 'Fast Learner', file: 'fast_learner.svg' },
+            quiz_crusher: { label: 'Quiz Crusher', file: 'quiz_crusher.svg' },
+            active_learner: { label: 'Active Learner', file: 'active_learner.svg' },
+            persistent: { label: 'Persistent', file: 'persistent.svg' },
+            hall_of_fame: { label: 'Hall of Fame', file: 'hall_of_fame.svg' },
+            consistent: { label: 'Consistent', file: 'consistent.svg' },
+            math_master: { label: 'Math Master', file: 'math_master.svg' },
+            // Note: filename in repo has a typo; match actual file name
+            critical_thinking: { label: 'Critical Thinking', file: 'critical_thinking.svg' },
+            top_scorer: { label: 'Top Scorer', file: 'top_scorer.svg' },
+            // Repo contains "problem_solving.svg" so point to that file
+            problem_solver: { label: 'Problem Solver', file: 'problem_solving.svg' },
+            explorer: { label: 'Explorer', file: 'explorer.svg' },
+            streak_master: { label: 'Streak Master', file: 'streak_master.svg' }
+        };
+
+        // Helper: return canonical badge URL under the webroot
+        function badgeUrl(filename) {
+            // Use the exact path provided by the server: /badges/<filename>
+            return `/badges/${filename}`;
+        }
+
+        // Create congrats modal (appended to body) if not exists
+        function ensureBadgeModal() {
+            if (document.getElementById('badgeCongratsModal')) return;
+            const modal = document.createElement('div');
+            modal.id = 'badgeCongratsModal';
+            modal.className = 'modal hidden';
+                        modal.innerHTML = `
+                                <div class="modal-content" style="min-width:18rem; text-align:center;">
+                                    <h3 id="badgeCongratsTitle">Congratulations — you've earned a badge!</h3>
+                                    <div id="badgeCongratsBody" style="margin:1rem 0;"></div>
+                                    <button id="badgeCongratsOk" class="play-btn">OK</button>
+                                </div>`;
+            document.body.appendChild(modal);
+            const ok = modal.querySelector('#badgeCongratsOk');
+            ok.addEventListener('click', () => { modal.classList.add('hidden'); modal.style.display = 'none'; });
+        }
+
+        // Show badge congrats (queues multiple badges)
+        async function showBadgeCongratsQueue(badges) {
+            if (!Array.isArray(badges) || badges.length === 0) return;
+            ensureBadgeModal();
+            const modal = document.getElementById('badgeCongratsModal');
+            const body = modal.querySelector('#badgeCongratsBody');
+            const title = modal.querySelector('#badgeCongratsTitle');
+            const okBtn = modal.querySelector('#badgeCongratsOk');
+
+            // Show badges one by one
+            for (const b of badges) {
+                body.innerHTML = '';
+                title.textContent = "Congratulations — you've earned a badge!";
+                const img = document.createElement('img');
+                // set up fallback chain
+                // Use canonical /badges/<filename> path. If it fails to load, fall back silently to a tiny transparent gif.
+                img.src = badgeUrl(b.file);
+                img.onerror = () => { img.src = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='; };
+                img.alt = b.label;
+                img.style.width = '140px';
+                img.style.height = '140px';
+                img.style.objectFit = 'contain';
+                img.style.display = 'block';
+                img.style.margin = '0.5rem auto';
+                const lbl = document.createElement('div');
+                lbl.textContent = b.label;
+                lbl.style.fontWeight = '700';
+                lbl.style.marginTop = '0.5rem';
+                body.appendChild(img);
+                body.appendChild(lbl);
+
+                modal.classList.remove('hidden');
+                modal.style.display = 'flex';
+
+                // wait for ok click
+                await new Promise(resolve => {
+                    const handler = () => { okBtn.removeEventListener('click', handler); resolve(); };
+                    okBtn.addEventListener('click', handler);
+                });
+                // small pause between modals
+                await new Promise(r => setTimeout(r, 200));
+            }
+        }
+
+        // Latest fetched state (kept for re-render after updates)
+        let latestBadgeRow = null;
+        let latestNotificationsMap = {};
+
+        // Render badges into .badge-grid
+        // Only render badges that are achieved in `badges` AND have a true `notified` in badge_notifications.
+        // If badgeRow is null/empty, show a "No badges yet" message.
+        // showCongrats (boolean) controls whether newly-earned badges should trigger the congrats modal.
+        function renderBadges(badgeRow, showCongrats = false, notificationsMap = {}) {
+            latestBadgeRow = badgeRow;
+            latestNotificationsMap = notificationsMap || {};
+            const grid = document.querySelector('.badge-grid');
+            if (!grid) return;
+            grid.innerHTML = '';
+
+            if (!badgeRow) {
+                // No data yet — show a small informative message
+                const msg = document.createElement('div');
+                msg.className = 'no-badges';
+                msg.textContent = 'No badges earned yet.';
+                msg.style.padding = '0.5rem';
+                msg.style.color = '#666';
+                grid.appendChild(msg);
+                return;
+            }
+
+            const seenBadges = JSON.parse(localStorage.getItem('seenBadges') || '[]');
+            const newlyEarned = [];
+            let anyRendered = false;
+
+            for (const key of Object.keys(BADGE_DEFS)) {
+                const def = BADGE_DEFS[key];
+                const badgeTrue = !!badgeRow[key];
+                const notifiedTrue = !!notificationsMap[key];
+
+                // Only show if both badge table has true and notifications table has been marked notified
+                if (!(badgeTrue && notifiedTrue)) {
+                    // If badge exists in badge table but not notified yet, queue for congrats (handled below)
+                    if (badgeTrue && !seenBadges.includes(key)) {
+                        newlyEarned.push({ key, label: def.label, file: def.file });
+                        seenBadges.push(key);
+                    }
+                    continue;
+                }
+
+                anyRendered = true;
+                const node = document.createElement('div');
+                node.className = 'badge achieved';
+                node.title = def.label;
+
+                const img = document.createElement('img');
+                img.src = badgeUrl(def.file);
+                // If the image is missing, fall back silently to a transparent gif (no retries)
+                img.onerror = () => { img.src = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='; };
+                img.alt = def.label;
+                img.style.width = '80px';
+                img.style.height = '80px';
+                img.style.objectFit = 'contain';
+                img.style.marginBottom = '0.25rem';
+
+                const lbl = document.createElement('div');
+                lbl.textContent = def.label;
+                lbl.style.fontSize = '0.85rem';
+                lbl.style.textAlign = 'center';
+                lbl.style.marginTop = '0.25rem';
+
+                node.appendChild(img);
+                node.appendChild(lbl);
+                grid.appendChild(node);
+            }
+
+            // update seen badges storage
+            localStorage.setItem('seenBadges', JSON.stringify(seenBadges));
+
+            if (!anyRendered) {
+                const msg = document.createElement('div');
+                msg.className = 'no-badges';
+                msg.textContent = 'No badges earned yet.';
+                msg.style.padding = '0.5rem';
+                msg.style.color = '#666';
+                grid.appendChild(msg);
+            }
+
+            // show congrats for newly earned badges only if allowed by caller
+            if (showCongrats && newlyEarned.length > 0) {
+                showBadgeCongratsQueue(newlyEarned.map(b => ({ label: b.label, file: b.file })) );
+            }
+        }
+
+        // Fetch badges and badge_notifications for current user and render. Returns an object with both rows/maps.
+        async function fetchBadgesAndNotifications(userId) {
+            try {
+                const [{ data: badgeRow, error: badgeErr }, { data: notifications, error: notifErr }] = await Promise.all([
+                    supabase.from('badges').select(Object.keys(BADGE_DEFS).join(', ')).eq('student_id', userId).maybeSingle(),
+                    supabase.from('badge_notifications').select('badge_name, notified').eq('student_id', userId)
+                ]);
+
+                if (badgeErr) {
+                    console.error('Error fetching badges:', badgeErr);
+                }
+                if (notifErr) {
+                    console.error('Error fetching badge_notifications:', notifErr);
+                }
+
+                // Convert notifications array to a map: badge_name -> boolean
+                const notificationsMap = {};
+                if (Array.isArray(notifications)) {
+                    for (const n of notifications) {
+                        if (n && n.badge_name) notificationsMap[n.badge_name] = !!n.notified;
+                    }
+                }
+
+                return { badgeRow: badgeRow || null, notificationsMap };
+            } catch (err) {
+                console.error('Failed to load badges/notifications:', err);
+                return { badgeRow: null, notificationsMap: {} };
+            }
+        }
+
+    // Render locked placeholders immediately so the UI is populated fast
+    renderBadges(null);
+
+    // Determine whether to run badge checks (and show congrats modal)
+        function cameFromProgressOrLogin() {
+            try {
+                const urlParams = new URLSearchParams(window.location.search);
+                const fromParam = (urlParams.get('from') || '').toLowerCase();
+                if (fromParam === 'progress' || fromParam === 'login') return true;
+                const ref = (document.referrer || '').toLowerCase();
+                if (ref.includes('/progress') || ref.endsWith('/progress') || ref.includes('/login') || ref.endsWith('/login')) return true;
+            } catch (e) {
+                // ignore parsing errors and default to not running
+            }
+            return false;
+        }
+
+        // Only fetch badges (and possibly show congrats) when the user arrived from progress or login pages
+        // Always fetch badges data so achieved badges are shown on the dashboard.
+        // But only trigger the congrats modal if the user came from progress/login.
+        const showCongrats = cameFromProgressOrLogin();
+        // Fetch both badges and notifications, render and possibly show congrats modal
+        const { badgeRow, notificationsMap } = await fetchBadgesAndNotifications(currentUser.id);
+        renderBadges(badgeRow, false, notificationsMap); // initial render: show only notified badges
+
+        // Determine mismatches: badge true but notification not true
+        const mismatches = [];
+        for (const key of Object.keys(BADGE_DEFS)) {
+            const badgeVal = badgeRow ? !!badgeRow[key] : false;
+            const notifVal = !!notificationsMap[key];
+            if (badgeVal && !notifVal) mismatches.push({ key, label: BADGE_DEFS[key].label, file: BADGE_DEFS[key].file });
+        }
+
+        // If we should show congrats (arrived from progress/login) and there are mismatches, show modal queue
+        if (showCongrats && mismatches.length > 0) {
+            // Show each mismatch in the modal; when user clicks OK for each, upsert notification
+            ensureBadgeModal();
+            const modal = document.getElementById('badgeCongratsModal');
+            const body = modal.querySelector('#badgeCongratsBody');
+            const okBtn = modal.querySelector('#badgeCongratsOk');
+
+            for (const m of mismatches) {
+                body.innerHTML = '';
+                const img = document.createElement('img');
+                img.src = badgeUrl(m.file);
+                img.onerror = () => { img.src = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='; };
+                img.alt = m.label;
+                img.style.width = '140px';
+                img.style.height = '140px';
+                img.style.objectFit = 'contain';
+                img.style.display = 'block';
+                img.style.margin = '0.5rem auto';
+                const lbl = document.createElement('div');
+                lbl.textContent = m.label;
+                lbl.style.fontWeight = '700';
+                lbl.style.marginTop = '0.5rem';
+                body.appendChild(img);
+                body.appendChild(lbl);
+                modal.classList.remove('hidden');
+                modal.style.display = 'flex';
+
+                // Wait for OK click, then upsert notification for this badge
+                await new Promise(async resolve => {
+                    const handler = async () => {
+                        okBtn.removeEventListener('click', handler);
+                        modal.classList.add('hidden');
+                        modal.style.display = 'none';
+                        try {
+                            // Update-only: set notified=true for existing notification row.
+                            // We deliberately avoid inserting a new row from the client.
+                            try {
+                                const { data: updateData, error: updateErr, count } = await supabase
+                                    .from('badge_notifications')
+                                    .update({ notified: true })
+                                    .eq('student_id', currentUser.id)
+                                    .eq('badge_name', m.key)
+                                    .select();
+
+                                if (updateErr) {
+                                    console.error('Failed to update badge_notifications:', updateErr);
+                                } else if (!Array.isArray(updateData) || updateData.length === 0) {
+                                    // No existing row was updated. We intentionally do not insert from the client.
+                                    console.warn(`No badge_notifications row found for student_id=${currentUser.id}, badge_name=${m.key}. Skipping client-side insert.`);
+                                }
+                            } catch (e) {
+                                console.error('Error updating badge_notifications:', e);
+                            }
+                        } catch (e) {
+                            console.error('Error updating badge_notifications:', e);
+                        }
+
+                        // Refresh notifications map and re-render badges to show this badge
+                        const refreshed = await fetchBadgesAndNotifications(currentUser.id);
+                        renderBadges(refreshed.badgeRow || null, false, refreshed.notificationsMap || {});
+                        resolve();
+                    };
+                    okBtn.addEventListener('click', handler);
+                });
+
+                // small pause before next modal
+                await new Promise(r => setTimeout(r, 150));
+            }
+        }
+
 // ------------------------------------ Update Dashboard Content ------------------------------------
         if (nameElement) nameElement.textContent = profile.full_name;
         if (emailElement) emailElement.textContent = profile.email;

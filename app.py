@@ -2,6 +2,7 @@ import os
 import dill
 import numpy as np
 from flask import Flask, render_template, request, jsonify, session
+from flask import send_from_directory
 from flask_cors import CORS
 from supabase import create_client, Client, ClientOptions
 from xanfis.models.classic_anfis import AnfisClassifier
@@ -239,6 +240,15 @@ def title():
 @app.route('/progress')
 def progress():
     return render_template('progress.html')
+
+
+# Serve badge image files from the repository 'badges' folder at /badges/<filename>
+@app.route('/badges/<path:filename>')
+def serve_badge(filename):
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    badges_dir = os.path.join(base_dir, 'badges')
+    # send_from_directory will return a 404 if file not found
+    return send_from_directory(badges_dir, filename)
 
 @app.route('/predict', methods=['POST'])
 def predict():

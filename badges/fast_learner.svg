@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <title>Book with Lightning and Text Lines</title>
+  
+  <!-- left page -->
+  <path d="M8 18h22c3 0 6 2 6 5v28H8z" fill="#4aa3ff" stroke="#2c3e50" stroke-width="2"></path>
+  
+  <!-- right page -->
+  <path d="M56 18H34c-3 0-6 2-6 5v28h28z" fill="#7ed957" stroke="#2c3e50" stroke-width="2"></path>
+  
+  <!-- center fold line -->
+  <line x1="32" y1="18" x2="32" y2="51" stroke="#2c3e50" stroke-width="1.5" stroke-dasharray="2,2"></line>
+  
+  <!-- guhit-guhit left page -->
+  <line x1="12" y1="26" x2="28" y2="26" stroke="#ffffff" stroke-width="1.2"></line>
+  <line x1="12" y1="32" x2="28" y2="32" stroke="#ffffff" stroke-width="1.2"></line>
+  <line x1="12" y1="38" x2="28" y2="38" stroke="#ffffff" stroke-width="1.2"></line>
+  <line x1="12" y1="44" x2="28" y2="44" stroke="#ffffff" stroke-width="1.2"></line>
+  
+  <!-- guhit-guhit right page -->
+  <line x1="36" y1="26" x2="52" y2="26" stroke="#ffffff" stroke-width="1.2"></line>
+  <line x1="36" y1="32" x2="52" y2="32" stroke="#ffffff" stroke-width="1.2"></line>
+  <line x1="36" y1="38" x2="52" y2="38" stroke="#ffffff" stroke-width="1.2"></line>
+  <line x1="36" y1="44" x2="52" y2="44" stroke="#ffffff" stroke-width="1.2"></line>
+  
+  <!-- lightning bolt -->
+  <polygon points="34,6 26,26 34,26 28,44 46,20 36,20" fill="#ffeb3b" stroke="#fbc02d" stroke-width="1.5"></polygon>
+</svg>
