@@ -210,12 +210,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             const modal = document.createElement('div');
             modal.id = 'badgeCongratsModal';
             modal.className = 'modal hidden';
-                        modal.innerHTML = `
-                                <div class="modal-content" style="min-width:18rem; text-align:center;">
-                                    <h3 id="badgeCongratsTitle">Congratulations — you've earned a badge!</h3>
-                                    <div id="badgeCongratsBody" style="margin:1rem 0;"></div>
-                                    <button id="badgeCongratsOk" class="play-btn">OK</button>
-                                </div>`;
+                                    modal.innerHTML = `
+                                            <div class="modal-content" style="min-width:18rem; text-align:center;">
+                                                <h3 id="badgeCongratsTitle">Congratulations — you've earned a badge!</h3>
+                                                <div id="badgeCongratsBody" style="margin:1rem 0;"></div>
+                                                <div style="display:flex;justify-content:center;align-items:center;margin-top:0.5rem;">
+                                                    <button id="badgeCongratsOk" class="play-btn" style="min-width:6rem;">OK</button>
+                                                </div>
+                                            </div>`;
             document.body.appendChild(modal);
             const ok = modal.querySelector('#badgeCongratsOk');
             ok.addEventListener('click', () => { modal.classList.add('hidden'); modal.style.display = 'none'; });

@@ -269,6 +269,67 @@ document.addEventListener('DOMContentLoaded', function() {
     const difficultyModalOkBtn = document.getElementById('difficulty-modal-ok-btn');
     const quizChoicesButtons = document.querySelector('.quiz-choices-buttons');
 
+    // --- Simple 'select answer' modal (replace native alert) ---
+    // We'll create it once and reuse it to avoid blocking the event loop or
+    // interfering with the running timer.
+    let selectAnswerModal = document.getElementById('select-answer-modal');
+    function ensureSelectAnswerModal() {
+        if (selectAnswerModal) return selectAnswerModal;
+        // overlay
+        const overlay = document.createElement('div');
+        overlay.id = 'select-answer-modal';
+        overlay.style.cssText = 'position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:20000;pointer-events:auto;';
+        // backdrop
+        const backdrop = document.createElement('div');
+        backdrop.style.cssText = 'position:absolute;inset:0;background:rgba(0,0,0,0.45);backdrop-filter:blur(2px);';
+        overlay.appendChild(backdrop);
+        // modal box
+        const box = document.createElement('div');
+    box.style.cssText = 'position:relative;background:#fff7f0;padding:1.2rem 1.4rem;border-radius:0.8rem;min-width:300px;max-width:90%;box-shadow:0 8px 24px rgba(0,0,0,0.16);border:1px solid #e6d6c7;font-family:inherit;color:#222;';
+        const msg = document.createElement('div');
+        msg.id = 'select-answer-modal-msg';
+        msg.textContent = 'Please select an answer!';
+        msg.style.cssText = 'margin-bottom:1rem;font-size:1rem;';
+        box.appendChild(msg);
+        const btnRow = document.createElement('div');
+        btnRow.style.cssText = 'display:flex;justify-content:center;';
+        const ok = document.createElement('button');
+        ok.textContent = 'OK';
+    ok.style.cssText = 'background:#8B5E3C;color:#fff;border:2px solid #6f452b;padding:0.5rem 1rem;border-radius:0.6rem;cursor:pointer;font-weight:700;box-shadow:0 2px 0 rgba(0,0,0,0.08);';
+        ok.addEventListener('click', () => {
+            overlay.style.display = 'none';
+            // focus first choice to help the user
+            const first = document.querySelector('.quiz-choice-btn');
+            if (first) try { first.focus(); } catch (_) {}
+        });
+        btnRow.appendChild(ok);
+        box.appendChild(btnRow);
+        overlay.appendChild(box);
+        // click outside to close
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) {
+                overlay.style.display = 'none';
+                const first = document.querySelector('.quiz-choice-btn');
+                if (first) try { first.focus(); } catch (_) {}
+            }
+        });
+        document.body.appendChild(overlay);
+        selectAnswerModal = overlay;
+        return selectAnswerModal;
+    }
+
+    function showSelectAnswerModal(message) {
+        const m = ensureSelectAnswerModal();
+        if (message) {
+            const el = m.querySelector('#select-answer-modal-msg');
+            if (el) el.textContent = message;
+        }
+        m.style.display = 'flex';
+        // ensure the OK button is focused for quick keyboard dismissal
+        const ok = m.querySelector('button');
+        if (ok) try { ok.focus(); } catch (_) {}
+    }
+
     // Create Attempts-Limit Modal by cloning the existing difficulty modal for consistent styling
     let attemptsLimitModal = document.getElementById('attempts-limit-modal');
     let attemptsLimitModalTitle = document.getElementById('attempts-limit-modal-title');
@@ -315,6 +376,103 @@ document.addEventListener('DOMContentLoaded', function() {
     let questionTimer = null;
     const QUESTION_TIME = 60;
     let timeLeft = QUESTION_TIME;
+
+    // Audio elements (populated on DOMContentLoaded)
+    let correctAudioEl = document.getElementById('correct-sound');
+    let wrongAudioEl = document.getElementById('wrong-sound');
+    let audioPrimed = false;
+    // Shared AudioContext to use for priming and fallback beeps
+    let audioCtx = null;
+
+    // Attempt a robust priming strategy that works across browsers:
+    // 1) Resume/create an AudioContext (best for Chrome/modern browsers)
+    // 2) Try a very-low-volume unmuted play() of the <audio> elements during the user gesture
+    // 3) Fallback to starting a tiny silent AudioBuffer on the AudioContext
+    async function primeAudioIfNeeded() {
+        if (audioPrimed) return;
+        try {
+            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            if (AudioCtx && !audioCtx) {
+                try {
+                    audioCtx = new AudioCtx();
+                } catch (e) {
+                    // some browsers may still throw here
+                    audioCtx = null;
+                }
+            }
+
+            // Try to resume an existing/suspended AudioContext
+            if (audioCtx && audioCtx.state === 'suspended') {
+                try {
+                    await audioCtx.resume();
+                    console.log('AudioContext resumed during priming');
+                    audioPrimed = true;
+                    return;
+                } catch (e) {
+                    // ignore and continue to other strategies
+                }
+            }
+
+            // Try to play a very-low-volume unmuted snippet from the audio elements
+            const ca = document.getElementById('correct-sound');
+            const wa = document.getElementById('wrong-sound');
+            const els = [ca, wa].filter(Boolean);
+            for (const a of els) {
+                try {
+                    const prevVol = a.volume;
+                    // set almost-silent volume but ensure not muted so playback is considered a gesture
+                    a.muted = false;
+                    a.volume = 0.001;
+                    const p = a.play();
+                    if (p && typeof p.then === 'function') {
+                        await p;
+                    }
+                    // pause and reset
+                    try { a.pause(); a.currentTime = 0; } catch (_) {}
+                    a.volume = prevVol;
+                    audioPrimed = true;
+                    console.log('Primed via <audio> element play');
+                    return;
+                } catch (e) {
+                    // try next element
+                    try { a.pause(); a.currentTime = 0; a.muted = false; } catch (_) {}
+                }
+            }
+
+            // Last-resort: start a tiny silent buffer on the AudioContext
+            if (audioCtx) {
+                try {
+                    const buffer = audioCtx.createBuffer(1, 1, audioCtx.sampleRate || 44100);
+                    const src = audioCtx.createBufferSource();
+                    src.buffer = buffer;
+                    src.connect(audioCtx.destination);
+                    src.start(0);
+                    // no need to stop, it is silent and tiny
+                    audioPrimed = true;
+                    console.log('Primed via AudioContext buffer source');
+                    return;
+                } catch (e) {
+                    console.warn('AudioContext buffer priming failed:', e && e.message ? e.message : e);
+                }
+            }
+        } catch (e) {
+            console.warn('Audio priming failed:', e && e.message ? e.message : e);
+        }
+        // If we reach here, priming didn't succeed; leave audioPrimed=false so future gestures can retry
+    }
+
+    // Warm up audio playback to avoid first-play delays in some browsers
+    (function warmupAudio() {
+        try {
+            if (correctAudioEl) { correctAudioEl.preload = 'auto'; correctAudioEl.muted = false; }
+            if (wrongAudioEl) { wrongAudioEl.preload = 'auto'; wrongAudioEl.muted = false; }
+            // try to play silently then pause to prime decoding (best-effort)
+            if (correctAudioEl && correctAudioEl.readyState < 3) correctAudioEl.load();
+            if (wrongAudioEl && wrongAudioEl.readyState < 3) wrongAudioEl.load();
+        } catch (e) {
+            console.warn('Audio warmup failed:', e && e.message ? e.message : e);
+        }
+    })();
 
     // Add clock display to the header
     let clockDisplay = document.querySelector('.quiz-clock-display');
@@ -559,12 +717,17 @@ document.addEventListener('DOMContentLoaded', function() {
         submitLocked = false;
         submitBtn.disabled = false;
 
-        // Start the question timer
-        startQuestionTimer();
+        // Start the question timer (force reset for a new question)
+        startQuestionTimer(true);
     }
 
-    function showLoadingPopupFn(show) {
-        if (loadingPopup) loadingPopup.classList.toggle('hidden', !show);
+    function showLoadingPopupFn(show, message) {
+        if (!loadingPopup) return;
+        try {
+            const p = loadingPopup.querySelector('.popup-content p');
+            if (message && p) p.textContent = message;
+        } catch (_) {}
+        loadingPopup.classList.toggle('hidden', !show);
     }
 
     function showEndMessage() {
@@ -578,11 +741,21 @@ document.addEventListener('DOMContentLoaded', function() {
         clockDisplay.textContent = `Time Left: ${timeLeft}s`;
     }
 
-    function startQuestionTimer() {
-        // Clear any existing timer to prevent multiple timers running at once
+    function startQuestionTimer(forceReset = false) {
+        // If a timer is already running and we're not explicitly forcing a reset,
+        // leave it alone. This prevents unintended restarts (for example when
+        // validation alerts or other UI actions occur).
+        if (questionTimer && !forceReset) {
+            return;
+        }
+
+        // Clear any existing timer when forcing a reset
         if (questionTimer) {
             clearInterval(questionTimer);
+            questionTimer = null;
         }
+
+        // Reset countdown only when forcing a new question
         timeLeft = QUESTION_TIME;
         updateClockDisplay();
         questionTimer = setInterval(() => {
@@ -590,6 +763,7 @@ document.addEventListener('DOMContentLoaded', function() {
             updateClockDisplay();
             if (timeLeft <= 0) {
                 clearInterval(questionTimer);
+                questionTimer = null;
                 // Handle timeout directly
                 handleTimeout();
             }
@@ -623,13 +797,63 @@ document.addEventListener('DOMContentLoaded', function() {
         const wrongSound = document.getElementById('wrong-sound');
 
         function playSound(audioElement, soundType) {
+            // Prefer the provided <audio> element. Ensure it's unmuted and set a reasonable volume.
             if (audioElement) {
                 try {
+                    audioElement.muted = false;
+                    audioElement.volume = Math.min(1, Math.max(0, audioElement.volume || 0.9));
+                    // reset to start
+                    try { audioElement.pause(); } catch (_) {}
                     audioElement.currentTime = 0;
-                    audioElement.play().catch(error => console.warn(`Could not play ${soundType} sound:`, error.message));
+                    console.log(`Attempting to play ${soundType} audio element`);
+                    const playPromise = audioElement.play();
+                    if (playPromise && typeof playPromise.then === 'function') {
+                        playPromise.then(() => {
+                            console.log(`${soundType} audio.play() succeeded`);
+                        }).catch(err => {
+                            console.warn(`Could not play ${soundType} sound:`, err && err.message ? err.message : err);
+                            // fallback to a short beep if playback is blocked
+                            playBeepFallback(soundType);
+                        });
+                    }
                 } catch (error) {
-                    console.warn(`Error playing ${soundType} sound:`, error.message);
+                    console.warn(`Error playing ${soundType} sound:`, error && error.message ? error.message : error);
+                    playBeepFallback(soundType);
                 }
+                return;
+            }
+            // No audio element available, use WebAudio fallback
+            playBeepFallback(soundType);
+        }
+
+        // Small WebAudio fallback beep for environments where <audio> cannot play
+        function playBeepFallback(type) {
+            try {
+                const AudioCtxCtor = window.AudioContext || window.webkitAudioContext;
+                if (!AudioCtxCtor && !audioCtx) return;
+                // Prefer existing/resumed audioCtx
+                if (!audioCtx && AudioCtxCtor) {
+                    try { audioCtx = new AudioCtxCtor(); } catch (e) { audioCtx = null; }
+                }
+                if (!audioCtx) return;
+                const ctx = audioCtx;
+                const o = ctx.createOscillator();
+                const g = ctx.createGain();
+                o.type = (type === 'correct') ? 'sine' : 'square';
+                o.frequency.value = (type === 'correct') ? 880 : 220; // Hz
+                // Smooth envelope for a short beep
+                const now = ctx.currentTime;
+                g.gain.setValueAtTime(0.0001, now);
+                g.gain.exponentialRampToValueAtTime(0.12, now + 0.01);
+                o.connect(g);
+                g.connect(ctx.destination);
+                o.start(now);
+                // stop after 140ms
+                const stopAt = now + 0.14;
+                try { o.stop(stopAt); } catch (_) {}
+                // do not close the shared context
+            } catch (e) {
+                console.warn('WebAudio fallback failed:', e && e.message ? e.message : e);
             }
         }
 
@@ -770,11 +994,15 @@ document.addEventListener('DOMContentLoaded', function() {
     let submitLocked = false;
     submitBtn.addEventListener('click', async function(e) {
         e.preventDefault();
+        // Ensure audio is primed by a user gesture so first sounds can play
+        try { await primeAudioIfNeeded(); } catch (_) {}
         if (submitLocked) return;
         submitLocked = true;
         submitBtn.disabled = true;
 
-        clearInterval(questionTimer);
+        // Do NOT clear the question timer yet. If the user clicked Submit without
+        // selecting an answer, we should leave the countdown running. The timer
+        // will only be cleared when a valid answer is submitted below.
 
         if (!mainQuestions.length) {
             submitLocked = false;
@@ -789,11 +1017,22 @@ document.addEventListener('DOMContentLoaded', function() {
         const selectedBtn = quizRight.querySelector('.quiz-choice-btn.selected');
 
         if (!selectedBtn) {
-            alert('Please select an answer!');
+            // Validation failure: show non-blocking modal and keep the timer running.
+            showSelectAnswerModal('Please select an answer!');
             submitLocked = false;
             submitBtn.disabled = false;
-            startQuestionTimer(); // Restart timer
+            // Nudge keyboard users to the first choice for easier selection
+            const firstChoice = quizRight.querySelector('.quiz-choice-btn');
+            if (firstChoice) {
+                try { firstChoice.focus(); } catch (_) {}
+            }
             return;
+        }
+
+        // Stop timer only when a valid answer is actually submitted
+        if (questionTimer) {
+            clearInterval(questionTimer);
+            questionTimer = null;
         }
 
         let choices = Array.isArray(sq.choices) ? sq.choices : (typeof sq.choices === 'string' ? JSON.parse(sq.choices) : []);
@@ -1066,9 +1305,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
 
                 if (showDifficultyModal) {
+                    // Show a loading popup while we wait for the model update and scaffold fetch
+                    showLoadingPopupFn(true, 'Preparing results...');
+                    // yield a frame so the browser can render the popup before we start awaiting
+                    await new Promise((res) => requestAnimationFrame(res));
                     // Wait for model update then fetch scaffold level to decide next step
                     await new Promise(resolve => setTimeout(resolve, 2500));
                     await fetchUserScaffoldLevel();
+                    // Hide loading popup before showing the difficulty modal
+                    showLoadingPopupFn(false);
 
                     // Calculate current accuracy for difficulty adjustment decision
                     const currentAccuracy = difficultyProgressData.totalMainQuestions > 0 
@@ -1126,7 +1371,42 @@ document.addEventListener('DOMContentLoaded', function() {
                         }
                     }
 
-                    if (difficultyModal) difficultyModal.style.display = 'flex';
+                    if (difficultyModal) {
+                        // Add a 'Back to Progress' button alongside the OK button if not already present
+                        try {
+                            // Avoid creating duplicates
+                            let backBtn = difficultyModal.querySelector('.difficulty-back-btn');
+                            if (!backBtn) {
+                                backBtn = document.createElement('button');
+                                backBtn.className = 'difficulty-back-btn';
+                                backBtn.textContent = 'Back to Progress';
+                                // Stronger, visible styling to match modal buttons
+                                backBtn.style.cssText = 'margin-left:0.6rem;background:#d9534f;color:#fff;border-radius:0.5rem;padding:0.6rem 0.9rem;border:2px solid #b43a3a;cursor:pointer;font-weight:700;';
+
+                                // Prefer a dedicated '.modal-actions' area; otherwise append to '.modal-content'
+                                const modalActions = difficultyModal.querySelector('.modal-actions');
+                                if (modalActions) {
+                                    modalActions.appendChild(backBtn);
+                                } else {
+                                    const modalContent = difficultyModal.querySelector('.modal-content') || difficultyModal;
+                                    // Place the button near the OK button if possible
+                                    const okBtn = modalContent.querySelector('#difficulty-modal-ok-btn');
+                                    if (okBtn && okBtn.parentNode) {
+                                        okBtn.parentNode.insertBefore(backBtn, okBtn.nextSibling);
+                                    } else {
+                                        modalContent.appendChild(backBtn);
+                                    }
+                                }
+
+                                backBtn.addEventListener('click', () => { window.location.href = '/progress'; });
+                            }
+                            // Ensure the button is displayed (in case CSS hidden it)
+                            if (backBtn) backBtn.style.display = 'inline-block';
+                        } catch (e) {
+                            console.error('Error adding Back to Progress button:', e);
+                        }
+                        difficultyModal.style.display = 'flex';
+                    }
                 } else {
                     // If user has attempted 10 main questions and hasn't reached the goal, show attempts-limit modal
                     const currentGoal = currentDifficulty === 'Easy' ? easyGoal : (currentDifficulty === 'Medium' ? mediumGoal : hardGoal);
