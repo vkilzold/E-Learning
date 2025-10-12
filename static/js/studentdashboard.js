@@ -179,6 +179,86 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Load and render leaderboard after loading profile/stats
         loadLeaderboard(currentUser.id);
+        // Fetch and render the latest user_progress row for Recent Activity
+        // This will show accuracy, difficulty, correct/mistake counts, total questions, points, and date.
+        async function fetchLatestProgress(userId) {
+            try {
+                const { data, error } = await supabase
+                    .from('user_progress')
+                    .select('accuracy, difficulty, correct_answers, mistake, points, last_updated')
+                    .eq('student_id', userId)
+                    .order('last_updated', { ascending: false })
+                    .limit(1)
+                    .maybeSingle();
+
+                if (error) {
+                    console.error('Error fetching latest user_progress:', error);
+                    return;
+                }
+                if (!data) return;
+                renderLatestProgress(data);
+            } catch (err) {
+                console.error('Failed to fetch latest progress:', err);
+            }
+        }
+
+        function renderLatestProgress(row) {
+            const list = document.querySelector('.activity-list');
+            if (!list) return;
+
+            const totalQuestions = (Number(row.correct_answers) || 0) + (Number(row.mistake) || 0);
+            const correct = (row.correct_answers != null) ? Number(row.correct_answers) : '-';
+            const mistakes = (row.mistake != null) ? Number(row.mistake) : '-';
+            const points = (row.points != null) ? Number(row.points) : '-';
+            const accuracy = (row.accuracy != null) ? `${Math.round(Number(row.accuracy))}%` : '-';
+            const difficulty = row.difficulty || '-';
+            const dateStr = row.last_updated ? new Date(row.last_updated).toLocaleString() : '-';
+
+            // Create an activity block with multiple content rows
+            const wrapper = document.createElement('div');
+            wrapper.className = 'activity-item recent-progress';
+
+            // Header row with icon, title and timestamp on the right
+            const header = document.createElement('div');
+            header.className = 'activity-item-header';
+            header.innerHTML = `
+                <div style="display:flex;align-items:center;gap:0.6rem;">
+                    <i class="fas fa-history" style="width:20px;text-align:center;"></i>
+                    <strong>Recent Activity</strong>
+                </div>
+                <small class="activity-item-time">${escapeHtml(dateStr)}</small>
+            `;
+            wrapper.appendChild(header);
+
+            // Helper to create a field row with icon + label + value
+            function fieldRow(iconClass, label, value) {
+                const row = document.createElement('div');
+                row.className = 'activity-field-row';
+                row.innerHTML = `
+                    <div class="activity-field-left" style="display:flex;align-items:center;gap:0.6rem;">
+                        <i class="${iconClass}" style="width:20px;text-align:center;"></i>
+                        <span class="activity-field-label">${escapeHtml(label)}</span>
+                    </div>
+                    <div class="activity-field-right">${escapeHtml(String(value))}</div>
+                `;
+                return row;
+            }
+
+            // Add rows: difficulty, accuracy, correct, mistakes, total, points
+            wrapper.appendChild(fieldRow('fas fa-sliders-h', 'Difficulty', difficulty));
+            wrapper.appendChild(fieldRow('fas fa-percentage', 'Accuracy', accuracy));
+            wrapper.appendChild(fieldRow('fas fa-check-circle', 'Correct', correct));
+            wrapper.appendChild(fieldRow('fas fa-times-circle', 'Mistakes', mistakes));
+            wrapper.appendChild(fieldRow('fas fa-list-ol', 'Total', totalQuestions));
+            wrapper.appendChild(fieldRow('fas fa-coins', 'Points', points));
+
+            // Insert at top of the list
+            if (list.firstChild) list.insertBefore(wrapper, list.firstChild);
+            else list.appendChild(wrapper);
+        }
+
+        // Kick off fetching the latest progress for this user
+        fetchLatestProgress(currentUser.id);
 
         // ----------------- Badges: fetch and render -----------------
         const BADGE_DEFS = {
