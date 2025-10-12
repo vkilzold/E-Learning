@@ -1804,6 +1804,21 @@ canvas {
   color: #E6D6C1;
   letter-spacing: 1px;
   font-family: 'Montserrat', Arial, sans-serif;
+  text-align: center;
+  width: 100%;
+}
+
+/* Specific fixes for multi-line modal titles (e.g. "Adjusting Difficulty") */
+#difficulty-modal-title {
+  display: block;
+  text-align: center !important;
+  width: 100%;
+  margin: 0 auto 0.4rem auto;
+  white-space: normal;
+  word-break: break-word;
+  line-height: 1.02;
+  /* slightly reduce font size on wrap to avoid odd single-word wrapping */
+  font-size: clamp(1.6rem, 2.2rem, 2.2rem);
 }
 .quiz-feedback-status.incorrect {
   color: #B0323A;

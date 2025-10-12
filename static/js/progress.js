@@ -481,32 +481,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     font-family: 'Pixelify Sans', sans-serif;
     font-size: 14px;
   `;
-  resetButton.addEventListener('click', async () => {
-    if (confirm('Are you sure you want to go back to dashboard?')) {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        const studentId = session?.user?.id || null;
-        if (studentId) {
-          const { error } = await supabase
-            .from('user_answers')
-            .delete()
-            .eq('student_id', studentId);
-          if (error) {
-            console.error('Error resetting user_answers:', error);
-            alert('Error resetting database. Please try again.');
-          } else {
-            progressManager.resetProgress();
-            await progressManager.updateProgressFromUserAnswers();
-            updateProgressDisplay();
-            // Redirect to student dashboard after successful reset
-            window.location.href = '/dashboard'
-          }
-        }
-      } catch (err) {
-        console.error('Failed to reset database:', err);
-        alert('Error resetting database. Please try again.');
-      }
-    }
+  // Home button: simple redirect to dashboard
+  resetButton.addEventListener('click', () => {
+    window.location.href = '/dashboard';
   });
   document.body.appendChild(resetButton);
   
