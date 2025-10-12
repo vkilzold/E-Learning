@@ -486,6 +486,11 @@ input, textarea {
 /* Activity List */
 .activity-list {
   flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  max-height: 100%;
+  overflow-y: auto;
 }
 .activity-item {
   display: flex;
@@ -511,6 +516,52 @@ input, textarea {
 .activity-item small {
   color: var(--text-muted);
   font-size: 0.69rem;
+}
+
+/* Column-style activity display */
+.activity-columns {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+  padding: 0.25rem 0;
+}
+.activity-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 0.5rem;
+  background: var(--bg-main);
+  border-radius: 0.5rem;
+  border: 1px solid var(--icon-blue);
+}
+.activity-column i {
+  color: var(--icon-blue) !important;
+  font-size: 1.1rem;
+  margin-bottom: 0.25rem;
+}
+.activity-column .activity-label {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  margin-bottom: 0.25rem;
+  font-weight: 500;
+}
+.activity-column .activity-value {
+  color: var(--text-main);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+/* Activity List Scrollbar */
+.activity-list::-webkit-scrollbar {
+  width: 0.375rem;
+}
+.activity-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+.activity-list::-webkit-scrollbar-thumb {
+  background: var(--accent);
+  border-radius: 0.625rem;
 }
 
 /* Scroll Box */

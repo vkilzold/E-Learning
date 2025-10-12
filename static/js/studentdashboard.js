@@ -210,51 +210,49 @@ document.addEventListener('DOMContentLoaded', async () => {
             const correct = (row.correct_answers != null) ? Number(row.correct_answers) : '-';
             const mistakes = (row.mistake != null) ? Number(row.mistake) : '-';
             const points = (row.points != null) ? Number(row.points) : '-';
-            const accuracy = (row.accuracy != null) ? `${Math.round(Number(row.accuracy))}%` : '-';
+            const accuracy = (row.accuracy != null) ? `${Math.round(Number(row.accuracy) * 100)}%` : '-';
             const difficulty = row.difficulty || '-';
             const dateStr = row.last_updated ? new Date(row.last_updated).toLocaleString() : '-';
 
-            // Create an activity block with multiple content rows
-            const wrapper = document.createElement('div');
-            wrapper.className = 'activity-item recent-progress';
+            // Clear existing content
+            list.innerHTML = '';
 
-            // Header row with icon, title and timestamp on the right
+            // Create header with timestamp
             const header = document.createElement('div');
             header.className = 'activity-item-header';
+            header.style.cssText = 'display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; padding-bottom: 0.25rem; border-bottom: 1px solid var(--icon-blue);';
             header.innerHTML = `
                 <div style="display:flex;align-items:center;gap:0.6rem;">
-                    <i class="fas fa-history" style="width:20px;text-align:center;"></i>
-                    <strong>Recent Activity</strong>
+                    <i class="fas fa-chart-line" style="color: var(--icon-blue);"></i>
+                    <strong style="color: var(--text-main);">Latest Performance</strong>
                 </div>
-                <small class="activity-item-time">${escapeHtml(dateStr)}</small>
+                <small style="color: var(--text-muted);">${escapeHtml(dateStr)}</small>
             `;
-            wrapper.appendChild(header);
+            list.appendChild(header);
 
-            // Helper to create a field row with icon + label + value
-            function fieldRow(iconClass, label, value) {
-                const row = document.createElement('div');
-                row.className = 'activity-field-row';
-                row.innerHTML = `
-                    <div class="activity-field-left" style="display:flex;align-items:center;gap:0.6rem;">
-                        <i class="${iconClass}" style="width:20px;text-align:center;"></i>
-                        <span class="activity-field-label">${escapeHtml(label)}</span>
-                    </div>
-                    <div class="activity-field-right">${escapeHtml(String(value))}</div>
+            // Create column grid container
+            const columnsContainer = document.createElement('div');
+            columnsContainer.className = 'activity-columns';
+
+            // Helper to create a column with icon, label, and value
+            function createColumn(iconClass, label, value) {
+                const column = document.createElement('div');
+                column.className = 'activity-column';
+                column.innerHTML = `
+                    <i class="${iconClass}"></i>
+                    <div class="activity-label">${escapeHtml(label)}</div>
+                    <div class="activity-value">${escapeHtml(String(value))}</div>
                 `;
-                return row;
+                return column;
             }
 
-            // Add rows: difficulty, accuracy, correct, mistakes, total, points
-            wrapper.appendChild(fieldRow('fas fa-sliders-h', 'Difficulty', difficulty));
-            wrapper.appendChild(fieldRow('fas fa-percentage', 'Accuracy', accuracy));
-            wrapper.appendChild(fieldRow('fas fa-check-circle', 'Correct', correct));
-            wrapper.appendChild(fieldRow('fas fa-times-circle', 'Mistakes', mistakes));
-            wrapper.appendChild(fieldRow('fas fa-list-ol', 'Total', totalQuestions));
-            wrapper.appendChild(fieldRow('fas fa-coins', 'Points', points));
+            // Add columns: difficulty, accuracy, correct, mistakes
+            columnsContainer.appendChild(createColumn('fas fa-sliders-h', 'Difficulty', difficulty));
+            columnsContainer.appendChild(createColumn('fas fa-percentage', 'Accuracy', accuracy));
+            columnsContainer.appendChild(createColumn('fas fa-check-circle', 'Correct', correct));
+            columnsContainer.appendChild(createColumn('fas fa-times-circle', 'Mistakes', mistakes));
 
-            // Insert at top of the list
-            if (list.firstChild) list.insertBefore(wrapper, list.firstChild);
-            else list.appendChild(wrapper);
+            list.appendChild(columnsContainer);
         }
 
         // Kick off fetching the latest progress for this user
