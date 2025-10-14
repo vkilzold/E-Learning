@@ -411,43 +411,29 @@ li {
 
 .playButton {
   position: relative;
-  background: none;
+  background: #ffcc00; /* yellow */
+  color: #23282b;
   border: none;
-  padding: 0;
+  padding: 0.65rem 1.2rem;
   cursor: pointer;
   font-family: 'Montserrat', sans-serif;
-  font-size: 1.2rem;
+  font-size: 1rem;
+  font-weight: 700;
   text-transform: uppercase;
-  image-rendering: pixelated;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-
-  width: 8em;     /* responsive width based on font size */
-  height: 1.6em;     /* responsive height */
-  transition: transform 0.1s ease;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 8px #14131355;
+  transition: transform 0.1s ease, background 0.2s ease;
 }
 
 .playButton:hover {
-  transform: scale(1.05);
-}
-.button-bg {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  image-rendering: pixelated;
-  z-index: 0;
-  pointer-events: none;
-}
-
-.playButton span {
-  z-index: 1;
-  color: #fff;
-  line-height: 1;
+  transform: scale(1.03);
+  background: #ffd740; /* slightly brighter yellow */
 }
 .playButton:active {
-  top: 2px;
+  transform: translateY(1px);
 }
 
 canvas {
@@ -719,6 +705,7 @@ canvas {
 
 .play-button {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   width: 100%;
@@ -1387,6 +1374,10 @@ canvas {
   .quiz-right {
     align-items: center;
   }
+  /* Phones: keep inline help hidden until Hint button is clicked; suppress modal */
+  .quiz-inline-help { display: none !important; }
+  .quiz-inline-help.visible { display: block !important; }
+  #quiz-help-modal { display: none !important; }
 }
 @media (max-width: 600px) {
   .quiz-new-layout {
@@ -1398,6 +1389,23 @@ canvas {
     margin-top: 3.2rem;
     margin-bottom: 0.7rem;
   }
+  /* Stack header elements and avoid overlap on small screens */
+  .quiz-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 0.4rem;
+  }
+  .quiz-clock-display,
+  .quiz-score-display {
+    position: static !important;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    transform: none !important;
+    margin: 0.2rem 0 !important;
+  }
   .quiz-header .question-label {
     font-size: 1rem; /* Reduced from 1.2rem */
   }
@@ -1408,13 +1416,18 @@ canvas {
     flex-direction: column;
     gap: 0.8rem; /* Reduced from 1rem */
     max-width: 100vw;
+    height: auto; /* remove fixed height to prevent clipping */
+    background: none;
+    border-radius: 0.7rem;
   }
   .quiz-left, .quiz-right {
     padding: 0.4rem 0.2rem; /* Reduced from 0.5rem 0.2rem */
-    align-items: flex-start;
+    align-items: stretch;
+    max-width: 100%;
+    width: 100%;
   }
   .quiz-right {
-    align-items: center;
+    align-items: stretch;
   }
   .quiz-input {
     font-size: 0.9rem; /* Reduced from 0.95rem */
@@ -1423,7 +1436,10 @@ canvas {
   .quiz-submit-btn {
     font-size: 0.9rem; /* Reduced from 1rem */
     padding: 0.6rem 0; /* Reduced from 0.7rem 0 */
+    max-width: 100%;
   }
+  .quiz-inline-help,
+  .quiz-choices-buttons { width: 100%; }
 }
 
 /* Quiz Choices Form Styles */
@@ -1545,11 +1561,10 @@ canvas {
 }
 
 .home-btn {
-  font-size: 11px !important; /* Reduced from 13px */
-  padding: 6px 12px !important; /* Reduced from 7px 14px */
-  border-radius: 4px !important; /* Reduced from 5px */
-  top: 12px !important; /* Reduced from 16px */
-  right: 12px !important; /* Reduced from 16px */
+  font-size: 1rem !important;
+  padding: 0.65rem 1.2rem !important;
+  border-radius: 0.5rem !important;
+  margin-top: 0.8rem !important;
   min-width: unset !important;
   min-height: unset !important;
 }
@@ -1745,6 +1760,27 @@ canvas {
   margin: 1rem 0 1rem 0;
   color: var(--light-brown);
   font-family: 'Montserrat', Arial, sans-serif;
+}
+
+/* Inline help block shown on phones below choices */
+.quiz-inline-help {
+  background: #e0e0e0;
+  border: 2px solid #d0d0d0;
+  border-radius: 0.7rem;
+  padding: 0.8rem 1rem;
+  margin: 0.6rem 0 0.6rem 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+.quiz-inline-help-title {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  color: #23282b;
+  margin-bottom: 0.4rem;
+}
+.quiz-inline-help-text {
+  font-family: 'Montserrat', sans-serif;
+  color: #23282b;
+  font-size: 0.95rem;
 }
 
 .close-help-modal {

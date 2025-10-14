@@ -258,6 +258,45 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Kick off fetching the latest progress for this user
         fetchLatestProgress(currentUser.id);
 
+        // ----------------- Time Spent: sum time_taken_seconds -----------------
+        function formatDuration(totalSeconds) {
+            const seconds = Math.max(0, Number(totalSeconds) || 0);
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            const secs = seconds % 60;
+            if (hours > 0) return `${hours}h ${minutes}m`;
+            if (minutes > 0) return `${minutes}m ${secs}s`;
+            return `${secs}s`;
+        }
+
+        async function updateTotalTimeSpent(userId) {
+            try {
+                const { data, error } = await supabase
+                    .from('user_answers')
+                    .select('time_taken_seconds')
+                    .eq('student_id', userId);
+                if (error) {
+                    console.error('Error fetching time_taken_seconds:', error);
+                    const el = document.getElementById('totalTimeSpent');
+                    if (el) el.textContent = '-';
+                    return;
+                }
+                const total = (data || []).reduce((sum, row) => {
+                    const v = Number(row?.time_taken_seconds);
+                    return sum + (Number.isFinite(v) ? v : 0);
+                }, 0);
+                const el = document.getElementById('totalTimeSpent');
+                if (el) el.textContent = formatDuration(total);
+            } catch (e) {
+                console.error('Failed to compute total time spent:', e);
+                const el = document.getElementById('totalTimeSpent');
+                if (el) el.textContent = '-';
+            }
+        }
+
+        // Update total time spent on load
+        updateTotalTimeSpent(currentUser.id);
+
         // ----------------- Badges: fetch and render -----------------
         const BADGE_DEFS = {
             fast_learner: { label: 'Fast Learner', file: 'fast_learner.svg' },

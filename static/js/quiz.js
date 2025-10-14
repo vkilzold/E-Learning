@@ -698,14 +698,23 @@ document.addEventListener('DOMContentLoaded', function() {
             const helpModal = document.getElementById('quiz-help-modal');
             const hintTextElement = helpModal?.querySelector('p');
 
-            // Update the hint modal content
-            if (hintTextElement && sq.hints) {
-                const appropriateHint = getHintByScaffoldLevel(sq.hints);
+            // Update hint content (modal for desktop, inline for phones)
+            const appropriateHint = sq.hints ? getHintByScaffoldLevel(sq.hints) : 'No hint available for this question.';
+            if (hintTextElement) {
                 hintTextElement.textContent = appropriateHint;
-                console.log(`Showing hint for scaffold level ${userScaffoldLevel}: ${appropriateHint.substring(0, 50)}...`);
-            } else if (hintTextElement) {
-                hintTextElement.textContent = 'No hint available for this question.';
             }
+            // Inline help text is set, but stays hidden until button tap on phones
+            try {
+                const inlineHelp = document.getElementById('quiz-inline-help');
+                const inlineText = inlineHelp ? inlineHelp.querySelector('.quiz-inline-help-text') : null;
+                if (inlineHelp && inlineText) {
+                    inlineText.textContent = appropriateHint;
+                    // Keep hidden by default; visibility is toggled on button click for phones
+                    if (window.matchMedia && window.matchMedia('(max-width: 600px)').matches) {
+                        inlineHelp.classList.remove('visible');
+                    }
+                }
+            } catch (_) {}
 
             // Add modal and label logic
             const closeHelp = document.getElementById('close-help-modal');
@@ -719,7 +728,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 // **NEW: Record hint usage when the button is clicked**
                 newHintBtn.addEventListener('click', () => {
                     recordHintUsage(sq.id); // Call the new function
-                    helpModal.style.display = 'flex';
+                    // On desktop/tablet show modal; on phones we rely on inline help
+                    const isPhone = window.matchMedia && window.matchMedia('(max-width: 600px)').matches;
+                    if (!isPhone) {
+                        helpModal.style.display = 'flex';
+                    } else {
+                        const inlineHelp = document.getElementById('quiz-inline-help');
+                        if (inlineHelp) inlineHelp.classList.add('visible');
+                    }
                 });
                 newCloseHelp.addEventListener('click', () => {
                     helpModal.style.display = 'none';
@@ -1274,32 +1290,19 @@ document.addEventListener('DOMContentLoaded', function() {
     // Overlay click handler reference so we can remove it when modal is closed
     let feedbackModalOverlayHandler = null;
 
-    // **NEW FUNCTION: Records hint usage to the `hints_second` table**
+    // Records hint usage locally (DB table for logging not available)
     async function recordHintUsage(subQuestionId) {
         try {
             // Track hint usage in progress data
             difficultyProgressData.hintUsageCount++;
             
-            const { data: { session } } = await supabase.auth.getSession();
-            const studentId = session?.user?.id || null;
-
-            if (studentId) {
-                const { error: hintError } = await supabase
-                    .from('hints_second')
-                    .insert([{
-                        student_id: studentId,
-                        question_id: subQuestionId,
-                        hint_used: true
-                    }]);
-
-                if (hintError) {
-                    console.error('❌ Error recording hint usage:', hintError.message);
-                } else {
-                    console.log('✅ Hint usage recorded successfully.');
-                }
-            } else {
-                console.log('User not logged in, skipping hint recording.');
-            }
+            // No server table exists for logging hint usage on your project.
+            // Persist a lightweight local record instead to avoid network errors.
+            try {
+                const events = JSON.parse(localStorage.getItem('hintUsageEvents') || '[]');
+                events.push({ subQuestionId, at: new Date().toISOString() });
+                localStorage.setItem('hintUsageEvents', JSON.stringify(events));
+            } catch (e) { /* ignore storage errors */ }
         } catch (err) {
             console.error('An error occurred while trying to record hint usage:', err.message);
         }
