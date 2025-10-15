@@ -342,6 +342,8 @@ function updateProgressDisplay() {
   document.getElementById('questions-answered').textContent = stats.questionsAnswered;
   document.getElementById('correct-answers').textContent = stats.correctAnswers;
   document.getElementById('accuracy').textContent = `${Math.round(stats.accuracy)}%`;
+  const difficultyElem = document.getElementById('last-difficulty');
+  if (difficultyElem) difficultyElem.textContent = (stats.currentDifficulty || 'easy').toString().replace(/^\w/, c => c.toUpperCase());
 }
 
 // ---------------------- Event Handlers ----------------------
@@ -464,28 +466,28 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Add event listener for play button
   document.getElementById('playButton').addEventListener('click', startQuiz);
   
-  // Add reset button
+  // Add Home button below Play button
+  const playContainer = document.querySelector('.play-button');
   const resetButton = document.createElement('button');
   resetButton.textContent = 'Home';
   resetButton.classList.add('home-btn');
   resetButton.style.cssText = `
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    padding: 10px 15px;
+    margin-top: 0.8rem;
+    padding: 0.65rem 1.2rem;
     background: #ff4444;
     color: white;
     border: none;
-    border-radius: 5px;
+    border-radius: 0.5rem;
     cursor: pointer;
-    font-family: 'Pixelify Sans', sans-serif;
-    font-size: 14px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    text-transform: uppercase;
   `;
-  // Home button: simple redirect to dashboard
   resetButton.addEventListener('click', () => {
     window.location.href = '/dashboard';
   });
-  document.body.appendChild(resetButton);
+  if (playContainer) playContainer.appendChild(resetButton);
   
   // Add reset button for testing (remove in production)
   if (window.location.search.includes('reset=true')) {
