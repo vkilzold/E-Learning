@@ -854,6 +854,239 @@ canvas {
 .progress-circle.animate {
   animation: progressFill 1.5s ease-out forwards;
 }
+
+/* ===================== RESPONSIVE DESIGN ===================== */
+
+@media (max-width: 1200px) {
+  .container {
+    max-width: 95vw; /* Reduced from 98vw */
+    height: 92%; /* Reduced from 95% */
+    padding: 0.4rem; /* Reduced from 0.5rem */
+  }
+  .quiz-main-content {
+    max-width: 92vw; /* Reduced from 95vw */
+    padding: 1rem; /* Reduced from 1.2rem */
+  }
+}
+
+@media (max-width: 900px) {
+  .quiz-content {
+    max-width: 92vw; /* Reduced from 95vw */
+  }
+  .quiz-main-content {
+    max-width: 95vw; /* Reduced from 98vw */
+    padding: 0.6rem; /* Reduced from 0.8rem */
+  }
+  .content-area {
+    margin-top: 3rem; /* Reduced from 4rem */
+    min-height: 280px; /* Reduced from 320px */
+  }
+  .score, .timer-number {
+    top: 0.5rem; /* Reduced from 0.7rem */
+    left: 0.8rem; /* Reduced from 1rem */
+    right: 0.8rem; /* Reduced from 1rem */
+    font-size: 1.3rem; /* Reduced from 1.5rem */
+  }
+  .timer-number {
+    width: 2.8rem; /* Reduced from 3.2rem */
+    height: 2.8rem; /* Reduced from 3.2rem */
+    font-size: 1.5rem; /* Reduced from 1.7rem */
+  }
+}
+
+@media (max-width: 600px) {
+  html, body, .quiz-section {
+    width: 100vw;
+    min-width: 100vw;
+    max-width: 100vw;
+    height: 100vh;
+    min-height: 100vh;
+    max-height: 100vh;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    overflow-y: auto; /* Allow vertical scrolling if needed */
+  }
+  body {
+    display: block;
+    overflow-x: hidden;
+    overflow-y: auto; /* Allow vertical scrolling if needed */
+    background: #2B3537;
+  }
+  .quiz-section {
+    justify-content: flex-start;
+    align-items: flex-start;
+    background: #2B3537;
+    min-height: 100vh;
+    min-width: 100vw;
+    padding: 0;
+    overflow-y: auto; /* Allow vertical scrolling if needed */
+  }
+  .container {
+    width: 100vw;
+    min-width: 100vw;
+    max-width: 100vw;
+    min-height: 100vh; /* Changed from height to min-height */
+    border-radius: 0;
+    padding: 0.4rem 0.2rem 0.2rem 0.2rem; /* Reduced from 0.5rem 0.2rem 0.2rem 0.2rem */
+    box-sizing: border-box;
+    overflow-y: auto; /* Allow vertical scrolling if needed */
+  }
+  .quiz-main-content, .quiz-content {
+    width: 100vw;
+    min-width: 100vw;
+    max-width: 100vw;
+    box-sizing: border-box;
+    padding: 0.4rem 0.2rem; /* Reduced from 0.5rem 0.2rem */
+  }
+  .quiz-content h3, #question {
+    font-size: 1.1rem; /* Reduced from 1.25rem */
+    margin-bottom: 0.4rem; /* Reduced from 0.5rem */
+  }
+  .choice {
+    font-size: 0.85rem; /* Reduced from 0.95rem */
+    padding: 0.4rem 0.4rem; /* Reduced from 0.5rem 0.5rem */
+  }
+  .title h1, .title h2 {
+    font-size: 1rem; /* Reduced from 1.2rem */
+    word-break: break-word;
+    text-align: center;
+  }
+  .score {
+    left: 0.4rem; /* Reduced from 0.5rem */
+    top: 0.4rem; /* Reduced from 0.5rem */
+    font-size: 1rem; /* Reduced from 1.1rem */
+  }
+  .temp-score {
+    font-size: 1rem; /* Reduced from 1.2rem */
+    padding: 0.2rem 0.8rem; /* Reduced from 0.3rem 1rem */
+    width: 4ch; /* Reduced from 4.5ch */
+  }
+  .timer-number {
+    position: fixed;
+    top: 0.5rem; /* Reduced from 0.7rem */
+    right: 0.8rem; /* Reduced from 1rem */
+    left: auto;
+    z-index: 100;
+    width: 2.2rem; /* Reduced from 2.5rem */
+    height: 2.2rem; /* Reduced from 2.5rem */
+    font-size: 1rem; /* Reduced from 1.2rem */
+    background: #2B3537;
+    border: 2px solid #ff9800;
+    box-shadow: 0 0 8px #ff9800cc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+  }
+  .playButton {
+    width: 8em; /* Reduced from 9em */
+    height: 2.2em; /* Reduced from 2.5em */
+    font-size: 1rem; /* Reduced from 1.2rem */
+    min-width: 56px; /* Reduced from 64px */
+    min-height: 40px; /* Reduced from 48px */
+    border-radius: 1.3em; /* Reduced from 1.5em */
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  }
+  .playButton .button-bg {
+    width: 90%;
+    height: 90%;
+    max-width: 90%;
+    max-height: 90%;
+    left: 5%;
+    top: 5%;
+  }
+  .popup-content {
+    padding: 0.6rem 0.6rem; /* Reduced from 0.7rem 0.7rem */
+    font-size: 0.9rem; /* Reduced from 1rem */
+    min-width: 100px; /* Reduced from 120px */
+  }
+  .end-message.end-message {
+    font-size: 1rem; /* Reduced from 1.1rem */
+    padding: 0.8rem 0.4rem 0.4rem 0.4rem; /* Reduced from 1rem 0.5rem 0.5rem 0.5rem */
+    max-width: 95vw;
+  }
+  .content-area {
+    margin-top: 5.5rem; /* Reduced from 7rem */
+  }
+  .play-button {
+    margin: 1.5rem 0 1.2rem 0; /* Reduced from 2rem 0 1.5rem 0 */
+  }
+}
+
+@media (max-width: 400px) {
+  .quiz-main-content, .quiz-content, .container, .quiz-section, html, body {
+    width: 100vw;
+    min-width: 100vw;
+    max-width: 100vw;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  .quiz-content h3, #question {
+    font-size: 0.95rem; /* Reduced from 1.1rem */
+  }
+  .choice {
+    font-size: 0.7rem; /* Reduced from 0.75rem */
+    padding: 0.2rem 0.2rem; /* Reduced from 0.3rem 0.2rem */
+  }
+  .title h1, .title h2 {
+    font-size: 2rem; /* Reduced from 1rem */
+  }
+  .score {
+    left: 0.2rem;
+    top: 0.2rem;
+    font-size: 0.8rem; /* Reduced from 0.9rem */
+  }
+  .temp-score {
+    font-size: 0.8rem; /* Reduced from 0.9rem */
+    padding: 0.2rem 0.4rem; /* Reduced from 0.2rem 0.5rem */
+    width: 3ch; /* Reduced from 3.5ch */
+  }
+  .timer-number {
+    position: fixed;
+    top: 0.3rem; /* Reduced from 0.4rem */
+    right: 0.4rem; /* Reduced from 0.5rem */
+    left: auto;
+    width: 1.5rem; /* Reduced from 1.7rem */
+    height: 1.5rem; /* Reduced from 1.7rem */
+    font-size: 0.7rem; /* Reduced from 0.8rem */
+    z-index: 100;
+    background: #2B3537;
+    border: 2px solid #ff9800;
+    box-shadow: 0 0 6px #ff9800cc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+  }
+  .playButton {
+    width: 6em; /* Reduced from 7em */
+    height: 1.8em; /* Reduced from 2em */
+    font-size: 1.5rem; /* Reduced from 1rem */
+    min-width: 48px; /* Reduced from 56px */
+    min-height: 32px; /* Reduced from 40px */
+    border-radius: 1rem; /* Reduced from 1.2em */
+  }
+  .playButton .button-bg {
+    width: 90%;
+    height: 90%;
+    max-width: 90%;
+    max-height: 90%;
+    left: 5%;
+    top: 5%;
+  }
+  .end-message.end-message {
+    font-size: 0.7rem; /* Reduced from 0.8rem */
+    padding: 0.4rem 0.2rem 0.2rem 0.2rem; /* Reduced from 0.5rem 0.2rem 0.2rem 0.2rem */
+  }
+  .content-area {
+    margin-top: 4.5rem; /* Reduced from 6rem */
+  }
+  .play-button {
+    margin: 1.2rem 0 0.8rem 0; /* Reduced from 1.5rem 0 1rem 0 */
+  }
+}
+
 /* Hide old content for now */
 #old-quiz-content {
   display: none !important;
@@ -1130,6 +1363,158 @@ canvas {
 
 
 
+/* Small Tablet styles (601px - 768px) */
+@media (min-width: 601px) and (max-width: 768px) {
+  .quiz-main-area {
+    flex-direction: row; /* Keep horizontal layout like desktop */
+    gap: 1rem;
+    align-items: stretch;
+    height: 260px; /* Reduced height for small tablets */
+  }
+  .quiz-left, .quiz-right {
+    padding: 0.6rem 0.3rem;
+    align-items: flex-start;
+  }
+  .quiz-right {
+    align-items: center;
+  }
+  /* Small tablets: show modal hints like desktop */
+  .quiz-inline-help { display: none !important; }
+  #quiz-help-modal { display: flex !important; }
+}
+
+/* Large Tablet/iPad styles (769px - 900px) */
+@media (min-width: 769px) and (max-width: 900px) {
+  .quiz-main-area {
+    flex-direction: row; /* Keep horizontal layout like desktop */
+    gap: 1.4rem;
+    align-items: stretch;
+    height: 300px; /* Better height for larger tablets */
+  }
+  .quiz-left, .quiz-right {
+    padding: 1rem 0.5rem;
+    align-items: flex-start;
+  }
+  .quiz-right {
+    align-items: center;
+  }
+  /* Large tablets: show modal hints like desktop */
+  .quiz-inline-help { display: none !important; }
+  #quiz-help-modal { display: flex !important; }
+}
+
+/* Phone styles (≤600px) */
+@media (max-width: 600px) {
+  .quiz-main-area {
+    flex-direction: column;
+    gap: 1.2rem;
+    align-items: stretch;
+  }
+  .quiz-left, .quiz-right {
+    padding: 0.8rem 0.4rem;
+    align-items: flex-start;
+  }
+  .quiz-right {
+    align-items: center;
+  }
+  /* Phones: keep inline help hidden until Hint button is clicked; suppress modal */
+  .quiz-inline-help { display: none !important; }
+  .quiz-inline-help.visible { display: block !important; }
+  #quiz-help-modal { display: none !important; }
+}
+@media (max-width: 600px) {
+  .quiz-new-layout {
+    padding: 0.8rem 0.2rem; /* Reduced from 1rem 0.2rem */
+  }
+  .progress-bar {
+    width: 98%;
+    margin: 0.8rem auto 0.8rem auto; /* Reduced from 1rem auto 1rem auto */
+    margin-top: 1.2rem; /* Reduced margin since score/time are now at top */
+    margin-bottom: 0.7rem;
+  }
+  /* Keep header compact but don't stack score/time inside it */
+  .quiz-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 0.4rem;
+    margin-bottom: 0.5rem; /* Add some space below header */
+  }
+  /* Move score and time to top like desktop, but smaller for phones */
+  .quiz-clock-display,
+  .quiz-score-display {
+    position: absolute !important;
+    top: 0.8rem !important;
+    z-index: 20 !important;
+    font-size: 0.9rem !important;
+    padding: 0.3rem 0.6rem !important;
+    border-radius: 0.4rem !important;
+    white-space: nowrap !important;
+  }
+  .quiz-clock-display {
+    left: 0.8rem !important;
+    right: auto !important;
+    background: #e0e0e0 !important;
+    color: #23282b !important;
+    border: 2px solid #d0d0d0 !important;
+    max-width: calc(50vw - 1rem) !important;
+  }
+  .quiz-score-display {
+    right: 0.8rem !important;
+    left: auto !important;
+    background: #388e3c !important;
+    color: #fff !important;
+    border: 2px solid #388e3c !important;
+    min-width: 1.6rem !important;
+    min-height: 1.6rem !important;
+    height: 1.6rem !important;
+    font-size: 1rem !important;
+    max-width: calc(50vw - 1rem) !important;
+  }
+  .quiz-header .question-label {
+    font-size: 1rem; /* Reduced from 1.2rem */
+  }
+  .quiz-header .round-label {
+    font-size: 0.9rem; /* Reduced from 1rem */
+  }
+  .quiz-main-area {
+    flex-direction: column;
+    gap: 0.8rem; /* Reduced from 1rem */
+    max-width: 100vw;
+    height: auto; /* remove fixed height to prevent clipping */
+    background: none;
+    border-radius: 0.7rem;
+  }
+  .quiz-left, .quiz-right {
+    padding: 0.4rem 0.2rem; /* Reduced from 0.5rem 0.2rem */
+    align-items: stretch;
+    max-width: 100%;
+    width: 100%;
+  }
+  .quiz-right {
+    align-items: stretch;
+  }
+  .quiz-input {
+    font-size: 0.9rem; /* Reduced from 0.95rem */
+    padding: 0.6rem 0.6rem; /* Reduced from 0.7rem 0.7rem */
+  }
+  .quiz-submit-btn {
+    font-size: 0.9rem; /* Reduced from 1rem */
+    padding: 0.6rem 0; /* Reduced from 0.7rem 0 */
+    max-width: 100%;
+    margin-bottom: 1rem; /* Add bottom margin to prevent cutoff */
+  }
+  .quiz-inline-help,
+  .quiz-choices-buttons { width: 100%; }
+  
+  /* Ensure proper spacing for the entire quiz layout */
+  .quiz-new-layout {
+    padding-bottom: 2rem !important; /* Add extra bottom padding */
+    min-height: 100vh; /* Ensure full viewport height */
+    box-sizing: border-box;
+  }
+}
 
 /* Quiz Choices Form Styles */
 .quiz-choices-form {
@@ -1328,6 +1713,154 @@ canvas {
 
 }
 
+/* === Desktop Responsiveness Improvements === */
+@media (min-width: 1400px) {
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2.5rem 2rem;
+  }
+  .quiz-main-area {
+    max-width: 1000px;
+    gap: 2.5rem;
+    height: 350px;
+  }
+  .quiz-new-layout {
+    padding: 2.5rem 2rem 2rem 2rem;
+  }
+}
+@media (min-width: 1600px) {
+  .container {
+    max-width: 1350px;
+    padding: 3rem 3rem;
+  }
+  .quiz-main-area {
+    max-width: 1200px;
+    gap: 3rem;
+    height: 400px;
+  }
+  .quiz-new-layout {
+    padding: 3rem 3rem 2.5rem 3rem;
+  }
+}
+@media (min-width: 1800px) {
+  .container {
+    max-width: 1500px;
+    padding: 4rem 4rem;
+  }
+  .quiz-main-area {
+    max-width: 1400px;
+    gap: 4rem;
+    height: 450px;
+  }
+  .quiz-new-layout {
+    padding: 4rem 4rem 3rem 4rem;
+  }
+  .quiz-question-text, .sub-question-text {
+    font-size: 20px;
+  }
+  .quiz-info-label {
+    font-size: 16px;
+  }
+  .quiz-choices-buttons button {
+    font-size: 14px;
+    padding: 14px 24px;
+  }
+}
+
+/* Responsive adjustments for clock and score displays */
+/* Tablet adjustments */
+@media (min-width: 601px) and (max-width: 900px) {
+  .quiz-clock-display,
+  .quiz-score-display {
+    font-size: 1.2rem;
+    padding: 0.5rem 1rem;
+    top: 1.2rem;
+  }
+  
+  .quiz-clock-display {
+    left: 1.5rem;
+  }
+  
+  .quiz-score-display {
+    right: 1.5rem;
+  }
+}
+
+/* Phone adjustments */
+@media (max-width: 600px) {
+  .quiz-clock-display,
+  .quiz-score-display {
+    font-size: 1rem;
+    padding: 0.4rem 0.8rem;
+    top: 1rem;
+  }
+  
+  .quiz-clock-display {
+    left: 1rem;
+  }
+  
+  .quiz-score-display {
+    right: 1rem;
+  }
+}
+
+/* Specific fixes for common phone dimensions */
+@media (max-width: 400px) {
+  .quiz-clock-display,
+  .quiz-score-display {
+    font-size: 0.8rem;
+    padding: 0.25rem 0.5rem;
+    top: 0.6rem;
+  }
+  
+  .quiz-clock-display {
+    left: 0.6rem;
+  }
+  
+  .quiz-score-display {
+    right: 0.6rem;
+  }
+  
+  /* Extra spacing for very small screens */
+  .quiz-new-layout {
+    padding-bottom: 2.5rem !important;
+  }
+  
+  .quiz-submit-btn {
+    margin-bottom: 1.5rem !important;
+  }
+}
+
+/* Specific fixes for 375x667 and similar dimensions */
+@media (max-height: 700px) and (max-width: 400px) {
+  .quiz-new-layout {
+    padding: 0.6rem 0.2rem 3rem 0.2rem !important; /* Extra bottom padding */
+  }
+  
+  .progress-bar {
+    margin-top: 1rem !important;
+    margin-bottom: 0.5rem !important;
+  }
+  
+  .quiz-header {
+    padding: 0.4rem 0.3rem !important;
+    margin-bottom: 0.3rem !important;
+  }
+  
+  .quiz-main-area {
+    gap: 0.6rem !important;
+  }
+  
+  .quiz-left, .quiz-right {
+    padding: 0.3rem 0.2rem !important;
+  }
+  
+  .quiz-submit-btn {
+    margin-bottom: 2rem !important;
+    padding: 0.5rem 0 !important;
+  }
+}
 
 .quiz-help-modal {
   background:#ebebeb;
@@ -1562,381 +2095,3 @@ canvas {
   box-sizing: border-box;
   margin: auto;
 }
-
-
-@media (max-width: 600px) {
-  .quiz-new-layout {
-    padding: 0.8rem 0.2rem; /* Reduced from 1rem 0.2rem */
-  }
-  .progress-bar {
-    width: 98%;
-    margin: 0.8rem auto 0.8rem auto; /* Reduced from 1rem auto 1rem auto */
-    margin-top: 1.2rem; /* Reduced margin since score/time are now at top */
-    margin-bottom: 0.7rem;
-  }
-  /* Keep header compact but don't stack score/time inside it */
-  .quiz-header {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.6rem 0.4rem;
-    margin-bottom: 0.5rem; /* Add some space below header */
-  }
-  /* Move score and time to top like desktop, but smaller for phones */
-  .quiz-clock-display,
-  .quiz-score-display {
-    position: absolute !important;
-    top: 0.8rem !important;
-    z-index: 20 !important;
-    font-size: 0.9rem !important;
-    padding: 0.3rem 0.6rem !important;
-    border-radius: 0.4rem !important;
-    white-space: nowrap !important;
-  }
-  .quiz-clock-display {
-    left: 0.8rem !important;
-    right: auto !important;
-    background: #e0e0e0 !important;
-    color: #23282b !important;
-    border: 2px solid #d0d0d0 !important;
-    max-width: calc(50vw - 1rem) !important;
-  }
-  .quiz-score-display {
-    right: 0.8rem !important;
-    left: auto !important;
-    background: #388e3c !important;
-    color: #fff !important;
-    border: 2px solid #388e3c !important;
-    min-width: 1.6rem !important;
-    min-height: 1.6rem !important;
-    height: 1.6rem !important;
-    font-size: 1rem !important;
-    max-width: calc(50vw - 1rem) !important;
-  }
-  .quiz-header .question-label {
-    font-size: 1rem; /* Reduced from 1.2rem */
-  }
-  .quiz-header .round-label {
-    font-size: 0.9rem; /* Reduced from 1rem */
-  }
-  .quiz-main-area {
-    flex-direction: column;
-    gap: 0.8rem; /* Reduced from 1rem */
-    max-width: 100vw;
-    height: auto; /* remove fixed height to prevent clipping */
-    background: none;
-    border-radius: 0.7rem;
-  }
-  .quiz-left, .quiz-right {
-    padding: 0.4rem 0.2rem; /* Reduced from 0.5rem 0.2rem */
-    align-items: stretch;
-    max-width: 100%;
-    width: 100%;
-  }
-  .quiz-right {
-    align-items: stretch;
-  }
-  .quiz-input {
-    font-size: 0.9rem; /* Reduced from 0.95rem */
-    padding: 0.6rem 0.6rem; /* Reduced from 0.7rem 0.7rem */
-  }
-  .quiz-submit-btn {
-    font-size: 0.9rem; /* Reduced from 1rem */
-    padding: 0.6rem 0; /* Reduced from 0.7rem 0 */
-    max-width: 100%;
-    margin-bottom: 1rem; /* Add bottom margin to prevent cutoff */
-  }
-  .quiz-inline-help,
-  .quiz-choices-buttons { width: 90%; }
-  
-  /* Ensure proper spacing for the entire quiz layout */
-  .quiz-new-layout {
-    padding-bottom: 2rem !important; /* Add extra bottom padding */
-    min-height: 100vh; /* Ensure full viewport height */
-    box-sizing: border-box;
-  }
-}
-
-/* === Desktop Responsiveness Improvements === */
-@media (min-width: 1400px) {
-  .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2.5rem 2rem;
-  }
-  .quiz-main-area {
-    max-width: 1000px;
-    gap: 2.5rem;
-    height: 350px;
-  }
-  .quiz-new-layout {
-    padding: 2.5rem 2rem 2rem 2rem;
-  }
-}
-@media (min-width: 1600px) {
-  .container {
-    max-width: 1350px;
-    padding: 3rem 3rem;
-  }
-  .quiz-main-area {
-    max-width: 1200px;
-    gap: 3rem;
-    height: 400px;
-  }
-  .quiz-new-layout {
-    padding: 3rem 3rem 2.5rem 3rem;
-  }
-}
-
-@media (min-width: 1800px) {
-  .container {
-    max-width: 1500px;
-    padding: 4rem 4rem;
-  }
-  .quiz-main-area {
-    max-width: 1400px;
-    gap: 4rem;
-    height: 450px;
-  }
-  .quiz-new-layout {
-    padding: 4rem 4rem 3rem 4rem;
-  }
-  .quiz-question-text, .sub-question-text {
-    font-size: 20px;
-  }
-  .quiz-info-label {
-    font-size: 16px;
-  }
-  .quiz-choices-buttons button {
-    font-size: 14px;
-    padding: 14px 24px;
-  }
-}
-
-/* === Desktop Responsiveness Improvements === */
-@media (min-width: 1400px) {
-  .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2.5rem 2rem;
-  }
-  .quiz-main-area {
-    max-width: 1000px;
-    gap: 2.5rem;
-    height: 350px;
-  }
-  .quiz-new-layout {
-    padding: 2.5rem 2rem 2rem 2rem;
-  }
-    .progress-bar {
-    margin-top: 3rem !important;
-  }
-}
-
-/* === Desktop Responsiveness Improvements === */
-@media (min-width: 1024px) {
-  .progress-bar {
-    margin-top: 4.5rem !important;
-  }
-
-}
-
-/* ============================================ tablet ============================================ */
-@media (min-width: 426px) and (max-width: 768px) {
-  /* Compact the timer and score */
-    .quiz-clock-display, 
-    .quiz-score-display { 
-    font-size: 0.7rem !important; 
-    padding: 0.25rem 0.45rem !important; 
-    top: 0.5rem !important;
-  }
-  .quiz-main-area {
-  gap: 0.5rem;
-  }
-  .round-label { 
-    font-size: 1rem; 
-  }
-  .question-label { 
-    font-size: 1rem; 
-  }
-  .main-question-context { 
-    font-size: 0.9rem; 
-    padding-bottom: 0.5rem; 
-  }
-  .sub-question-text { 
-    font-size: 0.9rem; 
-    margin-bottom: 0.1rem;
-  }
-
-  .quiz-clock-display {
-    left: 0.4rem !important;
-  }
-
-  .quiz-score-display {
-    right: 0.4rem !important;
-  }
-
-  /* Move progress bar further down to avoid overlap */
-  .progress-bar {
-    margin-top: 0.4rem !important;
-  }
-
-  /* Slightly smaller question and choices */
-  .quiz-question-text,
-  #question {
-    font-size: 0.88rem !important;
-    line-height: 1.3rem !important;
-  }
-
-  .quiz-choice-btn,
-  .quiz-choice-label {
-    font-size: 0.8rem !important;
-    padding: 0.5rem 0.6rem !important;
-  }
-
-  /* Reduce header spacing */
-  .quiz-header {
-    margin-top: 0.3rem !important;
-  }
- 
-
-.quiz-help-modal-content {
-  max-width: 20rem;
-}
-
-.quiz-help-modal-content h2 {
-  font-size: 2rem;
-}
-
-.quiz-help-modal-content p {
-  font-size: 1rem;
-}
-
-  /* Adjust container padding */
-  .quiz-new-layout {
-    padding-top: 3rem !important;  /* less space but still safe for score/timer */
-    padding-bottom: 1.8rem !important;
-  }
-
-  /* Keep full vertical space visible */
-  .container {
-    overflow-y: auto !important;
-    min-height: 100vh !important;
-  }
-}
-
-
-/* ============================================ phone ============================================ */
-@media (max-width: 425px) {
-  /* Compact the timer and score */
-    .quiz-clock-display, 
-    .quiz-score-display { 
-    font-size: 0.7rem !important; 
-    padding: 0.25rem 0.45rem !important; 
-    top: 0.5rem !important;
-  }
-  .quiz-main-area {
-  gap: 0.5rem;
-  }
-  .round-label { 
-    font-size: 1rem; 
-  }
-  .question-label { 
-    font-size: 1rem; 
-  }
-  .main-question-context { 
-    font-size: 0.9rem; 
-    padding-bottom: 0.5rem; 
-  }
-  .sub-question-text { 
-    font-size: 0.9rem; 
-    margin-bottom: 0.1rem;
-  }
-
-  .quiz-clock-display {
-    left: 0.4rem !important;
-  }
-
-  .quiz-score-display {
-    right: 0.4rem !important;
-  }
-
-  /* Move progress bar further down to avoid overlap */
-  .progress-bar {
-    margin-top: 0.4rem !important;
-  }
-
-  /* Slightly smaller question and choices */
-  .quiz-question-text,
-  #question {
-    font-size: 0.88rem !important;
-    line-height: 1.3rem !important;
-  }
-
-  .quiz-choice-btn,
-  .quiz-choice-label {
-    font-size: 0.8rem !important;
-    padding: 0.5rem 0.6rem !important;
-  }
-
-  /* Reduce header spacing */
-  .quiz-header {
-    margin-top: 0.3rem !important;
-  }
-  /* Inline help block shown on phones below choices */
-.quiz-inline-help {
-  background: #e0e0e0;
-  border: 2px solid #d0d0d0;
-  border-radius: 0.7rem;
-  padding: 0.8rem 1rem;
-  margin: 0.6rem 0 0.6rem 0;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-}
-.quiz-inline-help-title {
-  font-family: 'Montserrat', sans-serif;
-  font-weight: 700;
-  color: #23282b;
-  margin-bottom: 0.4rem;
-}
-.quiz-inline-help-text {
-  font-family: 'Montserrat', sans-serif;
-  color: #23282b;
-  font-size: 0.95rem;
-}
-/* Inline Help: hidden by default, shown when active */
-.quiz-inline-help {
-  display: none !important;
-}
-
-.quiz-inline-help.visible {
-  display: block !important;
-  background: #e0e0e0;
-  border: 2px solid #d0d0d0;
-  border-radius: 0.7rem;
-  padding: 0.8rem 1rem;
-  margin: 0.6rem 0 0.6rem 0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-}
-
-
-  /* Adjust container padding */
-  .quiz-new-layout {
-    padding-top: 3rem !important;  /* less space but still safe for score/timer */
-    padding-bottom: 1.8rem !important;
-  }
-
-  /* Keep full vertical space visible */
-  .container {
-    overflow-y: auto !important;
-    min-height: 100vh !important;
-  }
-  
-  .quiz-submit-btn {
-    margin-bottom: 1.5rem !important;
-    width: 90%;
-  }
-}
-
-
-
