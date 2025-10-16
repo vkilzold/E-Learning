@@ -241,6 +241,12 @@ def title():
 def progress():
     return render_template('progress.html')
 
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(
+        os.path.join(app.root_path, 'static', 'images'),
+        'favicon.jpg',
+        mimetype='image/jpeg')
 
 # Serve badge image files from the repository 'badges' folder at /badges/<filename>
 @app.route('/badges/<path:filename>')

@@ -900,8 +900,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         playPromise.then(() => {
                             console.log(`${soundType} audio.play() succeeded`);
                         }).catch(err => {
-                            console.warn(`Could not play ${soundType} sound:`, err && err.message ? err.message : err);
-                            // fallback to a short beep if playback is blocked
+                             // inalis ko yung nag eeror dine
                             playBeepFallback(soundType);
                         });
                     }
