@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <!-- Shield -->
+  <path d="M256 40C180 80 100 80 80 140v120c0 100 140 180 176 212 36-32 176-112 176-212V140c-20-60-100-60-176-100z" fill="#FFD24A" stroke="#0E3B5C" stroke-width="16" stroke-linejoin="round"></path>
+  
+  <!-- Folder -->
+  <rect x="150" y="190" width="200" height="120" rx="12" fill="none" stroke="#0E3B5C" stroke-width="14"></rect>
+  <path d="M150 190h70l20 20h110v20H150z" fill="none" stroke="#0E3B5C" stroke-width="14" stroke-linejoin="round"></path>
+  
+  <!-- Magnifying glass -->
+  <circle cx="300" cy="290" r="45" fill="#FFFFFF" stroke="#0E3B5C" stroke-width="14"></circle>
+  <line x1="335" y1="325" x2="370" y2="360" stroke="#0E3B5C" stroke-width="14" stroke-linecap="round"></line>
+  
+  <!-- Notification badge -->
+  <circle cx="380" cy="120" r="40" fill="#E74C3C" stroke="#0E3B5C" stroke-width="12"></circle>
+  <text x="380" y="135" text-anchor="middle" font-family="Arial, sans-serif" font-size="40" font-weight="bold" fill="#FFFFFF">1</text>
+</svg>
