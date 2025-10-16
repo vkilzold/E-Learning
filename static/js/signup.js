@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const password = document.getElementById('password').value.trim();
       const confirmPassword = document.getElementById('confirmPassword').value.trim();
       const termsCheckbox = document.getElementById('termsCheckbox');
-      const username = document.getElementById('User Name').value.trim();
+      const username = document.getElementById('username').value.trim();
 
       // ------------------------------------ Checks if all required fields are filled ------------------------------------
       if (!firstName || !lastName || !gender || !email || !password || !confirmPassword || !username) {
@@ -111,7 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
       message.style.color = 'green';
 
       setTimeout(() => {
-        window.location.href = '..templates/login.html';
+        window.location.href = '/login';
       }, 1800);
     });
   }
