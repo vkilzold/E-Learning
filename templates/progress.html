@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="/static/css/quiz.css" />
+  <link rel="stylesheet" href="/static/css/progress.css" />
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Jersey+10&family=Pixelify+Sans:wght@400;700&display=swap" rel="stylesheet">
   <title>Progress - InQUIZition</title>
@@ -34,13 +34,15 @@
                   <span class="stat-label">Accuracy:</span>
                   <span class="stat-value" id="accuracy">0%</span>
                 </div>
+                <div class="stat-item">
+                  <span class="stat-label">Last Difficulty:</span>
+                  <span class="stat-value" id="last-difficulty">-</span>
+                </div>
               </div>
             </div>
           </div>
           <div class="play-button">
-            <button class="playButton" id="playButton">
-              <img src="/static/images/buttons/playBtn.png" alt="Play" class="button-bg" />
-            </button>
+          <button class="playButton" id="playButton"><span>Play</span></button>
           </div>
         </div>
         

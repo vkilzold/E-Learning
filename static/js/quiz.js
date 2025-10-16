@@ -18,6 +18,12 @@ console.log('Testing basic connection...');
 
 // ================================================== New Quiz Logic for New Layout ==================================================
 document.addEventListener('DOMContentLoaded', function() {
+    // Force-hide any modals on load
+    const modalsToHide = [
+        document.getElementById('quiz-help-modal'),
+        document.getElementById('prestart-difficulty-modal')
+    ];
+    modalsToHide.forEach(m => { if (m) m.style.display = 'none'; });
     // --- New: Fetch main_questions and sub_questions from Supabase ---
     let mainQuestions = [];
     let currentMainIdx = 0;
@@ -40,7 +46,8 @@ document.addEventListener('DOMContentLoaded', function() {
         correctMainQuestions: 0,      // Correct main questions in current difficulty
         hintUsageCount: 0,           // Number of times hint was used in current difficulty
         mistakeCount: 0,             // Number of incorrect main question attempts in current difficulty
-        mainQuestionAttempts: []     // Track each main question attempt for ability calculation
+        mainQuestionAttempts: [],    // Track each main question attempt for ability calculation
+        points: 0                    // Accumulated points for correct sub-questions in this difficulty
     };
 
     // --- User Scaffold Level ---
@@ -90,7 +97,8 @@ document.addEventListener('DOMContentLoaded', function() {
             correctMainQuestions: 0,
             hintUsageCount: 0,
             mistakeCount: 0,
-            mainQuestionAttempts: []
+            mainQuestionAttempts: [],
+            points: 0
         };
     }
 
@@ -129,20 +137,93 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Function to calculate ability score based on performance
     function calculateAbilityScore() {
-        const attempts = difficultyProgressData.mainQuestionAttempts;
+        const attempts = (difficultyProgressData && difficultyProgressData.mainQuestionAttempts) || [];
         if (attempts.length === 0) return 0;
 
-        // Count perfect rounds (all sub-questions correct in a main question)
-        const perfectRounds = attempts.filter(attempt => attempt.isPerfect).length;
-        const totalAttempts = attempts.length;
-        const correctPercentage = (perfectRounds / totalAttempts);
+        // Prefer explicit metrics on difficultyProgressData if present
+        let accuracy = (typeof difficultyProgressData?.accuracy === 'number') ? difficultyProgressData.accuracy : null;
+        let hintUsage = (typeof difficultyProgressData?.hintUsage === 'number') ? difficultyProgressData.hintUsage : null;
+        let mistakes = (typeof difficultyProgressData?.mistakes === 'number') ? difficultyProgressData.mistakes : null;
 
-        // Apply the rule-based scoring
-        if (correctPercentage < 0.5) { // Less than 3/5 (60%)
-            return -1;
-        } else if (correctPercentage > 0.8) { // Perfect performance
+        // If any metric is missing, try to compute reasonable fallbacks from attempts
+        if (accuracy === null || hintUsage === null || mistakes === null) {
+            let totalSub = 0;
+            let correctSubs = 0;
+            let totalHintsCount = 0;
+            let attemptsWithHint = 0;
+            let mistakesSum = 0;
+            let perfectRounds = 0;
+
+            for (const a of attempts) {
+                // Sub-question level counts if available
+                const total = (typeof a.totalCount === 'number') ? a.totalCount
+                            : (typeof a.totalSubQuestions === 'number') ? a.totalSubQuestions
+                            : null;
+                const correct = (typeof a.correctCount === 'number') ? a.correctCount
+                            : (typeof a.correctSubQuestions === 'number') ? a.correctSubQuestions
+                            : null;
+
+                if (total != null) totalSub += total;
+                if (correct != null) correctSubs += (correct != null ? correct : 0);
+
+                // mistakes per attempt if available
+                if (typeof a.mistakes === 'number') {
+                    mistakesSum += a.mistakes;
+                } else if (total != null && correct != null) {
+                    mistakesSum += Math.max(0, total - correct);
+                } else {
+                    // fallback: if we know if the attempt was perfect or not
+                    if (a.isPerfect) {
+                        // zero mistakes for perfect
+                    } else {
+                        // count 1 mistake for a non-perfect attempt as a conservative fallback
+                        mistakesSum += 1;
+                    }
+                }
+
+                // hint usage: either numeric hintsUsed or boolean flags
+                if (typeof a.hintsUsed === 'number') {
+                    totalHintsCount += a.hintsUsed;
+                    if (a.hintsUsed > 0) attemptsWithHint++;
+                } else if (a.hintUsed || a.usedHint || a.hints) {
+                    attemptsWithHint++;
+                    totalHintsCount += 1;
+                }
+
+                if (a.isPerfect) perfectRounds++;
+            }
+
+            // Compute accuracy fallback: prefer sub-question accuracy, else use perfect-round ratio
+            if (accuracy === null) {
+                if (totalSub > 0) {
+                    accuracy = correctSubs / totalSub;
+                } else {
+                    accuracy = attempts.length > 0 ? (perfectRounds / attempts.length) : 0;
+                }
+            }
+
+            // Compute hintUsage fallback as fraction of attempts where a hint was used
+            if (hintUsage === null) {
+                hintUsage = attempts.length > 0 ? (attemptsWithHint / attempts.length) : 0;
+                // if we have totalHintsCount and totalSub, normalize to average hints per attempt (optional)
+                // but the rule expects a proportion, so fraction-of-attempts-with-hint is reasonable
+            }
+
+            // Compute mistakes fallback as total mistakes across attempts
+            if (mistakes === null) {
+                mistakes = mistakesSum;
+            }
+        }
+
+        // Apply the requested rule-set:
+        // if Accuracy >= 0.8 and HintUsage < 0.3 and Mistakes <= 2 → ability = 1
+        // else if Accuracy < 0.5 or HintUsage > 0.5 or Mistakes >= 5 → ability = -1
+        // else → ability = 0
+        if (accuracy >= 0.75 && hintUsage < 0.3 && mistakes <= 2) {
             return 1;
-        } else { // Between 60% and 100%
+        } else if (accuracy < 0.5 || hintUsage > 0.5 || mistakes >= 5) {
+            return -1;
+        } else {
             return 0;
         }
     }
@@ -178,6 +259,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 ability: abilityScore,
                 difficulty: difficulty.toLowerCase(),
                 correct_answers: difficultyProgressData.correctMainQuestions,
+                points: difficultyProgressData.points || 0,
                 last_updated: new Date().toISOString()
             };
 
@@ -260,6 +342,67 @@ document.addEventListener('DOMContentLoaded', function() {
     const difficultyModalOkBtn = document.getElementById('difficulty-modal-ok-btn');
     const quizChoicesButtons = document.querySelector('.quiz-choices-buttons');
 
+    // --- Simple 'select answer' modal (replace native alert) ---
+    // We'll create it once and reuse it to avoid blocking the event loop or
+    // interfering with the running timer.
+    let selectAnswerModal = document.getElementById('select-answer-modal');
+    function ensureSelectAnswerModal() {
+        if (selectAnswerModal) return selectAnswerModal;
+        // overlay
+        const overlay = document.createElement('div');
+        overlay.id = 'select-answer-modal';
+        overlay.style.cssText = 'position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:20000;pointer-events:auto;';
+        // backdrop
+        const backdrop = document.createElement('div');
+        backdrop.style.cssText = 'position:absolute;inset:0;background:rgba(0,0,0,0.45);backdrop-filter:blur(2px);';
+        overlay.appendChild(backdrop);
+        // modal box
+        const box = document.createElement('div');
+    box.style.cssText = 'position:relative;background:#fff7f0;padding:1.2rem 1.4rem;border-radius:0.8rem;min-width:300px;max-width:90%;box-shadow:0 8px 24px rgba(0,0,0,0.16);border:1px solid #e6d6c7;font-family:inherit;color:#222;';
+        const msg = document.createElement('div');
+        msg.id = 'select-answer-modal-msg';
+        msg.textContent = 'Please select an answer!';
+        msg.style.cssText = 'margin-bottom:1rem;font-size:1rem;';
+        box.appendChild(msg);
+        const btnRow = document.createElement('div');
+        btnRow.style.cssText = 'display:flex;justify-content:center;';
+        const ok = document.createElement('button');
+        ok.textContent = 'OK';
+    ok.style.cssText = 'background:#8B5E3C;color:#fff;border:2px solid #6f452b;padding:0.5rem 1rem;border-radius:0.6rem;cursor:pointer;font-weight:700;box-shadow:0 2px 0 rgba(0,0,0,0.08);';
+        ok.addEventListener('click', () => {
+            overlay.style.display = 'none';
+            // focus first choice to help the user
+            const first = document.querySelector('.quiz-choice-btn');
+            if (first) try { first.focus(); } catch (_) {}
+        });
+        btnRow.appendChild(ok);
+        box.appendChild(btnRow);
+        overlay.appendChild(box);
+        // click outside to close
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) {
+                overlay.style.display = 'none';
+                const first = document.querySelector('.quiz-choice-btn');
+                if (first) try { first.focus(); } catch (_) {}
+            }
+        });
+        document.body.appendChild(overlay);
+        selectAnswerModal = overlay;
+        return selectAnswerModal;
+    }
+
+    function showSelectAnswerModal(message) {
+        const m = ensureSelectAnswerModal();
+        if (message) {
+            const el = m.querySelector('#select-answer-modal-msg');
+            if (el) el.textContent = message;
+        }
+        m.style.display = 'flex';
+        // ensure the OK button is focused for quick keyboard dismissal
+        const ok = m.querySelector('button');
+        if (ok) try { ok.focus(); } catch (_) {}
+    }
+
     // Create Attempts-Limit Modal by cloning the existing difficulty modal for consistent styling
     let attemptsLimitModal = document.getElementById('attempts-limit-modal');
     let attemptsLimitModalTitle = document.getElementById('attempts-limit-modal-title');
@@ -307,6 +450,103 @@ document.addEventListener('DOMContentLoaded', function() {
     const QUESTION_TIME = 60;
     let timeLeft = QUESTION_TIME;
 
+    // Audio elements (populated on DOMContentLoaded)
+    let correctAudioEl = document.getElementById('correct-sound');
+    let wrongAudioEl = document.getElementById('wrong-sound');
+    let audioPrimed = false;
+    // Shared AudioContext to use for priming and fallback beeps
+    let audioCtx = null;
+
+    // Attempt a robust priming strategy that works across browsers:
+    // 1) Resume/create an AudioContext (best for Chrome/modern browsers)
+    // 2) Try a very-low-volume unmuted play() of the <audio> elements during the user gesture
+    // 3) Fallback to starting a tiny silent AudioBuffer on the AudioContext
+    async function primeAudioIfNeeded() {
+        if (audioPrimed) return;
+        try {
+            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            if (AudioCtx && !audioCtx) {
+                try {
+                    audioCtx = new AudioCtx();
+                } catch (e) {
+                    // some browsers may still throw here
+                    audioCtx = null;
+                }
+            }
+
+            // Try to resume an existing/suspended AudioContext
+            if (audioCtx && audioCtx.state === 'suspended') {
+                try {
+                    await audioCtx.resume();
+                    console.log('AudioContext resumed during priming');
+                    audioPrimed = true;
+                    return;
+                } catch (e) {
+                    // ignore and continue to other strategies
+                }
+            }
+
+            // Try to play a very-low-volume unmuted snippet from the audio elements
+            const ca = document.getElementById('correct-sound');
+            const wa = document.getElementById('wrong-sound');
+            const els = [ca, wa].filter(Boolean);
+            for (const a of els) {
+                try {
+                    const prevVol = a.volume;
+                    // set almost-silent volume but ensure not muted so playback is considered a gesture
+                    a.muted = false;
+                    a.volume = 0.001;
+                    const p = a.play();
+                    if (p && typeof p.then === 'function') {
+                        await p;
+                    }
+                    // pause and reset
+                    try { a.pause(); a.currentTime = 0; } catch (_) {}
+                    a.volume = prevVol;
+                    audioPrimed = true;
+                    console.log('Primed via <audio> element play');
+                    return;
+                } catch (e) {
+                    // try next element
+                    try { a.pause(); a.currentTime = 0; a.muted = false; } catch (_) {}
+                }
+            }
+
+            // Last-resort: start a tiny silent buffer on the AudioContext
+            if (audioCtx) {
+                try {
+                    const buffer = audioCtx.createBuffer(1, 1, audioCtx.sampleRate || 44100);
+                    const src = audioCtx.createBufferSource();
+                    src.buffer = buffer;
+                    src.connect(audioCtx.destination);
+                    src.start(0);
+                    // no need to stop, it is silent and tiny
+                    audioPrimed = true;
+                    console.log('Primed via AudioContext buffer source');
+                    return;
+                } catch (e) {
+                    console.warn('AudioContext buffer priming failed:', e && e.message ? e.message : e);
+                }
+            }
+        } catch (e) {
+            console.warn('Audio priming failed:', e && e.message ? e.message : e);
+        }
+        // If we reach here, priming didn't succeed; leave audioPrimed=false so future gestures can retry
+    }
+
+    // Warm up audio playback to avoid first-play delays in some browsers
+    (function warmupAudio() {
+        try {
+            if (correctAudioEl) { correctAudioEl.preload = 'auto'; correctAudioEl.muted = false; }
+            if (wrongAudioEl) { wrongAudioEl.preload = 'auto'; wrongAudioEl.muted = false; }
+            // try to play silently then pause to prime decoding (best-effort)
+            if (correctAudioEl && correctAudioEl.readyState < 3) correctAudioEl.load();
+            if (wrongAudioEl && wrongAudioEl.readyState < 3) wrongAudioEl.load();
+        } catch (e) {
+            console.warn('Audio warmup failed:', e && e.message ? e.message : e);
+        }
+    })();
+
     // Add clock display to the header
     let clockDisplay = document.querySelector('.quiz-clock-display');
     if (!clockDisplay) {
@@ -331,14 +571,25 @@ document.addEventListener('DOMContentLoaded', function() {
     async function fetchQuestions(difficulty) {
         console.log(`Fetching ${difficulty} questions from database...`);
         try {
-            // Fetch all main_questions for the given difficulty, excluding those already used
-            const { data: mains, error: mainErr } = await supabase
+            // Build case-insensitive difficulty variants including synonyms
+            const base = (difficulty || '').toLowerCase();
+            const variantsMap = {
+                easy: ['Easy','easy','EASY'],
+                medium: ['Medium','medium','MEDIUM','Average','average','AVERAGE'],
+                hard: ['Hard','hard','HARD','Difficult','difficult','DIFFICULT']
+            };
+            const diffVariants = variantsMap[base] || [difficulty, base, base.toUpperCase(), base.charAt(0).toUpperCase() + base.slice(1)];
+            let query = supabase
                 .from('main_questions')
                 .select('*')
-                .eq('difficulty', difficulty)
-                .not('id', 'in', `(${usedQuestionIds.join(',')})`)
+                .in('difficulty', diffVariants)
                 .order('id', { ascending: true })
                 .limit(100);
+            // Exclude usedQuestionIds only when there are any
+            if (Array.isArray(usedQuestionIds) && usedQuestionIds.length > 0) {
+                query = query.not('id', 'in', `(${usedQuestionIds.join(',')})`);
+            }
+            const { data: mains, error: mainErr } = await query;
 
             if (mainErr) {
                 console.error('❌ Error fetching main questions:', mainErr);
@@ -386,8 +637,21 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function renderCurrentQuestion() {
         if (!mainQuestions.length || currentMainIdx >= mainQuestions.length) {
-            console.log("No more questions to render. Ending quiz.");
-            showEndMessage();
+            console.log("No more questions to render for this difficulty.");
+            // Try fetching a fresh set once before giving up
+            (async () => {
+                const fresh = await fetchQuestions(currentDifficulty);
+                if (Array.isArray(fresh) && fresh.length > 0 && fresh[0].sub_questions && fresh[0].sub_questions.length > 0) {
+                    mainQuestions = fresh;
+                    currentMainIdx = 0;
+                    currentSubIdx = 0;
+                    subQuestionResults = [];
+                    roundCorrect = true;
+                    renderCurrentQuestion();
+                } else {
+                    showEndMessage();
+                }
+            })();
             return;
         }
 
@@ -434,14 +698,23 @@ document.addEventListener('DOMContentLoaded', function() {
             const helpModal = document.getElementById('quiz-help-modal');
             const hintTextElement = helpModal?.querySelector('p');
 
-            // Update the hint modal content
-            if (hintTextElement && sq.hints) {
-                const appropriateHint = getHintByScaffoldLevel(sq.hints);
+            // Update hint content (modal for desktop, inline for phones)
+            const appropriateHint = sq.hints ? getHintByScaffoldLevel(sq.hints) : 'No hint available for this question.';
+            if (hintTextElement) {
                 hintTextElement.textContent = appropriateHint;
-                console.log(`Showing hint for scaffold level ${userScaffoldLevel}: ${appropriateHint.substring(0, 50)}...`);
-            } else if (hintTextElement) {
-                hintTextElement.textContent = 'No hint available for this question.';
             }
+            // Inline help text is set, but stays hidden until button tap on phones
+            try {
+                const inlineHelp = document.getElementById('quiz-inline-help');
+                const inlineText = inlineHelp ? inlineHelp.querySelector('.quiz-inline-help-text') : null;
+                if (inlineHelp && inlineText) {
+                    inlineText.textContent = appropriateHint;
+                    // Keep hidden by default; visibility is toggled on button click for phones
+                    if (window.matchMedia && window.matchMedia('(max-width: 600px)').matches) {
+                        inlineHelp.classList.remove('visible');
+                    }
+                }
+            } catch (_) {}
 
             // Add modal and label logic
             const closeHelp = document.getElementById('close-help-modal');
@@ -455,7 +728,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 // **NEW: Record hint usage when the button is clicked**
                 newHintBtn.addEventListener('click', () => {
                     recordHintUsage(sq.id); // Call the new function
-                    helpModal.style.display = 'flex';
+                    // On desktop/tablet show modal; on phones we rely on inline help
+                    const isPhone = window.matchMedia && window.matchMedia('(max-width: 600px)').matches;
+                    if (!isPhone) {
+                        helpModal.style.display = 'flex';
+                    } else {
+                        const inlineHelp = document.getElementById('quiz-inline-help');
+                        if (inlineHelp) inlineHelp.classList.add('visible');
+                    }
                 });
                 newCloseHelp.addEventListener('click', () => {
                     helpModal.style.display = 'none';
@@ -526,12 +806,17 @@ document.addEventListener('DOMContentLoaded', function() {
         submitLocked = false;
         submitBtn.disabled = false;
 
-        // Start the question timer
-        startQuestionTimer();
+        // Start the question timer (force reset for a new question)
+        startQuestionTimer(true);
     }
 
-    function showLoadingPopupFn(show) {
-        if (loadingPopup) loadingPopup.classList.toggle('hidden', !show);
+    function showLoadingPopupFn(show, message) {
+        if (!loadingPopup) return;
+        try {
+            const p = loadingPopup.querySelector('.popup-content p');
+            if (message && p) p.textContent = message;
+        } catch (_) {}
+        loadingPopup.classList.toggle('hidden', !show);
     }
 
     function showEndMessage() {
@@ -545,11 +830,21 @@ document.addEventListener('DOMContentLoaded', function() {
         clockDisplay.textContent = `Time Left: ${timeLeft}s`;
     }
 
-    function startQuestionTimer() {
-        // Clear any existing timer to prevent multiple timers running at once
+    function startQuestionTimer(forceReset = false) {
+        // If a timer is already running and we're not explicitly forcing a reset,
+        // leave it alone. This prevents unintended restarts (for example when
+        // validation alerts or other UI actions occur).
+        if (questionTimer && !forceReset) {
+            return;
+        }
+
+        // Clear any existing timer when forcing a reset
         if (questionTimer) {
             clearInterval(questionTimer);
+            questionTimer = null;
         }
+
+        // Reset countdown only when forcing a new question
         timeLeft = QUESTION_TIME;
         updateClockDisplay();
         questionTimer = setInterval(() => {
@@ -557,6 +852,7 @@ document.addEventListener('DOMContentLoaded', function() {
             updateClockDisplay();
             if (timeLeft <= 0) {
                 clearInterval(questionTimer);
+                questionTimer = null;
                 // Handle timeout directly
                 handleTimeout();
             }
@@ -590,13 +886,63 @@ document.addEventListener('DOMContentLoaded', function() {
         const wrongSound = document.getElementById('wrong-sound');
 
         function playSound(audioElement, soundType) {
+            // Prefer the provided <audio> element. Ensure it's unmuted and set a reasonable volume.
             if (audioElement) {
                 try {
+                    audioElement.muted = false;
+                    audioElement.volume = Math.min(1, Math.max(0, audioElement.volume || 0.9));
+                    // reset to start
+                    try { audioElement.pause(); } catch (_) {}
                     audioElement.currentTime = 0;
-                    audioElement.play().catch(error => console.warn(`Could not play ${soundType} sound:`, error.message));
+                    console.log(`Attempting to play ${soundType} audio element`);
+                    const playPromise = audioElement.play();
+                    if (playPromise && typeof playPromise.then === 'function') {
+                        playPromise.then(() => {
+                            console.log(`${soundType} audio.play() succeeded`);
+                        }).catch(err => {
+                            console.warn(`Could not play ${soundType} sound:`, err && err.message ? err.message : err);
+                            // fallback to a short beep if playback is blocked
+                            playBeepFallback(soundType);
+                        });
+                    }
                 } catch (error) {
-                    console.warn(`Error playing ${soundType} sound:`, error.message);
+                    console.warn(`Error playing ${soundType} sound:`, error && error.message ? error.message : error);
+                    playBeepFallback(soundType);
                 }
+                return;
+            }
+            // No audio element available, use WebAudio fallback
+            playBeepFallback(soundType);
+        }
+
+        // Small WebAudio fallback beep for environments where <audio> cannot play
+        function playBeepFallback(type) {
+            try {
+                const AudioCtxCtor = window.AudioContext || window.webkitAudioContext;
+                if (!AudioCtxCtor && !audioCtx) return;
+                // Prefer existing/resumed audioCtx
+                if (!audioCtx && AudioCtxCtor) {
+                    try { audioCtx = new AudioCtxCtor(); } catch (e) { audioCtx = null; }
+                }
+                if (!audioCtx) return;
+                const ctx = audioCtx;
+                const o = ctx.createOscillator();
+                const g = ctx.createGain();
+                o.type = (type === 'correct') ? 'sine' : 'square';
+                o.frequency.value = (type === 'correct') ? 880 : 220; // Hz
+                // Smooth envelope for a short beep
+                const now = ctx.currentTime;
+                g.gain.setValueAtTime(0.0001, now);
+                g.gain.exponentialRampToValueAtTime(0.12, now + 0.01);
+                o.connect(g);
+                g.connect(ctx.destination);
+                o.start(now);
+                // stop after 140ms
+                const stopAt = now + 0.14;
+                try { o.stop(stopAt); } catch (_) {}
+                // do not close the shared context
+            } catch (e) {
+                console.warn('WebAudio fallback failed:', e && e.message ? e.message : e);
             }
         }
 
@@ -606,6 +952,18 @@ document.addEventListener('DOMContentLoaded', function() {
             playSound(wrongSound, 'wrong');
         }
 
+        // Award points for a correct sub-question based on the main question difficulty
+        try {
+            const diffKey = (mq && mq.difficulty) ? String(mq.difficulty).toLowerCase() : 'easy';
+            const pointsMap = { easy: 5, medium: 10, hard: 15 };
+            if (isCorrect) {
+                const pts = pointsMap[diffKey] || 0;
+                difficultyProgressData.points = (difficultyProgressData.points || 0) + pts;
+                console.log(`✅ Awarded ${pts} points for correct sub-question (difficulty=${diffKey}). Total points: ${difficultyProgressData.points}`);
+            }
+        } catch (err) {
+            console.error('Error awarding points:', err);
+        }
 
         // Insert into user_answers
         try {
@@ -686,8 +1044,38 @@ document.addEventListener('DOMContentLoaded', function() {
                 feedbackExplanation.textContent = 'Don’t worry, you can try again. We’ll re-focus on this topic to help you master it.';
             }
         }
-        const feedbackModal = document.getElementById('quiz-feedback-modal');
-        if (feedbackModal) feedbackModal.style.display = 'flex';
+            const feedbackModalEl = document.getElementById('quiz-feedback-modal');
+            if (feedbackModalEl) {
+                // Ensure visible and on top
+                feedbackModalEl.classList.remove('hidden');
+                feedbackModalEl.style.display = 'flex';
+                feedbackModalEl.style.zIndex = '10000';
+                // Prevent background interaction while open
+                feedbackModalEl.style.pointerEvents = 'auto';
+                // Lock background scroll
+                document.body.style.overflow = 'hidden';
+
+                // Enable Next button and focus it
+                if (feedbackNextBtn) {
+                    feedbackNextBtn.disabled = false;
+                    feedbackNextBtn.style.pointerEvents = 'auto';
+                    try { feedbackNextBtn.focus(); } catch (_) {}
+                }
+
+                // Attach overlay click handler to allow clicking outside the modal to act like Next
+                if (!feedbackModalOverlayHandler) {
+                    feedbackModalOverlayHandler = function(e) {
+                        if (e.target === feedbackModalEl) {
+                            if (feedbackNextBtn) {
+                                try { feedbackNextBtn.click(); } catch (_) {}
+                            }
+                        }
+                    };
+                    feedbackModalEl.addEventListener('click', feedbackModalOverlayHandler);
+                }
+            } else {
+                console.warn('Feedback modal element not found');
+            }
     }
 
 
@@ -695,11 +1083,15 @@ document.addEventListener('DOMContentLoaded', function() {
     let submitLocked = false;
     submitBtn.addEventListener('click', async function(e) {
         e.preventDefault();
+        // Ensure audio is primed by a user gesture so first sounds can play
+        try { await primeAudioIfNeeded(); } catch (_) {}
         if (submitLocked) return;
         submitLocked = true;
         submitBtn.disabled = true;
 
-        clearInterval(questionTimer);
+        // Do NOT clear the question timer yet. If the user clicked Submit without
+        // selecting an answer, we should leave the countdown running. The timer
+        // will only be cleared when a valid answer is submitted below.
 
         if (!mainQuestions.length) {
             submitLocked = false;
@@ -714,11 +1106,22 @@ document.addEventListener('DOMContentLoaded', function() {
         const selectedBtn = quizRight.querySelector('.quiz-choice-btn.selected');
 
         if (!selectedBtn) {
-            alert('Please select an answer!');
+            // Validation failure: show non-blocking modal and keep the timer running.
+            showSelectAnswerModal('Please select an answer!');
             submitLocked = false;
             submitBtn.disabled = false;
-            startQuestionTimer(); // Restart timer
+            // Nudge keyboard users to the first choice for easier selection
+            const firstChoice = quizRight.querySelector('.quiz-choice-btn');
+            if (firstChoice) {
+                try { firstChoice.focus(); } catch (_) {}
+            }
             return;
+        }
+
+        // Stop timer only when a valid answer is actually submitted
+        if (questionTimer) {
+            clearInterval(questionTimer);
+            questionTimer = null;
         }
 
         let choices = Array.isArray(sq.choices) ? sq.choices : (typeof sq.choices === 'string' ? JSON.parse(sq.choices) : []);
@@ -739,6 +1142,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         processAnswer(sq, mq, isCorrect, timeTakenSeconds);
         showFeedbackModal(isCorrect);
+        // Do NOT auto-advance; require the user to click the Next button on the feedback modal
     });
 
     // Function to sync localStorage data back to database
@@ -790,56 +1194,115 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
     // --- Start Quiz Button Listener ---
-    if (startQuizBtn && quizIntro && quizMainArea) {
-        startQuizBtn.addEventListener('click', async function() {
-            quizIntro.classList.add('hidden');
-            quizMainArea.classList.remove('hidden');
-            await syncLocalStorageData();
-            
-            // Fetch user's current scaffold level before starting
-            await fetchUserScaffoldLevel();
-            
-            // Correctly initialize difficulty on start
-            currentDifficulty = 'Easy';
+    async function beginQuizFlow() {
+        // Guard against re-entry
+        if (beginQuizFlow.__running) return; beginQuizFlow.__running = true;
+        const preModal = document.getElementById('prestart-difficulty-modal');
+        const preTitle = document.getElementById('prestart-modal-title');
+        const preText = document.getElementById('prestart-modal-text');
+        const preOk = document.getElementById('prestart-modal-ok-btn');
+
+        // Safely toggle sections if present
+        if (quizIntro) quizIntro.classList.add('hidden');
+        if (quizMainArea) quizMainArea.classList.remove('hidden');
+        await syncLocalStorageData();
+        await fetchUserScaffoldLevel();
+
+        // Determine recommended difficulty: priority is localStorage from progress page, else compute from DB
+        let recommended = localStorage.getItem('startingDifficulty');
+        if (!(recommended === 'Easy' || recommended === 'Medium' || recommended === 'Hard')) {
+            try {
+                const { data: { session } } = await supabase.auth.getSession();
+                const studentId = session?.user?.id || null;
+                if (studentId) {
+                    const [{ data: latestProgress }, userProfile] = await Promise.all([
+                        supabase
+                            .from('user_progress')
+                            .select('accuracy, difficulty')
+                            .eq('student_id', studentId)
+                            .order('last_updated', { ascending: false })
+                            .limit(1)
+                            .maybeSingle(),
+                        supabase
+                            .from('user_profiles')
+                            .select('scaffold_level')
+                            .eq('id', studentId)
+                            .single()
+                    ]);
+                    const lastDiff = latestProgress?.difficulty || 'easy';
+                    const accDec = typeof latestProgress?.accuracy === 'number' ? latestProgress.accuracy : 0;
+                    const scaffold = typeof userProfile?.scaffold_level === 'number' ? userProfile.scaffold_level : 0;
+                    const rec = (() => {
+                        const accPct = accDec * 100;
+                        const canAdjust = (scaffold === 0 || scaffold === 1) && accPct >= 75;
+                        const cur = (lastDiff || 'easy').toLowerCase();
+                        if (cur === 'easy') return (scaffold === 2 || !canAdjust) ? 'Easy' : 'Medium';
+                        if (cur === 'medium') return (scaffold === 2 || !canAdjust) ? 'Easy' : 'Hard';
+                        return (scaffold === 2 || !canAdjust) ? 'Medium' : 'Hard';
+                    })();
+                    recommended = rec;
+                } else {
+                    recommended = 'Easy';
+                }
+            } catch (_) {
+                recommended = 'Easy';
+            }
+        }
+
+        if (preTitle && preText) {
+            preTitle.textContent = 'Get Ready';
+            preText.textContent = `We will start at ${recommended} difficulty based on your recent performance.`;
+        }
+        if (preModal && preOk) {
+            preModal.style.display = 'flex';
+            const onStart = async () => {
+                preOk.removeEventListener('click', onStart);
+                preModal.style.display = 'none';
+                currentDifficulty = (recommended === 'Easy' || recommended === 'Medium' || recommended === 'Hard') ? recommended : 'Easy';
+                localStorage.removeItem('startingDifficulty');
+                score = 0;
+                usedQuestionIds = [];
+                resetDifficultyProgress();
+                fetchAndRenderQuestions();
+            };
+            preOk.addEventListener('click', onStart);
+        } else {
+            currentDifficulty = (recommended === 'Easy' || recommended === 'Medium' || recommended === 'Hard') ? recommended : 'Easy';
+            localStorage.removeItem('startingDifficulty');
             score = 0;
             usedQuestionIds = [];
-            // Initialize progress tracking
             resetDifficultyProgress();
             fetchAndRenderQuestions();
-        });
+        }
     }
+
+    if (startQuizBtn && quizMainArea) {
+        startQuizBtn.addEventListener('click', beginQuizFlow);
+    }
+
+    // Auto-start unconditionally on load; flow determines difficulty from recommendation or DB
+    beginQuizFlow();
 
 
     const feedbackModal = document.getElementById('quiz-feedback-modal');
     const feedbackNextBtn = document.getElementById('quiz-feedback-next-btn');
     const helpModal = document.getElementById('quiz-help-modal');
+    // Overlay click handler reference so we can remove it when modal is closed
+    let feedbackModalOverlayHandler = null;
 
-    // **NEW FUNCTION: Records hint usage to the `hints_second` table**
+    // Records hint usage locally (DB table for logging not available)
     async function recordHintUsage(subQuestionId) {
         try {
             // Track hint usage in progress data
             difficultyProgressData.hintUsageCount++;
             
-            const { data: { session } } = await supabase.auth.getSession();
-            const studentId = session?.user?.id || null;
-
-            if (studentId) {
-                const { error: hintError } = await supabase
-                    .from('hints_second')
-                    .insert([{
-                        student_id: studentId,
-                        question_id: subQuestionId,
-                        hint_used: true
-                    }]);
-
-                if (hintError) {
-                    console.error('❌ Error recording hint usage:', hintError.message);
-                } else {
-                    console.log('✅ Hint usage recorded successfully.');
-                }
-            } else {
-                console.log('User not logged in, skipping hint recording.');
-            }
+            // No server table exists for logging hint usage on your project.
+            // Persist a lightweight local record instead to avoid network errors.
+            try {
+                const events = JSON.parse(localStorage.getItem('hintUsageEvents') || '[]');
+                events.push({ subQuestionId, at: new Date().toISOString() });
+                localStorage.setItem('hintUsageEvents', JSON.stringify(events));
+            } catch (e) { /* ignore storage errors */ }
         } catch (err) {
             console.error('An error occurred while trying to record hint usage:', err.message);
         }
@@ -848,8 +1311,18 @@ document.addEventListener('DOMContentLoaded', function() {
     // --- RESTRUCTURED FEEDBACK NEXT BUTTON LISTENER ---
     if (feedbackNextBtn) {
         feedbackNextBtn.addEventListener('click', async function() {
-            if (feedbackModal) feedbackModal.style.display = 'none';
+            // Hide modals and cleanup overlay handler if present
+            if (feedbackModal) {
+                feedbackModal.style.display = 'none';
+                // Remove overlay click handler if attached
+                if (feedbackModalOverlayHandler) {
+                    try { feedbackModal.removeEventListener('click', feedbackModalOverlayHandler); } catch (_) {}
+                    feedbackModalOverlayHandler = null;
+                }
+            }
             if (helpModal) helpModal.style.display = 'none';
+            // Restore body scrolling
+            document.body.style.overflow = '';
 
             const mq = mainQuestions[currentMainIdx];
 
@@ -908,9 +1381,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
 
                 if (showDifficultyModal) {
+                    // Show a loading popup while we wait for the model update and scaffold fetch
+                    showLoadingPopupFn(true, 'Preparing results...');
+                    // yield a frame so the browser can render the popup before we start awaiting
+                    await new Promise((res) => requestAnimationFrame(res));
                     // Wait for model update then fetch scaffold level to decide next step
                     await new Promise(resolve => setTimeout(resolve, 2500));
                     await fetchUserScaffoldLevel();
+                    // Hide loading popup before showing the difficulty modal
+                    showLoadingPopupFn(false);
 
                     // Calculate current accuracy for difficulty adjustment decision
                     const currentAccuracy = difficultyProgressData.totalMainQuestions > 0 
@@ -968,7 +1447,42 @@ document.addEventListener('DOMContentLoaded', function() {
                         }
                     }
 
-                    if (difficultyModal) difficultyModal.style.display = 'flex';
+                    if (difficultyModal) {
+                        // Add a 'Back to Progress' button alongside the OK button if not already present
+                        try {
+                            // Avoid creating duplicates
+                            let backBtn = difficultyModal.querySelector('.difficulty-back-btn');
+                            if (!backBtn) {
+                                backBtn = document.createElement('button');
+                                backBtn.className = 'difficulty-back-btn';
+                                backBtn.textContent = 'Back to Progress';
+                                // Stronger, visible styling to match modal buttons
+                                backBtn.style.cssText = 'margin-left:0.6rem;background:#d9534f;color:#fff;border-radius:0.5rem;padding:0.6rem 0.9rem;border:2px solid #b43a3a;cursor:pointer;font-weight:700;';
+
+                                // Prefer a dedicated '.modal-actions' area; otherwise append to '.modal-content'
+                                const modalActions = difficultyModal.querySelector('.modal-actions');
+                                if (modalActions) {
+                                    modalActions.appendChild(backBtn);
+                                } else {
+                                    const modalContent = difficultyModal.querySelector('.modal-content') || difficultyModal;
+                                    // Place the button near the OK button if possible
+                                    const okBtn = modalContent.querySelector('#difficulty-modal-ok-btn');
+                                    if (okBtn && okBtn.parentNode) {
+                                        okBtn.parentNode.insertBefore(backBtn, okBtn.nextSibling);
+                                    } else {
+                                        modalContent.appendChild(backBtn);
+                                    }
+                                }
+
+                                backBtn.addEventListener('click', () => { window.location.href = '/progress'; });
+                            }
+                            // Ensure the button is displayed (in case CSS hidden it)
+                            if (backBtn) backBtn.style.display = 'inline-block';
+                        } catch (e) {
+                            console.error('Error adding Back to Progress button:', e);
+                        }
+                        difficultyModal.style.display = 'flex';
+                    }
                 } else {
                     // If user has attempted 10 main questions and hasn't reached the goal, show attempts-limit modal
                     const currentGoal = currentDifficulty === 'Easy' ? easyGoal : (currentDifficulty === 'Medium' ? mediumGoal : hardGoal);
@@ -1000,37 +1514,48 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // --- DIFFICULTY MODAL OK BUTTON LISTENER ---
-    if (difficultyModalOkBtn) {
-        difficultyModalOkBtn.addEventListener('click', async function() {
-            if (difficultyModal) difficultyModal.style.display = 'none';
+    // When user clicks OK on the difficulty modal we should apply the pending difficulty
+    // (if any), reset the progress for the new difficulty and fetch a new set of questions.
+    if (difficultyModal && difficultyModalOkBtn) {
+        const applyPendingDifficultyAndContinue = async () => {
+            try {
+                if (difficultyModal) difficultyModal.style.display = 'none';
 
-            let nextDifficulty = pendingNextDifficulty;
-            if (!nextDifficulty) {
-                if (currentDifficulty === 'Easy') {
-                    nextDifficulty = 'Medium';
-                } else if (currentDifficulty === 'Medium') {
-                    nextDifficulty = 'Hard';
+                // Apply pending difficulty if provided, otherwise keep current
+                if (pendingNextDifficulty && pendingNextDifficulty !== currentDifficulty) {
+                    currentDifficulty = pendingNextDifficulty;
                 }
-            }
 
-            if (nextDifficulty) {
-                // Fetch updated scaffold level before starting new difficulty
-                await fetchUserScaffoldLevel();
-                
-                currentDifficulty = nextDifficulty;
+                // Reset state for the new difficulty
+                pendingNextDifficulty = '';
                 score = 0;
-                roundCorrect = true;
-                currentMainIdx = 0;
-                currentSubIdx = 0;
-                subQuestionResults = [];
                 usedQuestionIds = [];
-                // Reset progress tracking for new difficulty
                 resetDifficultyProgress();
-                fetchAndRenderQuestions();
-            } else {
-                showEndMessage();
+                subQuestionResults = [];
+                roundCorrect = true;
+                currentSubIdx = 0;
+                currentMainIdx = 0;
+
+                // Fetch and render questions for the (possibly) new difficulty
+                await fetchAndRenderQuestions();
+            } catch (err) {
+                console.error('Error applying difficulty change:', err);
+            }
+        };
+
+        difficultyModalOkBtn.addEventListener('click', function() {
+            applyPendingDifficultyAndContinue();
+        });
+
+        // Allow clicking outside the modal to also proceed
+        difficultyModal.addEventListener('click', function(e) {
+            if (e.target === difficultyModal) {
+                applyPendingDifficultyAndContinue();
             }
         });
+    } else if (difficultyModal) {
+        // Ensure it's hidden by default if elements are missing
+        difficultyModal.style.display = 'none';
     }
 
     // --- ATTEMPTS-LIMIT MODAL OK BUTTON LISTENER ---

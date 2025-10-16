@@ -35,7 +35,6 @@
                 <div class="profile-section">
                   <div class="profile-avatar-col" style="display: flex; flex-direction: column; align-items: center;">
                     <div class="avatar large"><i class="fas fa-user"></i></div>
-                    <button class="edit-profile-btn" style="margin-top: 1rem;"><i class="fas fa-award"></i> Edit Profile</button>
                   </div>
                   <div class="student-info">
                     <h2 id="studentFullName">Student Name</h2>
@@ -48,39 +47,22 @@
             <!-- Top Row: 2 Cards -->
             <div class="card stats-card">
                 <div class="section-header">
-                    <h4><i class="fas fa-star"></i> Learning Statistics</h4>
+                    <h4><i class="fas fa-clock"></i> Time Spent</h4>
                 </div>
                 <div class="stats-grid">
-                    <div class="stat-item">
-                        <div class="stat-number">120</div>
-                        <div class="stat-label">Learning Time (hrs)</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-number">15</div>
-                        <div class="stat-label">Subjects</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-number">42</div>
-                        <div class="stat-label">Achievements</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-number">89%</div>
-                        <div class="stat-label">Progress</div>
+                    <div class="stat-item" style="grid-column: 1 / -1;">
+                        <div class="stat-number" id="totalTimeSpent">-</div>
+                        <div class="stat-label">Total Time Spent</div>
                     </div>
                 </div>
             </div>
 
             <div class="card leaderboard-section">
-                <div class="section-header">
-                    <h4><i class="fas fa-medal"></i> Leaderboard</h4>
-                    <button class="action-btn">View All</button>
-                </div>
+        <div class="section-header">
+          <h4><i class="fas fa-medal"></i> Leaderboard</h4>
+        </div>
                 <div class="scroll-box">
-                    <div class="item leaderboard-rank-1"><span class="leaderboard-name">1. Roldan Aguila</span><span class="leaderboard-points">4520 pts</span></div>
-                    <div class="item leaderboard-rank-2"><span class="leaderboard-name">2. Lorens Mangubat</span><span class="leaderboard-points">4300 pts</span></div>
-                    <div class="item leaderboard-rank-3"><span class="leaderboard-name">3. Mark Lester Laroza</span><span class="leaderboard-points">4180 pts</span></div>
-                    <div class="item"><span class="leaderboard-name">4. Arjhay Calaguan</span><span class="leaderboard-points">3900 pts</span></div>
-                    <div class="item"><span class="leaderboard-name">5. Audrei Lopez</span><span class="leaderboard-points">3420 pts</span></div>
+                          <!-- nandito yung leaderboard hehehehehehehheehheh -->
                 </div>
             </div>
 
@@ -110,21 +92,7 @@
                     <h4><i class="fas fa-gamepad"></i> Recent Activity</h4>
                 </div>
                 <div class="activity-list">
-                    <div class="activity-item">
-                        <i class="fas fa-star"></i>
-                        <span>Completed Math Quiz - 95%</span>
-                        <small>0 hours ago</small>
-                    </div>
-                    <div class="activity-item">
-                        <i class="fas fa-gamepad"></i>
-                        <span>Started Science Module 3</span>
-                        <small>0 day ago</small>
-                    </div>
-                    <div class="activity-item">
-                        <i class="fas fa-trophy"></i>
-                        <span>Earned "Math Master" badge</span>
-                        <small>0 days ago</small>
-                    </div>
+                    <!-- Activity items will be dynamically populated by JavaScript -->
                 </div>
             </div>
 
@@ -134,13 +102,7 @@
                     <h4><i class="fas fa-gem"></i> Skill Badge Grid</h4>
                 </div>
                 <div class="badge-grid">
-                  <div class="badge achieved"><i class="fas fa-star"></i> Time Calculation</div>
-                  <div class="badge"><i class="far fa-star"></i> Unit Conversion</div>
-                  <div class="badge achieved"><i class="fas fa-star"></i> Fraction Application</div>
-                  <div class="badge"><i class="far fa-star"></i> Word Problems</div>
-                  <div class="badge achieved"><i class="fas fa-star"></i> Basic Operation</div>
-                  <div class="badge achieved"><i class="far fa-star"></i> Speed Distance</div>
-                  <div class="badge achieved"><i class="far fa-star"></i> Elapsed Time Reasoning</div>
+                    <!--badge is over here-->
                 </div>
             </div>
         </div>
