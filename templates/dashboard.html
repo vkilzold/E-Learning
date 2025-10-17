@@ -17,8 +17,6 @@
              
             <div class="header-actions">
                 <button class="dark-mode-toggle" title="Toggle dark mode" style="display: none; background: none; border: none; font-size: 1.3rem; cursor: pointer; margin-right: 0.5rem;"><i class="fas fa-moon"></i></button>
-                <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i>&nbsp;Logout</button>
-                <div class="avatar small"></div>
             </div>
         </header>
 
@@ -26,11 +24,6 @@
             <!-- Profile Card First -->
             <div class="card profile-card">
                 <div class="section-header">
-                    <h4><i class="fas fa-user"></i> Profile Info</h4>
-                    <div style="display: flex; gap: 0.5rem;">
-                      <!--<button class="add-class-btn" id="addClassBtn">+ Add Section</button>-->
-                      <button class="play-btn" onclick="window.location.href='/title'"><i class="fas fa-gamepad"></i> Play</button>
-                    </div>
                 </div>
                 <div class="profile-section">
                   <div class="profile-avatar-col" style="display: flex; flex-direction: column; align-items: center;">
@@ -41,6 +34,10 @@
                     <p id="studentEmail">student@email.com</p>
                     <!--<p id="studentClassName">Section: Not assigned</p>-->
                   </div>
+                </div>
+                <div class="profile-primary-actions">
+                  <button class="play-btn play-btn-primary" onclick="window.location.href='/title'"><i class="fas fa-gamepad"></i> Play</button>
+                  <button class="logout-btn logout-btn-primary" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
                 </div>
             </div>
 

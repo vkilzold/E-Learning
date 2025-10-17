@@ -4,25 +4,26 @@
    Root Variables
 ====================== */
 :root {
-  --bg-main: #2B505C; /* bluegreen for light mode */
-  --card-bg: #E6D6C1; /* light brown for light mode */
-  --text-main: #061826; /* darkest bluegreen for light mode text */
-  --text-muted: #7E695C; /* brown for muted/secondary text */
-  --highlight: #607D7E; /* light bluegreen for highlights */
-  --accent: #7E695C; /* brown for accents */
-  --avatar-bg: #1A303F; /* dark bluegreen for avatar bg */
-  --icon-blue: #2B505C; /* bluegreen for icons */
+  --bg-main: #e9edf3; /* softer page background to reduce glare */
+  --card-bg: #fbfbfc; /* off-white cards to avoid pure white */
+  --text-main: #1f2328; /* slightly softer near-black */
+  --text-muted: #606770; /* gentler muted text */
+  --highlight: #1f2328; /* headings/icons */
+  --accent: #d6d9e0; /* softer borders/accents */
+  --avatar-bg: #1f2328; /* avatar background */
+  --icon-blue: #1f2328; /* icon color aligned to primary */
 }
 
 :root[data-theme="dark"] {
-  --bg-main: #061826; /* darkest bluegreen for dark bg */
-  --card-bg: #1A303F; /* dark bluegreen for cards */
-  --text-main: #E6D6C1; /* light brown for main text */
-  --text-muted: #607D7E; /* light bluegreen for muted/secondary text */
-  --highlight: #E6D6C1; /* light brown for highlights */
-  --accent: #607D7E; /* light bluegreen for accents */
-  --avatar-bg: #2B505C; /* bluegreen for avatar bg */
-  --icon-blue: #607D7E; /* light bluegreen for icons */
+  /* Keep the same palette to match other pages' look */
+  --bg-main: #e9edf3;
+  --card-bg: #fbfbfc;
+  --text-main: #1f2328;
+  --text-muted: #606770;
+  --highlight: #1f2328;
+  --accent: #d6d9e0;
+  --avatar-bg: #1f2328;
+  --icon-blue: #1f2328;
 }
 
 /* =====================
@@ -148,8 +149,8 @@ input, textarea {
 .card {
   background-color: var(--card-bg);
   color: var(--text-main);
-  border-radius: 1.125rem;
-  box-shadow: 0 4px 32px rgba(0,0,0,0.18), 0 1.5px 6px rgba(0,0,0,0.10);
+  border-radius: 1.25rem;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.10), 0 1px 4px rgba(0,0,0,0.08);
   padding: 2rem 1.5rem;
   transition: box-shadow 0.3s, background 0.3s, color 0.3s, outline 0.3s;
   height: 100%;
@@ -157,11 +158,11 @@ input, textarea {
   font-size: 0.92em;
 }
 .card:hover {
-  box-shadow: 0 8px 40px rgba(0,0,0,0.22), 0 2px 8px rgba(0,0,0,0.14);
+  box-shadow: 0 6px 24px rgba(0,0,0,0.14), 0 2px 8px rgba(0,0,0,0.10);
   background: var(--card-bg);
   color: var(--text-main);
-  outline: 2.5px solid var(--highlight);
-  outline-offset: -2.5px;
+  outline: 1.5px solid var(--accent);
+  outline-offset: -2px;
   transition: box-shadow 0.3s, background 0.3s, color 0.3s, outline 0.3s;
 }
 .card:hover .section-header h4,
@@ -171,6 +172,31 @@ input, textarea {
 .card:hover .student-info h2,
 .card:hover .student-info p {
   color: inherit !important;
+}
+
+
+/* Profile card overrides: remove card look, keep grid/layout intact */
+.profile-card {
+  background: transparent !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+}
+.profile-card:hover {
+  box-shadow: none !important;
+  outline: none !important;
+}
+.profile-card .section-header h4 {
+  display: block;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-main);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+/* subtle divider for header */
+.profile-card .section-header {
+  border-bottom: none;
+  padding-bottom: 0;
 }
 
 
@@ -256,7 +282,70 @@ input, textarea {
 }
 
 .play-btn i {
-  font-size: 0.85rem;
+  font-size: 1.1rem; /* boost icon visibility */
+}
+.profile-primary-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.9rem;
+  margin-top: 0.75rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--accent);
+}
+.play-btn-primary {
+  padding: 1.15rem 2.25rem; /* bigger */
+  font-size: 1.2rem;
+  background: var(--text-main);
+  color: #fff !important;
+  border-radius: 9999px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  min-width: 240px;
+}
+.play-btn-primary i { color: #fff !important; margin-right: 0.6rem; }
+.play-btn-primary:hover {
+  background: #2a2f36;
+  color: #fff !important;
+  box-shadow: 0 10px 28px rgba(0,0,0,0.16);
+}
+
+@media (max-width: 600px) {
+  .play-btn-primary {
+    width: 100%;
+    max-width: 420px;
+  }
+}
+
+/* Logout button styled similar to Play */
+.logout-btn-primary {
+  padding: 1.05rem 2.25rem;
+  font-size: 1.1rem;
+  background: #ffffff; /* white button for visibility */
+  color: #111111 !important; /* black text */
+  border-radius: 9999px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.10);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  min-width: 240px;
+  border: 1px solid var(--accent) !important; /* subtle border for definition */
+}
+.logout-btn-primary i { color: #111111 !important; margin-right: 0.5rem; }
+.logout-btn-primary:hover {
+  background: #f5f5f5;
+  color: #111111 !important;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.14);
+}
+
+/* Lighter logout look */
+#logoutBtn.logout-btn {
+  background: transparent;
+  color: var(--text-main);
+  border: 1px solid var(--accent) !important;
+}
+#logoutBtn.logout-btn:hover {
+  background: var(--accent);
 }
 .action-btn:hover {
   background-color: var(--highlight);
@@ -303,8 +392,8 @@ input, textarea {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 2rem;
-  padding: 1rem 0;
+  gap: 3rem; /* larger */
+  padding: 2rem 0 1.25rem 0; /* larger */
 }
 .student-info {
   display: flex;
@@ -313,12 +402,13 @@ input, textarea {
   gap: 0.5rem;
 }
 .student-info h2 {
-  font-size: 1.375rem;
+  font-size: 1.75rem; /* bigger name */
   color: var(--text-main);
   margin-bottom: 0.375rem;
+  font-weight: 700;
 }
 .student-info p {
-  font-size: 1rem;
+  font-size: 1.1rem;
   color: var(--text-muted);
   margin-bottom: 0.25rem;
 }
@@ -367,13 +457,18 @@ input, textarea {
   grid-template-columns: repeat(2, 1fr) !important;
   grid-template-rows: repeat(2, 1fr) !important;
   gap: 0.625rem !important;
-  height: 90%;
+  height: 100%;
   
 }
+/* Time Spent card: ensure single stat fills available space */
+.stats-card { display: flex; flex-direction: column; }
+.stats-card .section-header { margin-bottom: 0.75rem; }
+.stats-card .stats-grid { grid-template-columns: 1fr !important; grid-template-rows: 1fr !important; height: auto !important; flex: 1 1 auto; }
+.stats-card .stat-item { height: 100% !important; }
 .stat-item {
   background: var(--bg-main);
-  border-radius: 0.75rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+  border-radius: 0.875rem;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.10);
   color: var(--highlight);
   font-weight: 600;
   font-size: 0.92rem;
@@ -387,7 +482,7 @@ input, textarea {
   height: 100%; 
 }
 .stat-item:hover, .stat-item:focus {
-  box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+  box-shadow: 0 3px 12px rgba(0,0,0,0.14);
 }
 .stat-item:hover *, .stat-item:focus * {
   color: inherit !important;
@@ -437,11 +532,17 @@ input, textarea {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-radius: 0.375rem;
+  border-radius: 0.8rem; /* slightly larger */
   margin-bottom: 0.5rem;
   padding-left: 1rem;
   padding-right: 1rem;
-  font-size: 0.92em;
+  font-size: 1.2em; /* slightly larger */
+}
+/* Remove hover effect on leaderboard items */
+.leaderboard-section .item:hover {
+  background: inherit !important;
+  color: inherit !important;
+  box-shadow: none !important;
 }
 .leaderboard-section .item.leaderboard-rank-1 {
   background: linear-gradient(90deg, #FFD700 0%, #e6d6c1 100%);
@@ -462,7 +563,7 @@ input, textarea {
   position: relative;
   z-index: 1;
   color: inherit;
-  font-weight: inherit;
+  font-weight: 600; /* more emphasis */
   text-align: left;
   flex: 1 1 auto;
 }
@@ -473,7 +574,7 @@ input, textarea {
   text-align: right;
   flex: 0 0 auto;
   margin-left: 1.5rem;
-  font-weight: 600;
+  font-weight: 800; /* more emphasis */
   transition: color 0.3s;
 }
 .leaderboard-section {
@@ -517,23 +618,36 @@ input, textarea {
   color: var(--text-muted);
   font-size: 0.69rem;
 }
+/* Improve visibility of Latest Performance header and timestamp */
+.activity-item-header strong {
+  font-size: 1.1rem;
+}
+.activity-item-header small {
+  font-size: 0.95rem;
+}
 
 /* Column-style activity display */
 .activity-columns {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 0.5rem;
+  grid-auto-rows: 1fr;
+  gap: 0.75rem;
   padding: 0.25rem 0;
+  width: 100%;
+  height: 100%;
 }
 .activity-column {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   text-align: center;
-  padding: 0.5rem;
+  padding: 1rem;
   background: var(--bg-main);
-  border-radius: 0.5rem;
-  border: 1px solid var(--icon-blue);
+  border-radius: 0.875rem;
+  border: none;
+  min-height: 96px;
+  height: 100%;
 }
 .activity-column i {
   color: var(--icon-blue) !important;
@@ -542,14 +656,21 @@ input, textarea {
 }
 .activity-column .activity-label {
   color: var(--text-muted);
-  font-size: 0.75rem;
+  font-size: 0.9rem;
   margin-bottom: 0.25rem;
   font-weight: 500;
 }
 .activity-column .activity-value {
   color: var(--text-main);
-  font-size: 1rem;
+  font-size: 1.05rem;
   font-weight: 700;
+}
+/* Keep a 2x2 look by default; collapse on small screens */
+@media (max-width: 900px) {
+  .activity-columns { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 520px) {
+  .activity-columns { grid-template-columns: 1fr; }
 }
 
 /* Activity List Scrollbar */
@@ -592,9 +713,8 @@ input, textarea {
   transition: background-color 0.2s ease;
   border-color: var(--icon-blue) !important;
 }
-.item:hover {
-  background-color: var(--icon-blue);
-}
+/* Disable generic item hover to avoid overriding leaderboard visuals */
+.item:hover { background-color: inherit; }
 
 .badge-grid {
   display: grid;
@@ -774,6 +894,8 @@ input, textarea {
 .fa, .fas, .far, .fab {
   color: var(--icon-blue) !important;
 }
+/* Ensure gamepad icon remains white in primary button */
+.play-btn-primary .fa-gamepad, .play-btn-primary .fas.fa-gamepad, .play-btn-primary i.fa-gamepad { color: #fff !important; }
 
 /* =====================
    Media Queries
