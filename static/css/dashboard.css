@@ -757,7 +757,7 @@ input, textarea {
 
 .badge.achieved {
   background: transparent !important; /* keep transparent even when achieved */
-  color: #061826 !important;
+  color: #ffffff !important;
   box-shadow: 0 6px 20px rgba(0,0,0,0.10); /* subtle elevation for achieved badges */
   border: 2px solid var(--highlight); /* highlight border when achieved */
 }
@@ -1066,7 +1066,7 @@ input, textarea {
 /* Remove gradient from skill badge */
 .badge.achieved {
   background: var(--highlight) !important;
-  color: #061826 !important;
+  color: #ffffff !important;
   box-shadow: 0 2px 12px rgba(230,214,193,0.18);
   filter: none;
 }
