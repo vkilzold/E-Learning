@@ -439,16 +439,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                 // If the image is missing, fall back silently to a transparent gif (no retries)
                 img.onerror = () => { img.src = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='; };
                 img.alt = def.label;
-                img.style.width = '80px';
-                img.style.height = '80px';
-                img.style.objectFit = 'contain';
-                img.style.marginBottom = '0.25rem';
+                img.className = 'badge-img';
 
                 const lbl = document.createElement('div');
                 lbl.textContent = def.label;
-                lbl.style.fontSize = '0.85rem';
-                lbl.style.textAlign = 'center';
-                lbl.style.marginTop = '0.25rem';
+                lbl.className = 'badge-label';
 
                 node.appendChild(img);
                 node.appendChild(lbl);
@@ -463,7 +458,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 msg.className = 'no-badges';
                 msg.textContent = 'No badges earned yet.';
                 msg.style.padding = '0.5rem';
-                msg.style.color = '#666';
+                msg.style.color = '#fbfbfc';
                 grid.appendChild(msg);
             }
 
