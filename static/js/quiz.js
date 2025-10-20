@@ -583,18 +583,22 @@ document.addEventListener('DOMContentLoaded', function() {
                 .from('main_questions')
                 .select('*')
                 .in('difficulty', diffVariants)
-                .order('id', { ascending: true })
                 .limit(100);
+                
             // Exclude usedQuestionIds only when there are any
             if (Array.isArray(usedQuestionIds) && usedQuestionIds.length > 0) {
                 query = query.not('id', 'in', `(${usedQuestionIds.join(',')})`);
             }
             const { data: mains, error: mainErr } = await query;
-
+            
             if (mainErr) {
                 console.error('❌ Error fetching main questions:', mainErr);
                 alert('Error fetching main questions: ' + mainErr.message);
                 return [];
+            }
+            
+            if (mains && mains.length > 0) {
+                mains.sort(() => Math.random() - 0.5); // shuffle locally
             }
 
             console.log(`✅ Successfully fetched ${mains?.length || 0} main questions`);
