@@ -13,157 +13,155 @@
 
         body {
             width: 100vw;
-            height: 100vh;
-            background-image: url('../static/images/titlePage-1080p.png');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
+			height: 100vh;
+			min-height: 100dvh; /* better mobile viewport handling */
+            background: #0ea5e9; /* solid cyan-blue */
+            color: #111111;
+            font-family: Arial, sans-serif;
             display: flex;
-            justify-content: center;
             align-items: center;
-            font-family: 'Arial', sans-serif;
-            position: relative; /* Added for positioning context */
+            justify-content: center;
         }
 
-        .top-right-buttons {
-            position: absolute;
-            top: 40px;
-            right: 40px;
-            display: flex;
-            gap: 15px;
-        }
-
-        .top-right-buttons a img {
-            width: 70px; /* Adjust size as needed */
-            height: auto;
-            transition: transform 0.2s ease-in-out;
-        }
-
-        .top-right-buttons a:hover img {
-            transform: scale(1.1);
-        }
-
-        .title-container {
-            text-align: center;
-            color: white;
+        .container {
             width: 100%;
+            max-width: 1000px;
+            padding: 24px;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
+			align-items: center;
+            text-align: center;
+			gap: 28px;
+			position: relative;
+			justify-content: center; /* vertically center content inside */
+			min-height: 100dvh; /* fill viewport for centering */
         }
 
-        .title-text {
-            font-size: 4rem;
-            font-weight: bold;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
-            margin-bottom: 2rem;
+		/* accent shapes (no gradients) */
+		.accent {
+			position: absolute;
+			border-radius: 9999px;
+			background: rgba(255, 255, 255, 0.22);
+			filter: blur(42px);
+			pointer-events: none;
+		}
+		.accent.accent-1 { width: 220px; height: 220px; bottom: -40px; left: -20px; }
+		.accent.accent-2 { width: 320px; height: 320px; top: -60px; right: -40px; background: rgba(255,255,255,0.18); }
+
+		/* glass card */
+		.glass {
+			width: 100%;
+			max-width: 800px;
+			padding: 56px 40px;
+			margin: 0 auto; /* center horizontally */
+			display: flex;
+			flex-direction: column;
+			align-items: center; /* center inner content */
+			min-height: 460px; /* make a bit taller */
+			background: rgba(255,255,255,0.20);
+			border: 1px solid rgba(255,255,255,0.30);
+			border-radius: 20px;
+			backdrop-filter: blur(12px);
+			-webkit-backdrop-filter: blur(12px);
+			box-shadow: 0 10px 30px rgba(2, 132, 199, 0.25);
+		}
+
+		.brand-title {
+			font-size: 5.25rem;
+			font-weight: 800;
+			letter-spacing: 0.5px;
+			font-family: 'Poppins', sans-serif;
+			color: #0f172a;
+			line-height: 1.1;
+			margin-bottom: 10px;
+		}
+
+        .brand-title .quiz {
+            color: #ffffff; /* white for QUIZ on blue bg */
         }
 
-        .action-buttons {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 5px; /* Space between play and quit buttons */
-            margin-top: 450px;
+		.subtitle {
+			font-size: 1rem;
+			color: rgba(15, 23, 42, 0.75);
+			margin-bottom: 8px;
+		}
+
+        .actions {
+			display: flex;
+			flex-direction: column; /* stacked */
+			gap: 16px;
+			width: 100%;
+			max-width: 420px;
+			margin: 18px auto 0;
+			align-items: center; /* center children */
         }
 
-        .action-button-img {
-            width: 250px; /* Adjust size as needed */
-            height: auto;
-            cursor: pointer;
-            transition: transform 0.2s ease-in-out;
-        }
+		.btn {
+			width: 70%;
+			padding: 14px 18px;
+			border: 2px solid rgba(15, 23, 42, 0.90);
+			background: #ffffff;
+			color: #0f172a;
+			text-decoration: none;
+			font-weight: 700;
+			border-radius: 12px;
+			transition: background 0.2s ease, color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+			box-shadow: 0 6px 16px rgba(2, 132, 199, 0.18);
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			gap: 10px;
+			line-height: 1;
+			margin: 0 auto; /* center the button within actions */
+		}
 
-        .action-button-img:hover {
-            transform: scale(1.05);
-        }
+		.btn:hover { background: #0f172a; color: #ffffff; transform: translateY(-1px); box-shadow: 0 10px 22px rgba(2, 132, 199, 0.28); }
+		.btn:active { transform: translateY(0); }
+		.btn:focus { outline: none; box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.25); }
 
-        .zoom-wrapper {
-            transform: scale(0.75);
-            transform-origin: center center;
-            width: 100vw;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
+		.btn-primary {
+			border-color: #0284c7;
+			background: #0284c7;
+			color: #ffffff;
+		}
 
-        .zoom-wrapper {
-            transform: scale(0.75);
-            transform-origin: center center;
-            width: 100vw;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
+		.btn-primary:hover { background: #0369a1; border-color: #0369a1; }
 
-        /* Responsive Design */
-        @media (max-width: 768px) { /* Tablet size */
-            .title-text {
-                font-size: 3rem;
-            }
+		.btn-secondary {
+			background: transparent;
+			border-color: rgba(255,255,255,0.9);
+			color: #ffffff;
+		}
+		.btn-secondary:hover { background: rgba(255,255,255,0.12); color: #ffffff; border-color: rgba(255,255,255,0.9); }
 
-            .action-buttons {
-                margin-top: 350px;
-                gap: 15px;
-            }
+		@media (max-width: 768px) {
+			.brand-title { font-size: 2.5rem; }
+			.glass { padding: 32px 24px; min-height: 380px; }
+			.btn { width: 100%; }
+		}
 
-            .action-button-img {
-                width: 200px;
-            }
-
-            .top-right-buttons a img {
-                width: 50px;
-            }
-        }
-
-        @media (max-width: 480px) { /* Mobile size */
-            .title-text {
-                font-size: 2.5rem;
-            }
-
-            .action-buttons {
-                margin-top: 300px;
-                gap: 10px;
-            }
-
-            .action-button-img {
-                width: 150px;
-            }
-
-            .top-right-buttons {
-                top: 10px;
-                right: 10px;
-                gap: 10px;
-            }
-
-            .top-right-buttons a img {
-                width: 40px;
-            }
-        }
+		@media (max-width: 480px) {
+			.brand-title { font-size: 2.1rem; }
+			.glass { padding: 28px 20px; min-height: 340px; }
+			.btn { width: 100%; }
+		}
     </style>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="top-right-buttons">
-        <a href="/dashboard"><img src="/static/images/buttons/homeBtn.png" alt="Home"></a>
-        <a href="/progress"><img src="/static/images/buttons/optionBtn.png" alt="Options"></a>
-    </div>
-    <div class="zoom-wrapper">
-        <div class="title-container">
-            <h1 class="title-text"></h1>
-            <div class="action-buttons">
-                <a href="/progress">
-                    <img src="/static/images/buttons/playBtn.png" alt="Play Quiz" class="action-button-img">
-                </a>
-                <a href="/dashboard">
-                    <img src="/static/images/buttons/quitBtn.png" alt="Quit" class="action-button-img">
-                </a>
-            </div>
-        </div>
-    </div>
+	<main class="container">
+		<div class="accent accent-1"></div>
+		<div class="accent accent-2"></div>
+		<section class="glass">
+			<h1 class="brand-title">In<span class="quiz">QUIZ</span>ition</h1>
+			<p class="subtitle">Enhance your growth by evaluating your personal math skills</p>
+			<div class="actions">
+				<a class="btn btn-primary" href="/quiz">Play</a>
+				<a class="btn btn-secondary" href="/dashboard">Dashboard</a>
+			</div>
+		</section>
+	</main>
 </body>
-</html> 
+</html>

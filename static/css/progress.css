@@ -24,7 +24,7 @@ html, body {
   margin: 0;
   width: 100%;
   height: 100%;
-  background: var(--darkest-bluegreen);
+  background: #0ea5e9; /* cyan background like title page */
   color: var(--light-brown);
 }
 
@@ -33,7 +33,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: #ebebeb;
+  background: #0ea5e9;
   color: var(--light-brown);
 }
 
@@ -205,24 +205,35 @@ canvas#gameCanvas {
 }
 
 .container {
-  background-color: var(--bluegreen);
-  width: 90%;
-  max-width: 90rem;
-  height: 91%;
+  background-color: transparent;
+  width: 100%;
+  max-width: 1000px;
+  height: auto;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 0.7rem;
+  padding: 1.5rem;
   box-sizing: border-box;
   position: relative;
   color: var(--light-brown);
 }
 
+/* glass wrapper similar to title page */
+.glass-container {
+  background: rgba(255,255,255,0.20);
+  border: 1px solid rgba(255,255,255,0.30);
+  border-radius: 20px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 10px 30px rgba(2, 132, 199, 0.25);
+}
+
 .title {
     padding: 0.7rem 0; /* Reduced from 0.8rem 0 - small adjustment */
     text-align: center;
-    margin-top: -3rem; /* Reduced from -3.5rem - small adjustment */
+    margin-top: 0;
 }
+.title h1 { margin-bottom: 1rem; }
 h1, h2, h3 {
   color : #2B3537;
 }
@@ -703,14 +714,45 @@ canvas {
   background: none;
 }
 
-.play-button {
+.progress-actions {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  gap: 12px;
   align-items: center;
+  justify-content: center;
   width: 100%;
-  margin: -1.2rem 0 0 0;
+  max-width: 360px;
 }
+
+/* modern buttons like title page */
+.btn {
+  width: 100%;
+  padding: 14px 18px;
+  border: 2px solid rgba(15, 23, 42, 0.90);
+  background: #ffffff;
+  color: #0f172a;
+  text-decoration: none;
+  font-weight: 700;
+  font-family: 'Montserrat', sans-serif !important;
+  border-radius: 12px;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+  box-shadow: 0 6px 16px rgba(2, 132, 199, 0.18);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  line-height: 1;
+  margin: 0 auto;
+  font-size: 1.05rem;
+}
+.progress-actions .btn { width: 260px; max-width: 260px; }
+.btn:hover { background: #0f172a; color: #ffffff; transform: translateY(-1px); box-shadow: 0 10px 22px rgba(2, 132, 199, 0.28); }
+.btn:active { transform: translateY(0); }
+.btn:focus { outline: none; box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.25); }
+.btn-primary { border-color: #0284c7; background: #0284c7; color: #ffffff; }
+.btn-primary:hover { background: #0369a1; border-color: #0369a1; }
+.btn-secondary { background: transparent; border-color: rgba(255,255,255,0.9); color: #ffffff; }
+.btn-secondary:hover { background: rgba(255,255,255,0.12); color: #ffffff; border-color: rgba(255,255,255,0.9); }
 
 .timer-number {
   position: absolute;
@@ -757,9 +799,9 @@ canvas {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2rem;
+  gap: 3rem;
   width: 100%;
-  max-width: 280px;
+  max-width: 420px;
   margin-top: 0;
 }
 
@@ -778,8 +820,9 @@ canvas {
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  box-shadow: none;
   border: 7px solid #fff;
+  margin-bottom: 2.5rem;
 }
 
 .progress-percentage {
@@ -792,7 +835,7 @@ canvas {
 
 .progress-label {
   position: absolute;
-  bottom: -35px;
+  bottom: -45px;
   font-size: 1.7rem;
   color: #23282b;
   font-family: 'Montserrat', sans-serif;
@@ -804,13 +847,13 @@ canvas {
   flex-direction: column;
   gap: 1.4rem;
   width: 100%;
-  max-width: 200px;
-  background: rgba(255, 255, 255, 0.1);
+  max-width: 280px;
+  background: rgba(255, 255, 255, 0.20);
   padding: 1.5rem;
   border-radius: 1rem;
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
-  border: 2px solid rgba(255, 255, 255, 0.2);
+  border: 1.5px solid rgba(255, 255, 255, 0.30);
   padding-bottom: 0.2rem;
 }
 

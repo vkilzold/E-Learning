@@ -8,10 +8,13 @@
   --card-bg: #fbfbfc; /* off-white cards to avoid pure white */
   --text-main: #1f2328; /* slightly softer near-black */
   --text-muted: #606770; /* gentler muted text */
-  --highlight: #1f2328; /* headings/icons */
+  --highlight: #fbfbfc; /* headings/icons */
   --accent: #d6d9e0; /* softer borders/accents */
-  --avatar-bg: #1f2328; /* avatar background */
-  --icon-blue: #1f2328; /* icon color aligned to primary */
+  --avatar-bg: #0ea5e9; /* cyan-blue avatar background */
+  --icon-blue: #0ea5e9; /* cyan-blue icon color */
+  --primary-blue: #0ea5e9; /* primary cyan-blue for main actions */
+  --light-blue: #38bdf8; /* lighter cyan-blue for accents */
+  --blue-accent: #0284c7; /* deeper cyan-blue for highlights */
 }
 
 :root[data-theme="dark"] {
@@ -22,8 +25,11 @@
   --text-muted: #606770;
   --highlight: #1f2328;
   --accent: #d6d9e0;
-  --avatar-bg: #1f2328;
-  --icon-blue: #1f2328;
+  --avatar-bg: #0ea5e9;
+  --icon-blue: #0ea5e9;
+  --primary-blue: #0ea5e9;
+  --light-blue: #38bdf8;
+  --blue-accent: #0284c7;
 }
 
 /* =====================
@@ -291,24 +297,24 @@ input, textarea {
   gap: 0.9rem;
   margin-top: 0.75rem;
   padding-top: 1.5rem;
-  border-top: 1px solid var(--accent);
+  border-top: 2px solid var(--primary-blue);
 }
 .play-btn-primary {
   padding: 1.15rem 2.25rem; /* bigger */
   font-size: 1.2rem;
-  background: var(--text-main);
+  background: var(--primary-blue);
   color: #fff !important;
   border-radius: 9999px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  box-shadow: 0 8px 24px rgba(14, 165, 233, 0.25);
   font-weight: 700;
   letter-spacing: 0.02em;
   min-width: 240px;
 }
 .play-btn-primary i { color: #fff !important; margin-right: 0.6rem; }
 .play-btn-primary:hover {
-  background: #2a2f36;
+  background: var(--blue-accent);
   color: #fff !important;
-  box-shadow: 0 10px 28px rgba(0,0,0,0.16);
+  box-shadow: 0 10px 28px rgba(14, 165, 233, 0.35);
 }
 
 @media (max-width: 600px) {
@@ -329,13 +335,14 @@ input, textarea {
   font-weight: 700;
   letter-spacing: 0.02em;
   min-width: 240px;
-  border: 1px solid var(--accent) !important; /* subtle border for definition */
+  border: 2px solid var(--primary-blue) !important; /* blue border for accent */
 }
 .logout-btn-primary i { color: #111111 !important; margin-right: 0.5rem; }
 .logout-btn-primary:hover {
-  background: #f5f5f5;
-  color: #111111 !important;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.14);
+  background: var(--light-blue);
+  color: #ffffff !important;
+  border: 2px solid var(--blue-accent) !important;
+  box-shadow: 0 8px 24px rgba(14, 165, 233, 0.20);
 }
 
 /* Lighter logout look */
@@ -370,12 +377,12 @@ input, textarea {
   height: 6.25rem;
   border-radius: 50%;
   background-color: var(--avatar-bg);
-  color: var(--highlight);
+  color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 0 0 4px var(--card-bg), 0 4px 24px rgba(0,0,0,0.25);
-  filter: drop-shadow(0 0 8px var(--icon-blue));
+  box-shadow: 0 0 0 4px var(--card-bg), 0 4px 24px rgba(14, 165, 233, 0.30);
+  filter: drop-shadow(0 0 8px var(--primary-blue));
 }
 .avatar.large i {
   font-size: 4.5rem;
@@ -472,17 +479,19 @@ input, textarea {
   color: var(--highlight);
   font-weight: 600;
   font-size: 0.92rem;
-  transition: box-shadow 0.3s;
+  transition: box-shadow 0.3s, border 0.3s;
   display: flex;
   flex-direction: column;     /* Stack number and label vertically */
   justify-content: center;    /* Center vertically */
   align-items: center;        /* Center horizontally */
   text-align: center;
   padding: 1rem;              /* Optional: spacing inside */
-  height: 100%; 
+  height: 100%;
+  border: 2px solid transparent;
 }
 .stat-item:hover, .stat-item:focus {
   box-shadow: 0 3px 12px rgba(0,0,0,0.14);
+  border: 2px solid var(--light-blue);
 }
 .stat-item:hover *, .stat-item:focus * {
   color: inherit !important;
@@ -517,7 +526,7 @@ input, textarea {
   font-size: 0.94rem;
 }
 .stat-row .stat-value {
-  color: var(--text-light);
+  color: var(--primary-blue);
   font-weight: bold;
   font-size: 0.94rem;
 }
@@ -548,16 +557,19 @@ input, textarea {
   background: linear-gradient(90deg, #FFD700 0%, #e6d6c1 100%);
   color: #1A303F;
   font-weight: bold;
+  border-left: 4px solid var(--primary-blue);
 }
 .leaderboard-section .item.leaderboard-rank-2 {
   background: linear-gradient(90deg, #C0C0C0 0%, #e6d6c1 100%);
   color: #1A303F;
   font-weight: bold;
+  border-left: 4px solid var(--light-blue);
 }
 .leaderboard-section .item.leaderboard-rank-3 {
   background: linear-gradient(90deg, #CD7F32 0%, #e6d6c1 100%);
   color: #1A303F;
   font-weight: bold;
+  border-left: 4px solid var(--blue-accent);
 }
 .leaderboard-section .item .leaderboard-name {
   position: relative;
@@ -661,7 +673,7 @@ input, textarea {
   font-weight: 500;
 }
 .activity-column .activity-value {
-  color: var(--text-main);
+  color: var(--primary-blue);
   font-size: 1.05rem;
   font-weight: 700;
 }
@@ -748,7 +760,7 @@ input, textarea {
 
   font-size: 1.05em;
   color: var(--text-main);
-  background-color: transparent; /* make badge background transparent */
+  background-color: rgba(255, 255, 255, 0.3); /* lighter badge background */
   border-radius: 0.625rem;
   box-shadow: none; /* remove persistent shadow so border stands out */
   border: 2px solid rgba(255,255,255,0.06); /* subtle neutral border for locked badges */
@@ -756,10 +768,11 @@ input, textarea {
 }
 
 .badge.achieved {
-  background: transparent !important; /* keep transparent even when achieved */
-  color: #ffffff !important;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.10); /* subtle elevation for achieved badges */
-  border: 2px solid var(--highlight); /* highlight border when achieved */
+  background: #fbfbfc !important; /* much lighter background for achieved badges */
+  background-color: #fbfbfc !important; /* force light background */
+  color: var(--text-main) !important; /* use standard dark text color */
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.15) !important; /* blue elevation for achieved badges */
+  border: 2px solid var(--primary-blue) !important; /* blue border when achieved */
 }
 .badge i {
   font-size: 1em;
@@ -770,13 +783,29 @@ input, textarea {
 .badge div {
   margin-top: 0.45rem; /* space between image and label */
   margin-bottom: 0.5rem; /* less bottom space for tighter layout */
+  font-size: 0.85rem;
+  text-align: center;
+  color: var(--text-main); /* darker color for better contrast */
+  font-weight: 600;
+  line-height: 1.2;
 }
 
 /* Make badge images slightly smaller to fit the border-only look */
-.badge img {
+.badge img, .badge-img {
   width: 64px;
   height: 64px;
   object-fit: contain;
+  margin-bottom: 0.25rem;
+}
+
+/* Badge label styling */
+.badge-label {
+  font-size: 0.85rem;
+  text-align: center;
+  color: var(--text-main); /* darker color for better contrast */
+  font-weight: 600;
+  line-height: 1.2;
+  margin-top: 0.25rem;
 }
 
 /* Modal */
@@ -982,7 +1011,7 @@ input, textarea {
   height: 100%;
 }
 .written-stats-card .stat-row .stat-value {
-  color: #607D7E !important;
+  color: var(--primary-blue) !important;
   font-weight: 700;
   transition: color 0.3s;
 }
@@ -1053,7 +1082,8 @@ input, textarea {
   color: var(--highlight) !important;
 }
 .section-header h4 i,
-.stats-card .fa-star,
+.stats-card .fa-star, 
+.stats-card .fa-clock,
 .leaderboard-section .fa-medal,
 .written-stats-card .fa-award,
 .activity-card .fa-gamepad,
@@ -1065,9 +1095,11 @@ input, textarea {
 
 /* Remove gradient from skill badge */
 .badge.achieved {
-  background: var(--highlight) !important;
-  color: #ffffff !important;
-  box-shadow: 0 2px 12px rgba(230,214,193,0.18);
+  background: #fbfbfc !important;
+  background-color: #fbfbfc !important;
+  color: var(--text-main) !important;
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.15) !important;
+  border: 2px solid var(--primary-blue) !important;
   filter: none;
 }
 
