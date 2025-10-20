@@ -10,11 +10,11 @@
   --text-muted: #606770; /* gentler muted text */
   --highlight: #fbfbfc; /* headings/icons */
   --accent: #d6d9e0; /* softer borders/accents */
-  --avatar-bg: #2563eb; /* blue avatar background */
-  --icon-blue: #2563eb; /* blue icon color */
-  --primary-blue: #2563eb; /* primary blue for main actions */
-  --light-blue: #3b82f6; /* lighter blue for accents */
-  --blue-accent: #1e40af; /* darker blue for highlights */
+  --avatar-bg: #0ea5e9; /* cyan-blue avatar background */
+  --icon-blue: #0ea5e9; /* cyan-blue icon color */
+  --primary-blue: #0ea5e9; /* primary cyan-blue for main actions */
+  --light-blue: #38bdf8; /* lighter cyan-blue for accents */
+  --blue-accent: #0284c7; /* deeper cyan-blue for highlights */
 }
 
 :root[data-theme="dark"] {
@@ -25,11 +25,11 @@
   --text-muted: #606770;
   --highlight: #1f2328;
   --accent: #d6d9e0;
-  --avatar-bg: #2563eb;
-  --icon-blue: #2563eb;
-  --primary-blue: #2563eb;
-  --light-blue: #3b82f6;
-  --blue-accent: #1e40af;
+  --avatar-bg: #0ea5e9;
+  --icon-blue: #0ea5e9;
+  --primary-blue: #0ea5e9;
+  --light-blue: #38bdf8;
+  --blue-accent: #0284c7;
 }
 
 /* =====================
@@ -305,7 +305,7 @@ input, textarea {
   background: var(--primary-blue);
   color: #fff !important;
   border-radius: 9999px;
-  box-shadow: 0 8px 24px rgba(37, 99, 235, 0.25);
+  box-shadow: 0 8px 24px rgba(14, 165, 233, 0.25);
   font-weight: 700;
   letter-spacing: 0.02em;
   min-width: 240px;
@@ -314,7 +314,7 @@ input, textarea {
 .play-btn-primary:hover {
   background: var(--blue-accent);
   color: #fff !important;
-  box-shadow: 0 10px 28px rgba(37, 99, 235, 0.35);
+  box-shadow: 0 10px 28px rgba(14, 165, 233, 0.35);
 }
 
 @media (max-width: 600px) {
@@ -342,7 +342,7 @@ input, textarea {
   background: var(--light-blue);
   color: #ffffff !important;
   border: 2px solid var(--blue-accent) !important;
-  box-shadow: 0 8px 24px rgba(37, 99, 235, 0.20);
+  box-shadow: 0 8px 24px rgba(14, 165, 233, 0.20);
 }
 
 /* Lighter logout look */
@@ -381,7 +381,7 @@ input, textarea {
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 0 0 4px var(--card-bg), 0 4px 24px rgba(37, 99, 235, 0.30);
+  box-shadow: 0 0 0 4px var(--card-bg), 0 4px 24px rgba(14, 165, 233, 0.30);
   filter: drop-shadow(0 0 8px var(--primary-blue));
 }
 .avatar.large i {
