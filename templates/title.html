@@ -1,167 +1,324 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>InQUIZition - Title</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>InQUIZition - Title</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-        body {
-            width: 100vw;
-			height: 100vh;
-			min-height: 100dvh; /* better mobile viewport handling */
-            background: #0ea5e9; /* solid cyan-blue */
-            color: #111111;
-            font-family: Arial, sans-serif;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+    body {
+      width: 100vw;
+      height: 100vh;
+      min-height: 100dvh;
+      background: #0ea5e9;
+      color: #111111;
+      font-family: Arial, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-        .container {
-            width: 100%;
-            max-width: 1000px;
-            padding: 24px;
-            display: flex;
-            flex-direction: column;
-			align-items: center;
-            text-align: center;
-			gap: 28px;
-			position: relative;
-			justify-content: center; /* vertically center content inside */
-			min-height: 100dvh; /* fill viewport for centering */
-        }
+    .container {
+      width: 100%;
+      max-width: 1000px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 28px;
+      position: relative;
+      justify-content: center;
+      min-height: 100dvh;
+    }
 
-		/* accent shapes (no gradients) */
-		.accent {
-			position: absolute;
-			border-radius: 9999px;
-			background: rgba(255, 255, 255, 0.22);
-			filter: blur(42px);
-			pointer-events: none;
-		}
-		.accent.accent-1 { width: 220px; height: 220px; bottom: -40px; left: -20px; }
-		.accent.accent-2 { width: 320px; height: 320px; top: -60px; right: -40px; background: rgba(255,255,255,0.18); }
+    .accent {
+      position: absolute;
+      border-radius: 9999px;
+      background: rgba(255, 255, 255, 0.22);
+      filter: blur(42px);
+      pointer-events: none;
+    }
+    .accent.accent-1 { width: 220px; height: 220px; bottom: -40px; left: -20px; }
+    .accent.accent-2 { width: 320px; height: 320px; top: -60px; right: -40px; background: rgba(255,255,255,0.18); }
 
-		/* glass card */
-		.glass {
-			width: 100%;
-			max-width: 800px;
-			padding: 56px 40px;
-			margin: 0 auto; /* center horizontally */
-			display: flex;
-			flex-direction: column;
-			align-items: center; /* center inner content */
-			min-height: 460px; /* make a bit taller */
-			background: rgba(255,255,255,0.20);
-			border: 1px solid rgba(255,255,255,0.30);
-			border-radius: 20px;
-			backdrop-filter: blur(12px);
-			-webkit-backdrop-filter: blur(12px);
-			box-shadow: 0 10px 30px rgba(2, 132, 199, 0.25);
-		}
+    .glass {
+      width: 100%;
+      max-width: 800px;
+      padding: 56px 40px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 460px;
+      background: rgba(255,255,255,0.20);
+      border: 1px solid rgba(255,255,255,0.30);
+      border-radius: 20px;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      box-shadow: 0 10px 30px rgba(2, 132, 199, 0.25);
+    }
 
-		.brand-title {
-			font-size: 5.25rem;
-			font-weight: 800;
-			letter-spacing: 0.5px;
-			font-family: 'Poppins', sans-serif;
-			color: #0f172a;
-			line-height: 1.1;
-			margin-bottom: 10px;
-		}
+    .brand-title {
+      font-size: 5.25rem;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      font-family: 'Poppins', sans-serif;
+      color: #0f172a;
+      line-height: 1.1;
+      margin-bottom: 10px;
+    }
 
-        .brand-title .quiz {
-            color: #ffffff; /* white for QUIZ on blue bg */
-        }
+    .brand-title .quiz {
+      color: #ffffff;
+    }
 
-		.subtitle {
-			font-size: 1rem;
-			color: rgba(15, 23, 42, 0.75);
-			margin-bottom: 8px;
-		}
+    .subtitle {
+      font-size: 1rem;
+      color: rgba(15, 23, 42, 0.75);
+      margin-bottom: 8px;
+    }
 
-        .actions {
-			display: flex;
-			flex-direction: column; /* stacked */
-			gap: 16px;
-			width: 100%;
-			max-width: 420px;
-			margin: 18px auto 0;
-			align-items: center; /* center children */
-        }
+    .actions {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      width: 100%;
+      max-width: 420px;
+      margin: 18px auto 0;
+      align-items: center;
+    }
 
-		.btn {
-			width: 70%;
-			padding: 14px 18px;
-			border: 2px solid rgba(15, 23, 42, 0.90);
-			background: #ffffff;
-			color: #0f172a;
-			text-decoration: none;
-			font-weight: 700;
-			border-radius: 12px;
-			transition: background 0.2s ease, color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
-			box-shadow: 0 6px 16px rgba(2, 132, 199, 0.18);
-			display: inline-flex;
-			align-items: center;
-			justify-content: center;
-			gap: 10px;
-			line-height: 1;
-			margin: 0 auto; /* center the button within actions */
-		}
+    .btn {
+      width: 70%;
+      padding: 14px 18px;
+      border: 2px solid rgba(15, 23, 42, 0.90);
+      background: #ffffff;
+      color: #0f172a;
+      text-decoration: none;
+      font-weight: 700;
+      border-radius: 12px;
+      transition: background 0.2s ease, color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+      box-shadow: 0 6px 16px rgba(2, 132, 199, 0.18);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      line-height: 1;
+      margin: 0 auto;
+      cursor: pointer;
+    }
 
-		.btn:hover { background: #0f172a; color: #ffffff; transform: translateY(-1px); box-shadow: 0 10px 22px rgba(2, 132, 199, 0.28); }
-		.btn:active { transform: translateY(0); }
-		.btn:focus { outline: none; box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.25); }
+    .btn:hover { background: #0f172a; color: #ffffff; transform: translateY(-1px); box-shadow: 0 10px 22px rgba(2, 132, 199, 0.28); }
+    .btn:active { transform: translateY(0); }
+    .btn:focus { outline: none; box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.25); }
 
-		.btn-primary {
-			border-color: #0284c7;
-			background: #0284c7;
-			color: #ffffff;
-		}
+    .btn-primary {
+      border-color: #0284c7;
+      background: #0284c7;
+      color: #ffffff;
+    }
+    .btn-primary:hover { background: #0369a1; border-color: #0369a1; }
 
-		.btn-primary:hover { background: #0369a1; border-color: #0369a1; }
+    .btn-secondary {
+      background: transparent;
+      border-color: rgba(255,255,255,0.9);
+      color: #ffffff;
+    }
+    .btn-secondary:hover { background: rgba(255,255,255,0.12); color: #ffffff; border-color: rgba(255,255,255,0.9); }
 
-		.btn-secondary {
-			background: transparent;
-			border-color: rgba(255,255,255,0.9);
-			color: #ffffff;
-		}
-		.btn-secondary:hover { background: rgba(255,255,255,0.12); color: #ffffff; border-color: rgba(255,255,255,0.9); }
+    /* --- Modal Styling --- */
+	.modal {
+		display: none; /* ✅ Hide modal by default */
+		position: fixed;
+		inset: 0;
+		background-color: rgba(0, 0, 0, 0.6);
+		z-index: 9999;
+		align-items: center;
+		justify-content: center;
+		padding: 20px;
+	}
 
-		@media (max-width: 768px) {
-			.brand-title { font-size: 2.5rem; }
-			.glass { padding: 32px 24px; min-height: 380px; }
-			.btn { width: 100%; }
-		}
+	.modal-content {
+		background: #ffffff;
+		border-radius: 16px;
+		max-width: 600px;
+		width: 100%;
+		padding: 24px 28px;
+		text-align: left;
+		color: #0f172a;
+		line-height: 1.6;
+		box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+		overflow-y: auto;
+		max-height: 90vh;
+	}
 
-		@media (max-width: 480px) {
-			.brand-title { font-size: 2.1rem; }
-			.glass { padding: 28px 20px; min-height: 340px; }
-			.btn { width: 100%; }
-		}
-    </style>
-	<link rel="preconnect" href="https://fonts.googleapis.com">
-	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-	<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+    .modal-content h2 {
+      text-align: center;
+      margin-bottom: 12px;
+      color: #0284c7;
+    }
+
+    .close-btn {
+      display: block;
+      margin: 20px auto 0;
+      padding: 10px 20px;
+      background: #0284c7;
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .close-btn:hover {
+      background: #0369a1;
+    }
+
+    @media (max-width: 768px) {
+      .brand-title { font-size: 2.5rem; }
+      .glass { padding: 32px 24px; min-height: 380px; }
+      .btn { width: 100%; }
+      .modal-content { max-width: 90%; padding: 20px; }
+    }
+
+    @media (max-width: 480px) {
+      .brand-title { font-size: 2.1rem; }
+      .glass { padding: 28px 20px; min-height: 340px; }
+      .btn { width: 100%; }
+    }
+
+	/* --- Responsive modal adjustments --- */
+	@media (max-width: 768px) {
+	.modal {
+		align-items: center;
+		justify-content: center;
+		padding: 16px;
+	}
+
+	.modal-content {
+		max-width: 85%;
+		padding: 18px 20px;
+		font-size: 0.95rem;
+		margin: 0 auto;
+	}
+	}
+
+	@media (max-width: 480px) {
+	.modal {
+		align-items: center;
+		justify-content: center;
+		padding: 12px;
+	}
+
+	.modal-content {
+		max-width: 90%;
+		padding: 16px 18px;
+		font-size: 0.9rem;
+		margin: auto;
+	}
+
+	.modal-content h2 {
+		text-align: center;
+		font-size: 1.2rem;
+	}
+
+	.close-btn {
+		display: block;
+		margin: 18px auto 0;
+		padding: 8px 16px;
+		font-size: 0.9rem;
+	}
+	}
+  </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
-	<main class="container">
-		<div class="accent accent-1"></div>
-		<div class="accent accent-2"></div>
-		<section class="glass">
-			<h1 class="brand-title">In<span class="quiz">QUIZ</span>ition</h1>
-			<p class="subtitle">Enhance your growth by evaluating your personal math skills</p>
-			<div class="actions">
-				<a class="btn btn-primary" href="/quiz">Play</a>
-				<a class="btn btn-secondary" href="/dashboard">Dashboard</a>
-			</div>
-		</section>
-	</main>
+  <main class="container">
+    <div class="accent accent-1"></div>
+    <div class="accent accent-2"></div>
+    <section class="glass">
+      <h1 class="brand-title">In<span class="quiz">QUIZ</span>ition</h1>
+      <p class="subtitle">Enhance your growth by evaluating your personal math skills</p>
+      <div class="actions">
+        <a class="btn btn-primary" href="/progress">Play</a>
+        <button id="howToPlayBtn" class="btn btn-secondary">How to Play</button>
+        <a class="btn btn-secondary" href="/dashboard">Dashboard</a>
+      </div>
+    </section>
+  </main>
+
+  <!-- Modal -->
+  <div id="howToPlayModal" class="modal">
+	<div class="modal-content">
+	<h2>How to Play</h2>
+	<p><strong>Welcome to InQUIZition!</strong> Test your knowledge and skill across different levels of challenge.</p>
+
+	<ul style="margin-left: 20px; line-height: 1.8;">
+		<li><strong>Easy Mode:</strong> Each scenario has <strong>2 questions</strong>. Answer both correctly to earn <strong>1 point</strong> per scenario and reach <strong>5 points</strong> to move up.</li>
+		<li><strong>Moderate Mode:</strong> You must complete at least <strong>4 correct scenarios</strong> to advance.</li>
+		<li><strong>Hard Mode:</strong> Each scenario has <strong>3 questions</strong>. Clear <strong>3 correct scenarios</strong> to prove your mastery.</li>
+	</ul>
+
+	<p style="margin-top: 12px;">Your progress and accuracy will be tracked. Aim for <strong>at least 75% accuracy</strong> to unlock the next difficulty.</p>
+
+	<ul style="margin-left: 20px; line-height: 1.8;">
+		<li>You have <strong>1 minute</strong> to answer each question.</li>
+		<li>Use the <strong>Hint</strong> button if you need help.</li>
+		<li>After finishing a difficulty, visit the <strong>Progress Page</strong> to review your growth.</li>
+	</ul>
+
+	<p style="margin-top: 10px;">Get ready for the <strong>InQUIZition</strong> and show how sharp your mind truly is!</p>
+
+	<button class="close-btn" id="closeModalBtn">Close</button>
+	</div>
+
+  <script>
+    const howToPlayBtn = document.getElementById('howToPlayBtn');
+    const modal = document.getElementById('howToPlayModal');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+
+    howToPlayBtn.addEventListener('click', () => {
+      modal.style.display = 'flex';
+    });
+
+    closeModalBtn.addEventListener('click', () => {
+      modal.style.display = 'none';
+    });
+
+    window.addEventListener('click', (e) => {
+      if (e.target === modal) modal.style.display = 'none';
+    });
+
+	document.addEventListener('DOMContentLoaded', () => {
+  const howToPlayBtn = document.getElementById('howToPlayBtn');
+  const modal = document.getElementById('howToPlayModal');
+  const closeBtn = document.querySelector('.close-btn');
+
+  // ✅ Open modal when clicking the button
+  howToPlayBtn.addEventListener('click', () => {
+    modal.style.display = 'flex';
+  });
+
+  // ✅ Close when clicking the "Close" button
+  closeBtn.addEventListener('click', () => {
+    modal.style.display = 'none';
+  });
+
+  // ✅ Close when clicking outside the modal content
+  window.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      modal.style.display = 'none';
+    }
+  });
+});
+  </script>
 </body>
 </html>
