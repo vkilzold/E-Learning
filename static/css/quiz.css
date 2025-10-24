@@ -317,14 +317,14 @@ li {
   100% { box-shadow: 0 0 32px 10px #a259ffcc, 0 0 64px 18px #a259ff55; }
 }
 @keyframes fireAuraBlue {
-  0% { box-shadow: 0 0 32px 10px #00bfffcc, 0 0 64px 18px #00bfff55; }
-  17% { box-shadow: 0 0 38px 12px #aeefffaa, 0 0 70px 20px #00bfff44; }
-  31% { box-shadow: 0 0 30px 16px #00bfffbb, 0 0 80px 24px #aeefff33; }
-  47% { box-shadow: 0 0 44px 8px #aeefffaa, 0 0 60px 18px #00bfff44; }
-  61% { box-shadow: 0 0 36px 20px #00bfffcc, 0 0 74px 22px #aeefff33; }
-  79% { box-shadow: 0 0 40px 14px #aeefffaa, 0 0 70px 22px #00bfff44; }
-  93% { box-shadow: 0 0 28px 18px #00bfffbb, 0 0 80px 28px #aeefff33; }
-  100% { box-shadow: 0 0 32px 10px #00bfffcc, 0 0 64px 18px #00bfff55; }
+  0% { box-shadow: 0 0 32px 10px #0891b2cc, 0 0 64px 18px #0891b255; }
+  17% { box-shadow: 0 0 38px 12px #0e7490aa, 0 0 70px 20px #0891b244; }
+  31% { box-shadow: 0 0 30px 16px #0891b2bb, 0 0 80px 24px #0e749033; }
+  47% { box-shadow: 0 0 44px 8px #0e7490aa, 0 0 60px 18px #0891b244; }
+  61% { box-shadow: 0 0 36px 20px #0891b2cc, 0 0 74px 22px #0e749033; }
+  79% { box-shadow: 0 0 40px 14px #0e7490aa, 0 0 70px 22px #0891b244; }
+  93% { box-shadow: 0 0 28px 18px #0891b2bb, 0 0 80px 28px #0e749033; }
+  100% { box-shadow: 0 0 32px 10px #0891b2cc, 0 0 64px 18px #0891b255; }
 }
 
 .streak-fire {
@@ -572,15 +572,15 @@ canvas {
 }
 
 .container-aura-blue {
-  box-shadow: 0 0 32px 10px #00bfffcc, 0 0 64px 18px #00bfff55, 0 0 0 0 #fff0;
+  box-shadow: 0 0 32px 10px #0891b2cc, 0 0 64px 18px #0891b255, 0 0 0 0 #fff0;
   animation: fireAuraBlue 1.3s infinite linear;
 }
 @keyframes fireAuraBlue {
-  0% { box-shadow: 0 0 32px 10px #00bfffcc, 0 0 64px 18px #00bfff55, 0 0 0 0 #fff0; }
-  20% { box-shadow: 0 0 38px 14px #aeefffaa, 0 0 70px 22px #00bfff44, 0 0 0 0 #fff0; }
-  40% { box-shadow: 0 0 44px 18px #00bfffbb, 0 0 80px 28px #aeefff33, 0 0 0 0 #fff0; }
-  60% { box-shadow: 0 0 38px 14px #aeefffaa, 0 0 70px 22px #00bfff44, 0 0 0 0 #fff0; }
-  100% { box-shadow: 0 0 32px 10px #00bfffcc, 0 0 64px 18px #00bfff55, 0 0 0 0 #fff0; }
+  0% { box-shadow: 0 0 32px 10px #0891b2cc, 0 0 64px 18px #0891b255, 0 0 0 0 #fff0; }
+  20% { box-shadow: 0 0 38px 14px #0e7490aa, 0 0 70px 22px #0891b244, 0 0 0 0 #fff0; }
+  40% { box-shadow: 0 0 44px 18px #0891b2bb, 0 0 80px 28px #0e749033, 0 0 0 0 #fff0; }
+  60% { box-shadow: 0 0 38px 14px #0e7490aa, 0 0 70px 22px #0891b244, 0 0 0 0 #fff0; }
+  100% { box-shadow: 0 0 32px 10px #0891b2cc, 0 0 64px 18px #0891b255, 0 0 0 0 #fff0; }
 }
 
 .end-quiz-popup {
