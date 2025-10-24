@@ -475,7 +475,10 @@ section {
   padding: 0;
 }
 .cosmetics-header {
-  background: #fff;
+  background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.3)), url('../images/indexbg1.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   border-radius: 0;
   padding: 48px 48px 32px 48px;
   position: relative;
@@ -483,6 +486,21 @@ section {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
+  margin-right: calc(-50vw + 50%);
+}
+
+.title-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 40px;
+  box-sizing: border-box;
+  max-width: 1100px;
+  margin: 0 auto;
 }
 .header-top {
   display: flex;
@@ -503,11 +521,13 @@ section {
 
 .title-section {
   display: flex;
-  align-items: center;    /* Center text & image vertically */
-  justify-content: space-between;
-  min-height: 100vh;      /* ✅ Full screen height */
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
   padding: 40px;
   box-sizing: border-box;
+  max-width: 1100px;
+  margin: 0 auto;
 }
 
 /* Keep your original .brand-area settings + minor cleanup */
@@ -541,20 +561,20 @@ section {
 .brand-area button {
   font-size: 1.2rem;
   font-weight: 700;
-  background: #181a20;
-  color: #fff;
+  background: #00ffff;
+  color: #000;
   border: none;
   border-radius: 2.5rem;
   padding: 0.9rem 2.5rem;
   cursor: pointer;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  box-shadow: 0 2px 12px rgba(0, 255, 255, 0.3);
   transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
 }
 
 .brand-area button:hover {
-  background: #333;
+  background: #00e6e6;
   transform: translateY(-2px) scale(1.04);
-  box-shadow: 0 6px 24px rgba(0,0,0,0.13);
+  box-shadow: 0 6px 24px rgba(0, 255, 255, 0.4);
 }
 
 .join-button {
@@ -565,11 +585,12 @@ section {
   font-size: 5.5rem;
   font-weight: 700;
   letter-spacing: 0.01em;
-  color: #181a20;
+  color: #00ffff;
   display: inline-block;
   position: relative;
   margin-bottom: 1.5rem;
   margin-top: 1rem;
+  text-shadow: 0 2px 8px rgba(0, 255, 255, 0.3);
 }
 .brand-dot {
   font-size: 2.2rem;
@@ -594,11 +615,12 @@ section {
 }
 .brand-subtitle {
   font-size: 1.3rem;
-  color: #7a7a7a;
+  color: #00ffff;
   margin-top: 0.5rem;
   max-width: 600px;
   margin-left: auto;
   margin-right: auto;
+  text-shadow: 0 1px 4px rgba(0, 255, 255, 0.3);
 }
 .brand-and {
   font-style: italic;
@@ -888,9 +910,12 @@ section {
 }
 .features-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(2, 1fr);
   gap: 2rem;
   margin-top: 3rem;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
 }
 .feature-item {
   background: #fff;
@@ -1150,5 +1175,12 @@ html, body {
   .teams-content {
     padding: 1.5rem 0.5rem;
     max-width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .features-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
   }
 }
