@@ -196,7 +196,7 @@ canvas#gameCanvas {
   }
 
 .quiz-section {
-  background-color: var(--dark-bluegreen);
+  background: linear-gradient(135deg, #00ffff, #00bfff);
   width: 100%;
   height: 100%;
   display: flex;
@@ -205,27 +205,30 @@ canvas#gameCanvas {
 }
 
 .container {
-  background-color: transparent;
-  width: 100%;
-  max-width: 1000px;
+  background-color: white;
+  width: fit-content;
+  max-width: 500px;
+  min-width: 400px;
   height: auto;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 1.5rem;
+  padding: 2rem;
   box-sizing: border-box;
   position: relative;
-  color: var(--light-brown);
+  color: #333;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
 
 /* glass wrapper similar to title page */
 .glass-container {
-  background: rgba(255,255,255,0.20);
-  border: 1px solid rgba(255,255,255,0.30);
-  border-radius: 20px;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  box-shadow: 0 10px 30px rgba(2, 132, 199, 0.25);
+  background: rgba(255,255,255,0.95);
+  border: 1px solid rgba(0,255,255,0.2);
+  border-radius: 16px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 8px 32px rgba(0, 255, 255, 0.15);
 }
 
 .title {
@@ -235,7 +238,7 @@ canvas#gameCanvas {
 }
 .title h1 { margin-bottom: 1rem; }
 h1, h2, h3 {
-  color : #2B3537;
+  color : #333;
 }
 h1, h2 {
   font-family: 'Montserrat', sans-serif;
@@ -727,7 +730,8 @@ canvas {
 /* modern buttons like title page */
 .btn {
   width: 100%;
-  padding: 14px 18px;
+  height: 48px;
+  padding: 0;
   border: 2px solid rgba(15, 23, 42, 0.90);
   background: #ffffff;
   color: #0f172a;
@@ -746,13 +750,32 @@ canvas {
   font-size: 1.05rem;
 }
 .progress-actions .btn { width: 260px; max-width: 260px; }
-.btn:hover { background: #0f172a; color: #ffffff; transform: translateY(-1px); box-shadow: 0 10px 22px rgba(2, 132, 199, 0.28); }
+.btn:hover { 
+  transform: translateY(-1px); 
+  box-shadow: 0 10px 22px rgba(8, 145, 178, 0.28); 
+}
 .btn:active { transform: translateY(0); }
 .btn:focus { outline: none; box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.25); }
-.btn-primary { border-color: #0284c7; background: #0284c7; color: #ffffff; }
-.btn-primary:hover { background: #0369a1; border-color: #0369a1; }
-.btn-secondary { background: transparent; border-color: rgba(255,255,255,0.9); color: #ffffff; }
-.btn-secondary:hover { background: rgba(255,255,255,0.12); color: #ffffff; border-color: rgba(255,255,255,0.9); }
+.btn-primary { 
+  border-color: #0891b2; 
+  background: #0891b2; 
+  color: #fff; 
+}
+.btn-primary:hover { 
+  background: #0e7490; 
+  border-color: #0e7490; 
+  color: #fff;
+}
+.btn-secondary { 
+  background: #f8f9fa; 
+  border-color: #0891b2; 
+  color: #333; 
+}
+.btn-secondary:hover { 
+  background: #e9ecef; 
+  color: #333; 
+  border-color: #0891b2; 
+}
 
 .timer-number {
   position: absolute;
@@ -812,15 +835,15 @@ canvas {
   border-radius: 50%;
   background: conic-gradient(
     from 0deg,
-    #4caf50 0deg,
-    #4caf50 calc(var(--progress, 0) * 3.6deg),
-    #e0e0e0 calc(var(--progress, 0) * 3.6deg),
-    #e0e0e0 360deg
+    #00ffff 0deg,
+    #00ffff calc(var(--progress, 0) * 3.6deg),
+    #e9ecef calc(var(--progress, 0) * 3.6deg),
+    #e9ecef 360deg
   );
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: none;
+  box-shadow: 0 4px 20px rgba(0, 255, 255, 0.2);
   border: 7px solid #fff;
   margin-bottom: 2.5rem;
 }
@@ -828,16 +851,15 @@ canvas {
 .progress-percentage {
   font-size: 1.8rem;
   font-weight: bold;
-  color: #23282b;
+  color: #333;
   font-family: 'Montserrat', sans-serif;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .progress-label {
   position: absolute;
   bottom: -45px;
   font-size: 1.7rem;
-  color: #23282b;
+  color: #333;
   font-family: 'Montserrat', sans-serif;
   font-weight: 600;
 }
@@ -848,12 +870,10 @@ canvas {
   gap: 1.4rem;
   width: 100%;
   max-width: 280px;
-  background: rgba(255, 255, 255, 0.20);
+  background: #f8f9fa;
   padding: 1.5rem;
-  border-radius: 1rem;
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
-  border: 1.5px solid rgba(255, 255, 255, 0.30);
+  border-radius: 12px;
+  border: 1px solid #e9ecef;
   padding-bottom: 0.2rem;
 }
 
@@ -862,7 +882,7 @@ canvas {
   justify-content: space-between;
   align-items: center;
   padding: 0.3rem 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  border-bottom: 1px solid #e9ecef;
 }
 
 .stat-item:last-child {
@@ -871,17 +891,16 @@ canvas {
 
 .stat-label {
   font-size: 1.2rem;
-  color: #23282b;
+  color: #666;
   font-family: 'Montserrat', sans-serif;
   font-weight: 500;
 }
 
 .stat-value {
   font-size: 1.2rem;
-  color: #23282b;
+  color: #333;
   font-family: 'Montserrat', sans-serif;
   font-weight: bold;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 /* Animation for progress circle */
