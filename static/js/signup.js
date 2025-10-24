@@ -74,6 +74,14 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
+      // ------------------------------------ Password Strength Validation ------------------------------------
+      const passwordRequirements = /^(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/;
+      if (!passwordRequirements.test(password)) {
+        message.textContent = 'Password must be at least 8 characters long, contain 1 uppercase letter, and 1 symbol.';
+        message.style.color = 'red';
+        return;
+      }
+
       // ------------------------------------ Display "Signing Up" Message ------------------------------------
       message.textContent = 'Signing up....';
       message.style.color = 'blue';
@@ -112,7 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       setTimeout(() => {
         window.location.href = '/login';
-      }, 1800);
+      }, 2000);
     });
   }
 });

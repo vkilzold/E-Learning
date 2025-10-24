@@ -393,7 +393,11 @@ li {
   display: flex;
   flex-direction: column;
   align-items: center;
-  position: relative;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
 }
 
 .popup-spinner {
@@ -685,10 +689,6 @@ canvas {
 .end-quiz-next-btn:hover {
   background: linear-gradient(90deg, #ffd740 60%, #ff9800 100%);
   color: #fff;
-}
-
-.loading-popup {
-  padding: 0;
 }
 .popup-content {
   padding: 1.2rem 2rem;
